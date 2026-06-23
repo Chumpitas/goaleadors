@@ -317,6 +317,46 @@ body {
   cursor: not-allowed;
 }
 
+/* --- academy --- */
+.academy {
+  max-width: 720px;
+  margin: 0 auto;
+  text-align: center;
+}
+
+.academy__intro {
+  color: #8aa394;
+  font-size: 0.85rem;
+}
+
+.academy__levels {
+  display: flex;
+  justify-content: center;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+  margin: 1rem 0 0.5rem;
+}
+
+.academy__desc {
+  color: #b9c9bd;
+  font-size: 0.85rem;
+  margin: 0 0 1rem;
+}
+
+.academy__run {
+  background: #2c6e49;
+  color: #fff;
+  border: none;
+  padding: 0.7rem 2rem;
+  border-radius: 999px;
+  font-size: 1rem;
+  cursor: pointer;
+}
+
+.academy__grid {
+  margin-top: 1.5rem;
+}
+
 /* --- reveal overlay --- */
 .reveal {
   position: fixed;

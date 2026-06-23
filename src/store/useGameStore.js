@@ -5,6 +5,7 @@ import { openPack, packByCode } from '../game/packs.js';
 import { CURRENCIES, applyTransaction, matchReward } from '../game/currency.js';
 import { grantStarterCards, STARTER_BONUS } from '../game/starterPack.js';
 import { trainCard, TRAINING_COST_KOVANICE } from '../game/training.js';
+import { generateYouth } from '../game/academy.js';
 
 const EDITION = 'foundations';
 
@@ -107,6 +108,14 @@ export const useGameStore = create((set, get) => ({
       return { collection };
     });
     return { ok: true, applied: res.applied, capped: res.capped };
+  },
+
+  /** Generiši omladince iz akademije (§10.3) — besplatno, dodaje u kolekciju. */
+  runAcademy(level = 1) {
+    const { club, editionCode } = get();
+    const youth = generateYouth(level, { country: club?.country, editionCode });
+    set((s) => ({ collection: [...s.collection, ...youth] }));
+    return youth;
   },
 
   /** Pripiši nagradu u Kovanicama za ishod meča (§6.2). */
