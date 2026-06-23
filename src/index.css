@@ -639,6 +639,24 @@ body {
 .ultra__ch { display: flex; justify-content: space-between; align-items: center; gap: 0.5rem; font-size: 0.78rem; padding: 0.35rem 0; }
 .ultra__ch button:disabled { opacity: 0.5; cursor: not-allowed; }
 
+/* --- pro league + euro --- */
+.proleague { max-width: 680px; margin: 0 auto; }
+.proleague__head { display: flex; justify-content: space-between; align-items: center; gap: 1rem; margin-bottom: 1rem; flex-wrap: wrap; }
+.proleague__head p { color: #8aa394; font-size: 0.85rem; margin: 0; }
+.proleague__legend { font-size: 0.72rem; color: #8aa394; margin: 0 0 0.6rem; }
+.ltable__releg td { background: rgba(232, 70, 47, 0.14); }
+.euro { font-weight: 700; font-size: 0.7rem; }
+.euro--cl { color: #e0a01e; }
+.euro--el { color: #16a3a3; }
+.euro--conf { color: #8b3fd1; }
+.proleague__euro { margin: 1.25rem 0; text-align: center; }
+.proleague__euro p { font-size: 0.9rem; }
+.proleague__bracket { margin-top: 1.5rem; }
+.proleague__bracket h3 { text-align: center; font-size: 1rem; }
+.bracket__round { display: flex; flex-direction: column; gap: 2px; margin-bottom: 0.75rem; }
+.bracket__label { font-size: 0.7rem; color: #8aa394; text-transform: uppercase; letter-spacing: 0.05em; }
+.bracket__match { font-size: 0.78rem; color: #b9c9bd; }
+
 /* --- editions / legacy --- */
 .editions {
   max-width: 720px;

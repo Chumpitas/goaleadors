@@ -12,6 +12,7 @@ import MedicalPanel from './components/MedicalPanel.jsx';
 import SponsorsPanel from './components/SponsorsPanel.jsx';
 import ProgressPanel from './components/ProgressPanel.jsx';
 import SocialPanel from './components/SocialPanel.jsx';
+import ProLeaguePanel from './components/ProLeaguePanel.jsx';
 import { SAMPLE_CARDS } from './game/sampleCards.js';
 
 const TABS = [
@@ -25,6 +26,7 @@ const TABS = [
   { id: 'sponsors', label: 'Sponzori' },
   { id: 'match', label: 'Meč' },
   { id: 'league', label: 'Liga' },
+  { id: 'proleague', label: 'Profi liga' },
   { id: 'editions', label: 'Edicije' },
   { id: 'progress', label: 'Sezona' },
   { id: 'social', label: 'Društvo' },
@@ -70,6 +72,7 @@ export default function App() {
       {tab === 'sponsors' && <SponsorsPanel />}
       {tab === 'match' && <MatchSim />}
       {tab === 'league' && <LeagueTable />}
+      {tab === 'proleague' && <ProLeaguePanel />}
       {tab === 'editions' && <EditionsPanel />}
       {tab === 'progress' && <ProgressPanel />}
       {tab === 'social' && <SocialPanel />}

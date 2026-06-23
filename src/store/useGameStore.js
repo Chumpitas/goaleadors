@@ -25,6 +25,9 @@ import { buildLineup, simulateMatch } from '../game/matchEngine.js';
 import { outcomeFromScore } from '../game/elo.js';
 import { createRivalry, applyDerbyResult, derbyBonusPct, MAX_RIVALRIES } from '../game/rivalries.js';
 import { ultraPointsFor, WEEKLY_ULTRA_CHALLENGES } from '../game/ultras.js';
+import { eloFromOverall } from '../game/elo.js';
+import { buildProLeague, runProSeason, simulateKnockout } from '../game/proLeague.js';
+import { generateAIClubs } from '../game/amateurSeason.js';
 import { mulberry32 } from '../game/rng.js';
 import { generateEditionSchedule, legacyEditions, seasonForDay } from '../game/editions.js';
 import { generateOffers, maxActiveSponsors } from '../game/sponsors.js';
@@ -399,6 +402,56 @@ export const useGameStore = create((set, get) => ({
     const amount = Math.round(base * (1 + pct / 100));
     get()._tx(CURRENCIES.KOVANICE, amount, `mec:${outcome}`);
     return amount;
+  },
+
+  // Profesionalne lige + Evropa (§8.2–8.4)
+  proSeason: null,
+  euroResult: null,
+
+  /** Procijeni ELO igrača iz najjače postave (+ talenti). */
+  _playerElo() {
+    const talents = get().talents.filter((t) => t.status === 'signed').map(talentToCard);
+    const lineup = buildLineup(get().pool, '4-3-3', { extra: talents });
+    const avg = lineup.reduce((s, c) => s + c.overall, 0) / (lineup.length || 1);
+    return eloFromOverall(avg);
+  },
+
+  /** Odigraj profesionalnu ligašku sezonu (16 klubova, §8.2–8.3). */
+  runProSeason() {
+    const elo = get()._playerElo();
+    const player = { id: 'player', name: get().club?.name || 'Moj klub', elo, isPlayer: true };
+    const clubs = buildProLeague(player);
+    const { table, classification } = runProSeason({ clubs });
+
+    const me = table.find((c) => c.id === 'player');
+    const euro = classification.euro.find((e) => e.id === 'player') || null;
+
+    // Nagrade (§6.2): prvak lige 25.000, ostali promovisani bonus.
+    if (me.rank === 1) { get()._grantReward({ kovanice: 25000 }); get().contributeUltraPoints('leagueWin'); }
+    else if (me.rank <= 2) { get()._grantReward({ kovanice: 5000 }); get().contributeUltraPoints('promotion'); }
+
+    set({ proSeason: { table, classification, playerRank: me.rank, euro, playerElo: elo }, euroResult: null });
+    return { rank: me.rank, euro };
+  },
+
+  /** Odigraj evropsko takmičenje za koje se igrač kvalifikovao (§8.4). */
+  runEuropean() {
+    const ps = get().proSeason;
+    if (!ps || !ps.euro) return { ok: false, reason: 'nema evropske kvalifikacije' };
+    const rng = mulberry32(Math.floor(Math.random() * 1e9));
+    const ai = generateAIClubs(7, { rng, eloRange: [ps.playerElo - 60, ps.playerElo + 160] });
+    const bracket = [{ id: 'player', name: get().club?.name || 'Moj klub', elo: ps.playerElo, isPlayer: true }, ...ai];
+    const { winner, rounds } = simulateKnockout(bracket, rng);
+    const playerWon = winner.id === 'player';
+
+    // Nagrade: osvajanje LŠ 100.000 (§6.2); LE/LK manje.
+    if (playerWon) {
+      const reward = ps.euro.competition === 'cl' ? 100000 : ps.euro.competition === 'el' ? 40000 : 20000;
+      get()._grantReward({ kovanice: reward });
+      get().contributeUltraPoints('leagueWin');
+    }
+    set({ euroResult: { competition: ps.euro.competition, rounds, winner, playerWon } });
+    return { ok: true, playerWon };
   },
 
   // Socijalni sistemi (§14)
