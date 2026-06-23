@@ -1,6 +1,7 @@
-import { useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { useGameStore } from './store/useGameStore.js';
 import AdminPanel from './components/AdminPanel.jsx';
+import AccountPanel from './components/AccountPanel.jsx';
 import CardView from './components/CardView.jsx';
 import PackOpening from './components/PackOpening.jsx';
 import MatchSim from './components/MatchSim.jsx';
@@ -42,12 +43,29 @@ const TABS = [
   { id: 'referral', label: 'Referral' },
   { id: 'affiliate', label: 'Affiliate' },
   { id: 'premium', label: 'Premium' },
+  { id: 'account', label: 'Nalog' },
   { id: 'admin', label: 'Admin' },
 ];
 
 export default function App() {
   const [tab, setTab] = useState('club');
   const resetGame = useGameStore((s) => s.resetGame);
+  const initAuth = useGameStore((s) => s.initAuth);
+  const saveTimer = useRef(null);
+
+  // Init auth na učitavanje.
+  useEffect(() => { initAuth(); }, [initAuth]);
+
+  // Auto-sync u oblak (debounce) kad si prijavljen i stanje se mijenja.
+  useEffect(() => {
+    return useGameStore.subscribe((s, prev) => {
+      if (!s.user) return;
+      // Ignoriši promjene koje samo mijenjaju cloudStatus (sprječava petlju snimanja).
+      if (s.cloudStatus !== prev.cloudStatus) return;
+      clearTimeout(saveTimer.current);
+      saveTimer.current = setTimeout(() => useGameStore.getState().syncToCloud(), 2000);
+    });
+  }, []);
 
   return (
     <main className="app">
@@ -96,6 +114,7 @@ export default function App() {
       {tab === 'referral' && <ReferralPanel />}
       {tab === 'affiliate' && <AffiliatePanel />}
       {tab === 'premium' && <PremiumPanel />}
+      {tab === 'account' && <AccountPanel />}
       {tab === 'admin' && <AdminPanel />}
     </main>
   );

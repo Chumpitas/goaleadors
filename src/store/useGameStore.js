@@ -50,8 +50,16 @@ import {
   emergencyHealsPerWeek,
   ENERGY_MAX,
 } from '../game/fatigue.js';
+import { authEnabled, signIn, signUp, signOut, getUser, onAuthChange } from '../lib/auth.js';
+import { loadCloudState, saveCloudState } from '../lib/cloudSave.js';
 
 const EDITION = 'foundations';
+
+/** Trajno (perzistabilno) stanje: izbaci `pool` (determinizam), tranzijente i akcije. */
+export function persistable(s) {
+  const { pool, lastOpening, user, cloudStatus, ...rest } = s;
+  return Object.fromEntries(Object.entries(rest).filter(([, v]) => typeof v !== 'function'));
+}
 
 export const useGameStore = create(persist((set, get) => ({
   editionCode: EDITION,
@@ -915,6 +923,70 @@ export const useGameStore = create(persist((set, get) => ({
     set({ lastOpening: null });
   },
 
+  // --- Backend: auth + cloud-save ---
+  user: null,
+  cloudStatus: 'idle', // idle | loading | saving | saved | error
+  authEnabled,
+
+  /** Inicijalizuj auth: učitaj sesiju i pretplati se na promjene. */
+  async initAuth() {
+    if (!authEnabled) return;
+    const u = await getUser();
+    if (u) { set({ user: u }); await get().syncFromCloud(); }
+    onAuthChange((nextUser) => {
+      const prev = get().user?.id;
+      set({ user: nextUser });
+      if (nextUser && nextUser.id !== prev) get().syncFromCloud();
+    });
+  },
+
+  async signIn(email, password) {
+    const { user, error } = await signIn(email, password);
+    if (error) return { ok: false, reason: error };
+    set({ user });
+    await get().syncFromCloud();
+    return { ok: true };
+  },
+
+  async signUp(email, password) {
+    const { user, error } = await signUp(email, password);
+    if (error) return { ok: false, reason: error };
+    if (user) { set({ user }); await get().syncToCloud(); }
+    return { ok: true, needsConfirm: !user };
+  },
+
+  async signOut() {
+    await signOut();
+    set({ user: null, cloudStatus: 'idle' });
+  },
+
+  /** Učitaj stanje iz oblaka i primijeni ga. */
+  async syncFromCloud() {
+    if (!get().user) return;
+    set({ cloudStatus: 'loading' });
+    try {
+      const st = await loadCloudState(get().user.id);
+      if (st) set(st);
+      set({ cloudStatus: 'saved' });
+    } catch (e) {
+      set({ cloudStatus: 'error' });
+    }
+  },
+
+  /** Snimi trenutno stanje u oblak. */
+  async syncToCloud() {
+    if (!get().user) return { ok: false, reason: 'niste prijavljeni' };
+    set({ cloudStatus: 'saving' });
+    try {
+      await saveCloudState(get().user.id, persistable(get()));
+      set({ cloudStatus: 'saved' });
+      return { ok: true };
+    } catch (e) {
+      set({ cloudStatus: 'error' });
+      return { ok: false, reason: e.message };
+    }
+  },
+
   // --- Admin / dev alati (zaobilaze cijene i ograničenja) ---
   adminCredit(currency, amount) {
     get()._tx(currency, amount, 'admin');
@@ -942,9 +1014,5 @@ export const useGameStore = create(persist((set, get) => ({
   version: 1,
   storage: createJSONStorage(() => localStorage),
   // Perzistiraj samo trajno stanje; `pool` se determinizmom regeneriše, `lastOpening` je tranzijentno.
-  partialize: (s) => {
-    const { pool, lastOpening, ...rest } = s;
-    // izbaci funkcije (akcije)
-    return Object.fromEntries(Object.entries(rest).filter(([, v]) => typeof v !== 'function'));
-  },
+  partialize: persistable,
 }));

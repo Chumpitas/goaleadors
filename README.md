@@ -109,9 +109,14 @@ nisu postavljene).
 > World Cup, implementirani kao logika + UI + Vitest pokrivenost (188 testova) +
 > localStorage perzistencija + admin panel. Vidi `docs/GOALEADORS_SPEC.md` za referencu.
 
-## Infrastruktura / sljedeći koraci (van GDD-a)
-Stanje se trenutno čuva u **localStorage** (single-player). Za multiplayer/produkciju:
-Supabase wiring (auth + tabele iz `supabase/schema.sql`), HTML5 Canvas match
+## Backend (Supabase)
+Opcioni **cloud-save sloj** (auth + JSONB snapshot po korisniku) — vidi
+[`docs/BACKEND.md`](docs/BACKEND.md). Bez kredencijala igra radi lokalno (localStorage);
+s kredencijalima tab **Nalog** nudi prijavu/registraciju + auto-sync. Migracija:
+`supabase/migrations/0001_game_states.sql`.
+
+## Sljedeći koraci (van GDD-a)
+Normalizovane tabele za multiplayer (`supabase/schema.sql`), HTML5 Canvas match
 vizualizacija (§15.1), interaktivni live meč s izmjenama (§3.8).
 
 ## Izdvajanje u vlastiti repo

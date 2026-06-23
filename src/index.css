@@ -81,6 +81,39 @@ body {
   border-radius: 999px; padding: 0.4rem 1.2rem; cursor: pointer;
 }
 
+/* --- account / auth --- */
+.account { max-width: 420px; margin: 0 auto; }
+.account__card {
+  padding: 1.5rem; border-radius: 14px;
+  background: linear-gradient(160deg, #1b2620, #0e1612); border: 1px solid rgba(255,255,255,0.1);
+}
+.account__card h3 { margin: 0 0 0.75rem; }
+.account__card input {
+  width: 100%; background: #0e1612; color: #e8efe9; box-sizing: border-box;
+  border: 1px solid rgba(255,255,255,0.15); border-radius: 8px; padding: 0.55rem 0.6rem; margin-bottom: 0.6rem;
+}
+.account__tabs { display: flex; gap: 0.4rem; margin-bottom: 0.75rem; }
+.account__tabs button {
+  flex: 1; background: rgba(255,255,255,0.05); color: #cfe0d4;
+  border: 1px solid rgba(255,255,255,0.12); border-radius: 999px; padding: 0.4rem; cursor: pointer; font-size: 0.82rem;
+}
+.account__tabs button.is-active { background: #2c6e49; color: #fff; border-color: #2c6e49; }
+.account__submit, .account__actions button {
+  background: #2c6e49; color: #fff; border: none; border-radius: 999px;
+  padding: 0.55rem 1.1rem; cursor: pointer; font-size: 0.85rem;
+}
+.account__submit { width: 100%; }
+.account__actions { display: flex; flex-wrap: wrap; gap: 0.5rem; margin: 0.5rem 0; }
+.account__out { background: transparent !important; color: #e8462f !important; border: 1px solid rgba(232,70,47,0.4) !important; }
+.account__email { font-weight: 700; }
+.account__status, .account__hint { font-size: 0.75rem; color: #8aa394; }
+.account__msg { font-size: 0.8rem; color: #e0a01e; }
+.account__pre {
+  background: #0e1612; border: 1px solid rgba(255,255,255,0.12); border-radius: 8px;
+  padding: 0.6rem; font-size: 0.75rem; color: #2c8c5e; overflow-x: auto;
+}
+.account__card code { color: #e0a01e; font-size: 0.85em; }
+
 .app__grid {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(190px, 1fr));
