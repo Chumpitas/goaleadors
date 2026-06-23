@@ -163,7 +163,8 @@ export const useGameStore = create((set, get) => ({
       const remaining = [];
       for (const sp of get().activeSponsors) {
         const seasonsPaid = Math.min(seasonsCrossed, sp.seasonsLeft);
-        payout += sp.perSeason * seasonsPaid;
+        // Samo ugovori "na rate" plaćaju po sezoni; upfront je već isplaćen na potpis.
+        if (sp.payout === 'installments') payout += sp.perSeason * seasonsPaid;
         const left = sp.seasonsLeft - seasonsPaid;
         if (left > 0) remaining.push({ ...sp, seasonsLeft: left });
       }
@@ -181,18 +182,35 @@ export const useGameStore = create((set, get) => ({
     set({ sponsorOffers: generateOffers(get().agencyLevel) });
   },
 
-  /** Potpiši sponzora ako ima slobodan slot (§10.8). */
+  /** Potpiši sponzora ako ima slobodan slot; isplati bonus na potpis i upfront (§10.8). */
   signSponsor(offerId) {
     const offer = get().sponsorOffers.find((o) => o.id === offerId);
     if (!offer) return { ok: false, reason: 'nema ponude' };
     if (get().activeSponsors.length >= maxActiveSponsors(get().agencyLevel)) {
       return { ok: false, reason: 'svi slotovi popunjeni' };
     }
+
+    // Bonus na potpis.
+    const sb = offer.signingBonus || {};
+    if (sb.kovanice) get()._tx(CURRENCIES.KOVANICE, sb.kovanice, `sponzor:potpis:${offer.brand}`);
+    if (sb.lopte) get()._tx(CURRENCIES.LOPTE, sb.lopte, `sponzor:potpis:${offer.brand}`);
+    if (sb.pack) get().openAndCollect(sb.pack);
+
+    // Isplata odmah (upfront) — cijeli iznos na potpis.
+    if (offer.payout === 'upfront') {
+      get()._tx(CURRENCIES.KOVANICE, offer.amount, `sponzor:upfront:${offer.brand}`);
+    }
+
     set((s) => ({
       activeSponsors: [...s.activeSponsors, { ...offer, seasonsLeft: offer.seasons }],
       sponsorOffers: s.sponsorOffers.filter((o) => o.id !== offerId),
     }));
     return { ok: true };
+  },
+
+  /** Ukupan bonus na Kovanice iz mečeva od aktivnih sponzora (§10.8 perk). */
+  sponsorMatchIncomePct() {
+    return get().activeSponsors.reduce((sum, sp) => sum + (sp.perks?.matchIncomePct || 0), 0);
   },
 
   setMedicalLevel(level) {
@@ -289,9 +307,11 @@ export const useGameStore = create((set, get) => ({
     return youth;
   },
 
-  /** Pripiši nagradu u Kovanicama za ishod meča (§6.2). */
+  /** Pripiši nagradu u Kovanicama za ishod meča (§6.2) + sponzorski bonus (§10.8). */
   rewardMatch(outcome) {
-    const amount = matchReward(outcome);
+    const base = matchReward(outcome);
+    const pct = get().sponsorMatchIncomePct();
+    const amount = Math.round(base * (1 + pct / 100));
     get()._tx(CURRENCIES.KOVANICE, amount, `mec:${outcome}`);
     return amount;
   },

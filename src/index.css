@@ -675,8 +675,19 @@ body {
 }
 
 .sponsor--active { border-color: #2c6e49; }
-.sponsor__sub { display: block; font-size: 0.68rem; color: #8aa394; }
-.sponsor__left { font-size: 0.72rem; color: #e0a01e; }
+.sponsor__body { display: flex; flex-direction: column; gap: 2px; }
+.sponsor__sub { font-size: 0.7rem; color: #cfe0d4; }
+.sponsor__desc { font-size: 0.68rem; color: #8aa394; }
+.sponsor__chips { display: flex; flex-wrap: wrap; gap: 3px; margin-top: 3px; }
+.sponsor__chip {
+  font-size: 0.62rem;
+  padding: 1px 6px;
+  border-radius: 999px;
+  background: rgba(224, 160, 30, 0.15);
+  border: 1px solid rgba(224, 160, 30, 0.4);
+  color: #e0a01e;
+}
+.sponsor__left { font-size: 0.72rem; color: #e0a01e; white-space: nowrap; }
 
 .sponsor button {
   background: #2c6e49; color: #fff; border: none;

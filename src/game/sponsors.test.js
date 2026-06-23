@@ -1,53 +1,73 @@
 import { describe, it, expect } from 'vitest';
 import {
-  SPONSOR_TYPES,
-  AGENCY_LEVELS,
+  OFFER_TEMPLATES,
+  MAX_OFFERS,
   generateOffers,
-  perSeasonPayout,
+  perSeasonAmount,
   maxActiveSponsors,
+  AGENCY_LEVELS,
 } from './sponsors.js';
 import { mulberry32 } from './rng.js';
 
 describe('sponzori (§10.8)', () => {
-  it('tipovi imaju ispravna trajanja i iznose', () => {
-    expect(SPONSOR_TYPES.lokalni).toMatchObject({ seasons: 1, amount: 3000 });
-    expect(SPONSOR_TYPES.regionalni).toMatchObject({ seasons: 2, amount: 8000 });
-    expect(SPONSOR_TYPES.premium).toMatchObject({ seasons: 3, amount: 20000 });
+  it('nudi najviše 3 ponude po sezoni', () => {
+    for (let lvl = 1; lvl <= 5; lvl++) {
+      const offers = generateOffers(lvl, mulberry32(lvl));
+      expect(offers.length).toBeLessThanOrEqual(MAX_OFFERS);
+    }
   });
 
-  it('isplata po sezoni = iznos / trajanje', () => {
-    expect(perSeasonPayout('lokalni')).toBe(3000);
-    expect(perSeasonPayout('regionalni')).toBe(4000);
-    expect(perSeasonPayout('premium')).toBe(6667); // round(20000/3)
+  it('ponude su suštinski različite (jedinstveni arhetipovi, ne duplikati)', () => {
+    for (let s = 0; s < 30; s++) {
+      const offers = generateOffers(5, mulberry32(s + 1));
+      const keys = offers.map((o) => o.key);
+      expect(new Set(keys).size).toBe(keys.length); // bez duplikata
+    }
   });
 
-  it('nivo agencije određuje broj ponuda i dostupne tipove (§10.8)', () => {
-    const lvl1 = generateOffers(1, mulberry32(1));
-    expect(lvl1).toHaveLength(AGENCY_LEVELS[1].offers);
-    expect(lvl1.every((o) => o.type === 'lokalni')).toBe(true);
+  it('na nivou 1 ima 3 ponude (svi lokalni arhetipovi)', () => {
+    const offers = generateOffers(1, mulberry32(1));
+    expect(offers).toHaveLength(3);
+    expect(offers.every((o) => o.type === 'lokalni')).toBe(true);
+  });
 
-    const lvl3 = generateOffers(3, mulberry32(2));
-    expect(lvl3).toHaveLength(4);
-    expect(lvl3.every((o) => ['lokalni', 'regionalni', 'premium'].includes(o.type))).toBe(true);
+  it('viši nivo otključava premium tier', () => {
+    let sawPremium = false;
+    for (let s = 0; s < 40 && !sawPremium; s++) {
+      sawPremium = generateOffers(3, mulberry32(s + 1)).some((o) => o.type === 'premium');
+    }
+    expect(sawPremium).toBe(true);
+  });
+
+  it('ponude nose način isplate (odmah ili na rate)', () => {
+    const offers = generateOffers(3, mulberry32(9));
+    for (const o of offers) {
+      expect(['upfront', 'installments']).toContain(o.payout);
+      if (o.payout === 'installments') expect(o.perSeason).toBeGreaterThan(0);
+      else expect(o.perSeason).toBe(0);
+    }
+  });
+
+  it('postoje arhetipovi s bonusom na potpis i s pasivnim perkom', () => {
+    const withSigning = OFFER_TEMPLATES.some((t) => Object.keys(t.signingBonus).length);
+    const withPerk = OFFER_TEMPLATES.some((t) => Object.keys(t.perks).length);
+    expect(withSigning).toBe(true);
+    expect(withPerk).toBe(true);
+  });
+
+  it('perSeasonAmount = iznos / trajanje (zaokruženo)', () => {
+    expect(perSeasonAmount(8000, 2)).toBe(4000);
+    expect(perSeasonAmount(20000, 3)).toBe(6667);
   });
 
   it('multi-slot tek na nivou 5', () => {
     expect(maxActiveSponsors(1)).toBe(1);
     expect(maxActiveSponsors(4)).toBe(1);
     expect(maxActiveSponsors(5)).toBe(2);
+    expect(AGENCY_LEVELS[5].slots).toBe(2);
   });
 
-  it('svaka ponuda nosi brand, perSeason i trajanje', () => {
-    const offers = generateOffers(5, mulberry32(7));
-    for (const o of offers) {
-      expect(typeof o.brand).toBe('string');
-      expect(o.perSeason).toBeGreaterThan(0);
-      expect(o.seasons).toBeGreaterThanOrEqual(1);
-    }
-  });
-
-  it('baca grešku za nepoznat nivo / tip', () => {
+  it('baca grešku za nepoznat nivo', () => {
     expect(() => generateOffers(9)).toThrow();
-    expect(() => perSeasonPayout('mega')).toThrow();
   });
 });

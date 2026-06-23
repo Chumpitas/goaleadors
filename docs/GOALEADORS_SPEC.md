@@ -344,10 +344,10 @@ Ukupno: 19 Common, 5 Rare, 1 Epic = 25 karata
 Plus: 1 Zlatna kesica, 500 Kovanica, Starter stadion (2.000 kapaciteta). Prosječan overall
 tima 65–68 (dovoljno za amatersku ligu).
 
-> ⚠️ **Nekonzistentnost u izvornom spec-u:** raspored po pozicijama gore daje **13 Common,
-> 5 Rare, 1 Epic = 19 karata**, dok izvorni PDF u sumarnoj liniji tvrdi „19 Common … = 25".
-> Implementacija (`src/game/starterPack.js`) prati raspored po pozicijama (19 karata).
-> Treba potvrditi koja je brojka tačna.
+> ⚠️ **Nekonzistentnost + odluka vlasnika:** raspored po pozicijama daje 13C/5R/1E = 19, a
+> sumarna linija tvrdi „19 Common … = 25". Po odluci vlasnika dodato je **+1 Common po
+> poziciji** → implementacija (`src/game/starterPack.js`) koristi **17 Common, 5 Rare,
+> 1 Epic = 23 karte** (GK×3, DEF×7, MID×7, ATT×6).
 
 ---
 

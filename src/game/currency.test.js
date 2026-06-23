@@ -79,24 +79,26 @@ describe('applyTransaction', () => {
 describe('starter pack (§7)', () => {
   const pool = generateEdition('foundations');
 
-  // NAPOMENA: §7 ima nekonzistentnost — raspored po pozicijama daje 13C/5R/1E = 19,
-  // dok sumarna linija tvrdi "19 Common ... = 25". Pratimo raspored po pozicijama.
-  it('kompozicija po poziciji je 13C + 5R + 1E = 19', () => {
-    expect(starterCardCount()).toBe(19);
+  // +1 Common po poziciji u odnosu na §7 raspored -> 17C/5R/1E = 23 (odluka vlasnika).
+  it('kompozicija po poziciji je 17C + 5R + 1E = 23', () => {
+    expect(starterCardCount()).toBe(23);
     const totals = STARTER_COMPOSITION.reduce(
       (a, r) => ({ common: a.common + r.common, rare: a.rare + r.rare, epic: a.epic + r.epic }),
       { common: 0, rare: 0, epic: 0 }
     );
-    expect(totals).toEqual({ common: 13, rare: 5, epic: 1 });
+    expect(totals).toEqual({ common: 17, rare: 5, epic: 1 });
   });
 
-  it('grantStarterCards vrati 19 karata ispravnih rariteta/pozicija', () => {
+  it('grantStarterCards vrati 23 karte ispravnih rariteta/pozicija', () => {
     const cards = grantStarterCards(pool, mulberry32(5));
-    expect(cards).toHaveLength(19);
-    expect(cards.filter((c) => c.rarity === 'common')).toHaveLength(13);
+    expect(cards).toHaveLength(23);
+    expect(cards.filter((c) => c.rarity === 'common')).toHaveLength(17);
     expect(cards.filter((c) => c.rarity === 'rare')).toHaveLength(5);
     expect(cards.filter((c) => c.rarity === 'epic')).toHaveLength(1);
-    // 2 GK karte
-    expect(cards.filter((c) => c.position === 'GK')).toHaveLength(2);
+    // sve 4 pozicije zastupljene
+    for (const pos of ['GK', 'DEF', 'MID', 'ATT']) {
+      expect(cards.filter((c) => c.position === pos).length).toBeGreaterThan(0);
+    }
+    expect(cards.filter((c) => c.position === 'GK')).toHaveLength(3);
   });
 });

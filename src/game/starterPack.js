@@ -4,16 +4,15 @@ import { pick } from './rng.js';
 /**
  * Sastav starter postave (§7), po poziciji/raritetu.
  *
- * NAPOMENA o spec-u: §7 je interno nekonzistentan. Raspored po pozicijama
- * (GK×2, DEF×6, MID×6, ATT×5) daje 13 Common, 5 Rare, 1 Epic = 19 karata,
- * dok sumarna linija tvrdi "19 Common, 5 Rare, 1 Epic = 25". Pratimo detaljni
- * raspored po pozicijama (4 interno konzistentne linije) -> 19 karata.
+ * NAPOMENA o spec-u: §7 je interno nekonzistentan (raspored po pozicijama = 19,
+ * sumarno "25"). Po odluci vlasnika dodato je +1 Common po poziciji u odnosu na
+ * raspored po pozicijama -> ukupno 17 Common, 5 Rare, 1 Epic = 23 karte.
  */
 export const STARTER_COMPOSITION = Object.freeze([
-  { position: 'GK', common: 2, rare: 0, epic: 0 },
-  { position: 'DEF', common: 4, rare: 2, epic: 0 },
-  { position: 'MID', common: 4, rare: 2, epic: 0 },
-  { position: 'ATT', common: 3, rare: 1, epic: 1 },
+  { position: 'GK', common: 3, rare: 0, epic: 0 },
+  { position: 'DEF', common: 5, rare: 2, epic: 0 },
+  { position: 'MID', common: 5, rare: 2, epic: 0 },
+  { position: 'ATT', common: 4, rare: 1, epic: 1 },
 ]);
 
 /** Ostali starter benefiti (§7). */
