@@ -189,6 +189,89 @@ create index scout_missions_club_idx on scout_missions (club_id, status);
 create index scout_missions_active_idx on scout_missions (completes_at) where status = 'active';
 
 -- ---------------------------------------------------------------------------
+-- World Cup (WORLD_CUP_SYSTEM)
+-- ---------------------------------------------------------------------------
+create table manager_ratings (
+  manager_id        uuid primary key references users (id) on delete cascade,
+  total             integer not null default 0,
+  league_level_score integer default 0,
+  win_rate_score    integer default 0,
+  european_score    integer default 0,
+  seasons_score     integer default 0,
+  updated_at        timestamptz not null default now()
+);
+create index manager_ratings_total_idx on manager_ratings (total desc);
+
+create table world_cups (
+  id                uuid primary key default gen_random_uuid(),
+  year              integer unique not null,
+  status            text not null default 'qualification', -- qualification|group_stage|knockout|completed
+  winner_manager_id uuid references users (id),
+  created_at        timestamptz not null default now()
+);
+
+create table wc_applications (
+  id            uuid primary key default gen_random_uuid(),
+  world_cup_id  uuid references world_cups (id) on delete cascade,
+  manager_id    uuid references users (id) on delete cascade,
+  nation        text not null,
+  priority      smallint not null check (priority between 1 and 3),
+  status        text not null default 'pending', -- pending|qualified|rejected|active_selector
+  applied_at    timestamptz not null default now(),
+  unique (world_cup_id, manager_id, nation)
+);
+create index wc_applications_idx on wc_applications (world_cup_id, nation, status);
+
+create table wc_qualification_matches (
+  id              uuid primary key default gen_random_uuid(),
+  world_cup_id    uuid references world_cups (id) on delete cascade,
+  nation          text not null,
+  round           smallint not null,
+  home_manager_id uuid references users (id),
+  away_manager_id uuid references users (id),
+  home_goals      smallint,
+  away_goals      smallint,
+  home_present    boolean default false,
+  away_present    boolean default false,
+  home_setup      jsonb,
+  away_setup      jsonb,
+  scheduled_at    timestamptz not null,
+  played_at       timestamptz,
+  status          text not null default 'scheduled' -- scheduled|live|completed
+);
+create index wc_qual_idx on wc_qualification_matches (world_cup_id, nation, round);
+
+create table wc_selectors (
+  id                uuid primary key default gen_random_uuid(),
+  world_cup_id      uuid references world_cups (id) on delete cascade,
+  nation            text not null,
+  manager_id        uuid references users (id),
+  deputy_manager_id uuid references users (id), -- finalista (zamjenik)
+  squad             jsonb, -- 23 igrača
+  created_at        timestamptz not null default now(),
+  unique (world_cup_id, nation)
+);
+
+create table wc_legacy_activations (
+  id             uuid primary key default gen_random_uuid(),
+  world_cup_id   uuid references world_cups (id) on delete cascade,
+  manager_id     uuid references users (id) on delete cascade,
+  legacy_card_id uuid,
+  nation         text not null,
+  activated_at   timestamptz not null default now(),
+  unique (world_cup_id, manager_id, nation) -- max 1 po menadžeru po naciji
+);
+
+create table wc_rewards (
+  id              uuid primary key default gen_random_uuid(),
+  world_cup_id    uuid references world_cups (id) on delete cascade,
+  manager_id      uuid references users (id) on delete cascade,
+  placement       text not null, -- winner|runner_up|third_place
+  rewards_granted jsonb,
+  granted_at      timestamptz not null default now()
+);
+
+-- ---------------------------------------------------------------------------
 -- transactions  (currency ledger: purchases, rewards, sinks — §6)
 -- ---------------------------------------------------------------------------
 create table transactions (

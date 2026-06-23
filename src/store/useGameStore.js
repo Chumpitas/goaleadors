@@ -37,6 +37,7 @@ import {
 import { AFFILIATE_ACTIONS, bookmakerById, estimatedRevenueEUR } from '../game/affiliate.js';
 import { rollFriendlyReward, FRIENDLY_TYPES } from '../game/friendlies.js';
 import { PREMIUM_PRICES, stadiumById } from '../game/cosmeticsPremium.js';
+import { calculateManagerRating, simulateWorldCup, placementReward } from '../game/worldCup.js';
 import { buildProLeague, runProSeason, simulateKnockout } from '../game/proLeague.js';
 import { generateAIClubs } from '../game/amateurSeason.js';
 import { mulberry32 } from '../game/rng.js';
@@ -622,6 +623,63 @@ export const useGameStore = create((set, get) => ({
     set((s) => ({ [key]: s[key].filter((l) => l.id !== id), [dest]: [...s[dest], listing.card] }));
   },
 
+  // World Cup (WORLD_CUP_SYSTEM)
+  managerStats: { currentLeagueLevel: 3, winsLast30: 0, europeanHistory: [], totalSeasons: 0 },
+  veteranTokens: 0,
+  wcApplication: null,
+  wcQualified: false,
+  wcResult: null,
+  wcTrophies: [],
+
+  managerRating() {
+    return calculateManagerRating(get().managerStats);
+  },
+
+  /** Prijavi se za selektora (max 3 nacije po prioritetu). */
+  applyWorldCup(nations) {
+    const list = (nations || []).filter(Boolean).slice(0, 3);
+    if (!list.length) return { ok: false, reason: 'odaberi bar jednu naciju' };
+    set({ wcApplication: { nations: list }, wcQualified: false, wcResult: null });
+    return { ok: true };
+  },
+
+  /** Kvalifikacije: top selektori po Manager Ratingu prolaze (simulirani bracket). */
+  runQualification() {
+    if (!get().wcApplication) return { ok: false, reason: 'prvo se prijavi' };
+    const rating = get().managerRating().total;
+    const rng = mulberry32(Math.floor(Math.random() * 1e9));
+    // Bracket od 8: pobijedi 3 protivnika (rating-vjerovatnoća) → kvalifikacija.
+    let survived = true;
+    for (let round = 0; round < 3 && survived; round++) {
+      const opp = 1500 + Math.floor(rng() * 1500);
+      survived = rng() < rating / (rating + opp);
+    }
+    set({ wcQualified: survived });
+    return { ok: true, qualified: survived };
+  },
+
+  /** Odigraj World Cup za kvalifikovanu naciju #1; dodijeli nagrade po plasmanu. */
+  runWorldCup() {
+    if (!get().wcQualified || !get().wcApplication) return { ok: false, reason: 'nisi kvalifikovan' };
+    const nation = get().wcApplication.nations[0];
+    const bonus = Math.round(get().managerRating().total / 40); // bolji selektor = jača reprezentacija
+    const result = simulateWorldCup({ [nation]: bonus });
+    const placement = result.placement[nation];
+    const reward = placementReward(placement);
+    if (reward) get()._grantWCReward(reward);
+    set({ wcResult: { ...result, nation, placement } });
+    return { ok: true, placement };
+  },
+
+  _grantWCReward(reward) {
+    if (reward.coins) get()._tx(CURRENCIES.KOVANICE, reward.coins, 'wc:nagrada');
+    for (let i = 0; i < (reward.elitePacks || 0); i++) get().openAndCollect('elite');
+    for (let i = 0; i < (reward.diamondPacks || 0); i++) get().openAndCollect('dijamantska');
+    if (reward.veteranTokens) set((s) => ({ veteranTokens: s.veteranTokens + reward.veteranTokens }));
+    if (reward.trophy) set((s) => ({ wcTrophies: [...s.wcTrophies, reward.trophy] }));
+    if (reward.kit) set((s) => ({ ownedCosmetics: { ...s.ownedCosmetics, kitId: reward.kit } }));
+  },
+
   // Profesionalne lige + Evropa (§8.2–8.4)
   proSeason: null,
   euroResult: null,
@@ -648,6 +706,16 @@ export const useGameStore = create((set, get) => ({
     if (me.rank === 1) { get()._grantReward({ kovanice: 25000 }); get().contributeUltraPoints('leagueWin'); }
     else if (me.rank <= 2) { get()._grantReward({ kovanice: 5000 }); get().contributeUltraPoints('promotion'); }
 
+    // Ažuriraj Manager Rating (WORLD_CUP_SYSTEM napomena 1).
+    set((s) => ({
+      managerStats: {
+        ...s.managerStats,
+        currentLeagueLevel: me.rank <= 2 ? 1 : 2,
+        winsLast30: Math.min(30, me.w),
+        totalSeasons: s.managerStats.totalSeasons + 1,
+      },
+    }));
+
     set({ proSeason: { table, classification, playerRank: me.rank, euro, playerElo: elo }, euroResult: null });
     return { rank: me.rank, euro };
   },
@@ -668,7 +736,10 @@ export const useGameStore = create((set, get) => ({
       get()._grantReward({ kovanice: reward });
       get().contributeUltraPoints('leagueWin');
     }
-    set({ euroResult: { competition: ps.euro.competition, rounds, winner, playerWon } });
+    set((s) => ({
+      euroResult: { competition: ps.euro.competition, rounds, winner, playerWon },
+      managerStats: { ...s.managerStats, europeanHistory: [...s.managerStats.europeanHistory, { result: playerWon ? 'win' : 'qf' }] },
+    }));
     return { ok: true, playerWon };
   },
 

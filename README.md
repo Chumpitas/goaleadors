@@ -48,6 +48,7 @@ React + Vite · Framer Motion · Zustand · HTML5 Canvas (match viz, kasnije) ·
 | `src/game/affiliate.js`     | Affiliate B2B: kladionice, CPA, geo + 18+ zaštita (§11)        |
 | `src/game/friendlies.js` / `hallOfFame.js` | Prijateljski mečevi + Hall of Fame (§14.3–14.4) |
 | `src/game/cosmeticsPremium.js` | Premium kosmetika: legendarni stadioni 1-of-1, grbovi, dresovi (§9.4) |
+| `src/game/worldCup.js`      | World Cup: Manager Rating, kvalifikacije, turnir, nagrade (WC_SYSTEM) |
 | `src/game/rng.js`           | Seedable PRNG (deterministički draws)                          |
 | `src/game/*.test.js`        | Vitest: OVERALL, karte, packs + pity, pool, match engine       |
 | `src/store/useGameStore.js` | Zustand store (kolekcija, pity, openAndCollect)                |
@@ -99,8 +100,11 @@ nisu postavljene).
 - [x] **Friendly mečevi + Hall of Fame** — egzibicije + sezonska priznanja (§14.3–14.4)
 - [x] **Premium kosmetika 1-of-1** — legendarni stadioni, historijski grbovi, special dresovi (§9.4)
 
-> ✅ **Cijeli GDD je pokriven** — svi sistemi iz spec-a (§2–§17) implementirani kao logika
-> + UI + Vitest pokrivenost (177 testova). Vidi `docs/GOALEADORS_SPEC.md` za referencu.
+- [x] **World Cup** — Manager Rating, prijava/kvalifikacije, grupna faza + knockout, nagrade (WORLD_CUP_SYSTEM)
+
+> ✅ **Cijeli GDD + dopune pokriveni** — svi sistemi iz spec-a (§2–§17) + Scout redizajn +
+> World Cup, implementirani kao logika + UI + Vitest pokrivenost (188 testova).
+> Vidi `docs/GOALEADORS_SPEC.md` za referencu.
 
 ## Izdvajanje u vlastiti repo
 

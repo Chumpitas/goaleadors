@@ -17,6 +17,7 @@ import MarketPanel from './components/MarketPanel.jsx';
 import ReferralPanel from './components/ReferralPanel.jsx';
 import AffiliatePanel from './components/AffiliatePanel.jsx';
 import PremiumPanel from './components/PremiumPanel.jsx';
+import WorldCupPanel from './components/WorldCupPanel.jsx';
 import { SAMPLE_CARDS } from './game/sampleCards.js';
 
 const TABS = [
@@ -32,6 +33,7 @@ const TABS = [
   { id: 'match', label: 'Meč' },
   { id: 'league', label: 'Liga' },
   { id: 'proleague', label: 'Profi liga' },
+  { id: 'worldcup', label: 'World Cup' },
   { id: 'editions', label: 'Edicije' },
   { id: 'progress', label: 'Sezona' },
   { id: 'social', label: 'Društvo' },
@@ -82,6 +84,7 @@ export default function App() {
       {tab === 'match' && <MatchSim />}
       {tab === 'league' && <LeagueTable />}
       {tab === 'proleague' && <ProLeaguePanel />}
+      {tab === 'worldcup' && <WorldCupPanel />}
       {tab === 'editions' && <EditionsPanel />}
       {tab === 'progress' && <ProgressPanel />}
       {tab === 'social' && <SocialPanel />}

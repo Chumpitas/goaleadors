@@ -674,6 +674,29 @@ body {
 }
 .prem__card button:disabled { opacity: 0.4; cursor: not-allowed; }
 
+/* --- world cup --- */
+.wc { max-width: 720px; margin: 0 auto; }
+.wc section { margin-bottom: 1.75rem; }
+.wc h3 { font-size: 0.92rem; margin: 0 0 0.6rem; }
+.wc__rating { padding: 1rem; border-radius: 14px; background: linear-gradient(160deg, #241f0e, #0e1612); border: 1px solid rgba(224,160,30,0.3); }
+.wc__rhead { display: flex; justify-content: space-between; align-items: center; }
+.wc__total { font-size: 2rem; font-weight: 800; color: #e0a01e; }
+.wc__bar { display: flex; align-items: center; gap: 0.6rem; margin: 0.35rem 0; }
+.wc__blabel { width: 110px; font-size: 0.72rem; color: #8aa394; }
+.wc__btrack { flex: 1; height: 8px; border-radius: 999px; background: rgba(255,255,255,0.08); overflow: hidden; }
+.wc__bfill { height: 100%; background: #e0a01e; }
+.wc__bval { width: 80px; text-align: right; font-size: 0.7rem; color: #b9c9bd; }
+.wc__hint { font-size: 0.72rem; color: #8aa394; margin-top: 0.5rem; }
+.wc__msg { color: #e0a01e; font-size: 0.85rem; }
+.wc__picks { display: flex; flex-wrap: wrap; gap: 0.5rem; }
+.wc__picks select { background: #0e1612; color: #e8efe9; border: 1px solid rgba(255,255,255,0.15); border-radius: 8px; padding: 0.4rem 0.5rem; font-size: 0.82rem; }
+.wc__qual { margin-top: 0.75rem; }
+.wc__result { padding: 1rem; border-radius: 12px; background: linear-gradient(160deg, #1b2620, #0e1612); border: 1px solid rgba(224,160,30,0.3); }
+.wc__bracket { font-size: 0.8rem; color: #b9c9bd; margin-top: 0.5rem; display: flex; flex-direction: column; gap: 3px; }
+.wc__groups { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 0.6rem; margin-bottom: 0.6rem; }
+.wc__group { display: flex; flex-direction: column; gap: 2px; padding: 0.6rem; border-radius: 10px; background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.1); font-size: 0.72rem; }
+.wc__group strong { color: #e0a01e; margin-bottom: 2px; }
+
 /* --- pro league + euro --- */
 .proleague { max-width: 680px; margin: 0 auto; }
 .proleague__head { display: flex; justify-content: space-between; align-items: center; gap: 1rem; margin-bottom: 1rem; flex-wrap: wrap; }
