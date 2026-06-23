@@ -5,23 +5,26 @@ import { useGameStore } from '../store/useGameStore.js';
 export default function Landing() {
   const signIn = useGameStore((s) => s.signIn);
   const signUp = useGameStore((s) => s.signUp);
-  const [mode, setMode] = useState('register'); // 'register' | 'login'
+  const [mode, setMode] = useState('login');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [agreed, setAgreed] = useState(false);
   const [loading, setLoading] = useState(false);
-  const [msg, setMsg] = useState(null); // { type: 'ok'|'err', text }
+  const [msg, setMsg] = useState(null);
 
   async function handleSubmit(e) {
     e.preventDefault();
+    if (mode === 'register' && !agreed) {
+      setMsg({ type: 'err', text: 'Prihvati uvjete korištenja.' });
+      return;
+    }
     setMsg(null);
     setLoading(true);
     try {
       if (mode === 'register') {
         const res = await signUp(email, password);
         if (!res.ok) throw new Error(res.error || 'Greška pri registraciji.');
-        if (res.needsConfirm) {
-          setMsg({ type: 'ok', text: 'Potvrdi e-mail pa se prijavi.' });
-        }
+        if (res.needsConfirm) setMsg({ type: 'ok', text: 'Potvrdi e-mail pa se prijavi.' });
       } else {
         const res = await signIn(email, password);
         if (!res.ok) throw new Error(res.error || 'Pogrešan e-mail ili lozinka.');
@@ -34,107 +37,83 @@ export default function Landing() {
   }
 
   return (
-    <div className="landing">
-      {/* Pitch background (CSS) */}
-      <div className="landing__pitch" aria-hidden="true">
-        <div className="landing__pitch-inner">
-          <div className="landing__halfway" />
-          <div className="landing__center-circle" />
-          <div className="landing__center-dot" />
-          <div className="landing__penalty landing__penalty--left" />
-          <div className="landing__penalty landing__penalty--right" />
-          <div className="landing__goal landing__goal--left" />
-          <div className="landing__goal landing__goal--right" />
-          <div className="landing__stripe" />
+    <div className="landing2">
+      {/* Top — dark hero with logo */}
+      <div className="landing2__hero">
+        <img src="/logo-goal.svg" alt="Goaleadors" className="landing2__logo" />
+      </div>
+
+      {/* Bottom — yellow sheet */}
+      <motion.div
+        className="landing2__sheet"
+        initial={{ y: 60, opacity: 0 }}
+        animate={{ y: 0, opacity: 1 }}
+        transition={{ duration: 0.45, ease: 'easeOut' }}
+      >
+        {/* Tabs */}
+        <div className="landing2__tabs">
+          <button
+            className={`landing2__tab${mode === 'login' ? ' is-active' : ''}`}
+            onClick={() => { setMode('login'); setMsg(null); }}
+          >
+            PRIJAVA
+          </button>
+          <button
+            className={`landing2__tab${mode === 'register' ? ' is-active' : ''}`}
+            onClick={() => { setMode('register'); setMsg(null); }}
+          >
+            REGISTRACIJA
+          </button>
         </div>
-      </div>
 
-      {/* Dark overlay gradient */}
-      <div className="landing__overlay" />
-
-      {/* Content */}
-      <div className="landing__content">
-        <motion.div
-          className="landing__card"
-          initial={{ opacity: 0, y: 28 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.4, ease: 'easeOut' }}
-        >
-          {/* Logo */}
-          <div className="landing__logo">
-            <img src="/logo-goal.svg" alt="Goaleadors" className="landing__logo-img" />
-          </div>
-          <p className="landing__tagline">Football manager · card game</p>
-
-          {/* Tabs */}
-          <div className="landing__tabs">
-            <button
-              className={`landing__tab${mode === 'register' ? ' is-active' : ''}`}
-              onClick={() => { setMode('register'); setMsg(null); }}
-            >
-              Registracija
-            </button>
-            <button
-              className={`landing__tab${mode === 'login' ? ' is-active' : ''}`}
-              onClick={() => { setMode('login'); setMsg(null); }}
-            >
-              Prijava
-            </button>
+        <form className="landing2__form" onSubmit={handleSubmit}>
+          <div className="landing2__field">
+            <label className="landing2__label">EMAIL</label>
+            <input
+              className="landing2__input"
+              type="email"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              required
+              autoComplete="email"
+            />
           </div>
 
-          <form className="landing__form" onSubmit={handleSubmit}>
-            <div className="landing__field">
-              <label className="landing__label">E-mail</label>
+          <div className="landing2__field">
+            <label className="landing2__label">LOZINKA</label>
+            <input
+              className="landing2__input"
+              type="password"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              required
+              minLength={mode === 'register' ? 8 : 1}
+              autoComplete={mode === 'register' ? 'new-password' : 'current-password'}
+            />
+          </div>
+
+          {mode === 'register' && (
+            <label className="landing2__checkbox">
               <input
-                className="landing__input"
-                type="email"
-                placeholder="tvoj@email.com"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                required
-                autoComplete="email"
+                type="checkbox"
+                checked={agreed}
+                onChange={(e) => setAgreed(e.target.checked)}
               />
+              <span>I accept the Terms of Service and Privacy Policy</span>
+            </label>
+          )}
+
+          {msg && (
+            <div className={`landing2__msg landing2__msg--${msg.type}`}>
+              {msg.text}
             </div>
-            <div className="landing__field">
-              <label className="landing__label">Lozinka</label>
-              <input
-                className="landing__input"
-                type="password"
-                placeholder={mode === 'register' ? 'Min. 8 znakova' : '••••••••'}
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                required
-                minLength={mode === 'register' ? 8 : 1}
-                autoComplete={mode === 'register' ? 'new-password' : 'current-password'}
-              />
-            </div>
+          )}
 
-            {msg && (
-              <div className={`landing__msg landing__msg--${msg.type}`}>
-                {msg.text}
-              </div>
-            )}
-
-            <button className="landing__submit" type="submit" disabled={loading}>
-              {loading
-                ? 'Učitavam…'
-                : mode === 'register'
-                ? '⚽ Kreiraj nalog'
-                : 'Prijavi se'}
-            </button>
-          </form>
-
-          <p className="landing__switch">
-            {mode === 'register' ? 'Već imaš nalog? ' : 'Nemaš nalog? '}
-            <button
-              className="landing__switch-btn"
-              onClick={() => { setMode(mode === 'register' ? 'login' : 'register'); setMsg(null); }}
-            >
-              {mode === 'register' ? 'Prijavi se' : 'Registruj se'}
-            </button>
-          </p>
-        </motion.div>
-      </div>
+          <button className="landing2__submit" type="submit" disabled={loading}>
+            {loading ? 'Učitavam…' : mode === 'login' ? 'PRIJAVI SE' : 'REGISTRUJ SE'}
+          </button>
+        </form>
+      </motion.div>
     </div>
   );
 }
