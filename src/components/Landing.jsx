@@ -62,9 +62,8 @@ export default function Landing() {
         >
           {/* Logo */}
           <div className="landing__logo">
-            <span className="landing__logo-icon">G</span>
+            <img src="/logo-goal.svg" alt="Goaleadors" className="landing__logo-img" />
           </div>
-          <h1 className="landing__title">Goaleadors</h1>
           <p className="landing__tagline">Football manager · card game</p>
 
           {/* Tabs */}
