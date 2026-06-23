@@ -3,6 +3,7 @@ import { motion } from 'framer-motion';
 import { useGameStore } from '../store/useGameStore.js';
 import { buildLineup, simulateMatch } from '../game/matchEngine.js';
 import { FORMATIONS, STYLES, MENTALITIES } from '../game/tactics.js';
+import { outcomeFromScore } from '../game/elo.js';
 
 const FORMATION_OPTS = Object.keys(FORMATIONS);
 const STYLE_OPTS = Object.keys(STYLES);
@@ -38,9 +39,11 @@ function TacticsPicker({ label, value, onChange }) {
 
 export default function MatchSim() {
   const pool = useGameStore((s) => s.pool);
+  const rewardMatch = useGameStore((s) => s.rewardMatch);
   const [home, setHome] = useState({ formation: '4-3-3', style: 'High Press', mentality: 'Attacking' });
   const [away, setAway] = useState({ formation: '5-4-1', style: 'Defensive', mentality: 'Defensive' });
   const [result, setResult] = useState(null);
+  const [reward, setReward] = useState(null);
 
   // Postave (najbolji OVERALL po liniji) — memoizirane po formaciji.
   const homeLineup = useMemo(() => buildLineup(pool, home.formation), [pool, home.formation]);
@@ -52,6 +55,8 @@ export default function MatchSim() {
       { name: 'Gosti', cards: awayLineup, ...away }
     );
     setResult(res);
+    const outcome = outcomeFromScore(res.score.home, res.score.away, 'home');
+    setReward({ outcome, amount: rewardMatch(outcome) });
   };
 
   return (
@@ -71,6 +76,11 @@ export default function MatchSim() {
             <span className="scoreboard__name">Gosti</span>
           </div>
           <div className="scoreboard__char">{result.character.label}</div>
+          {reward && (
+            <div className="scoreboard__reward">
+              {reward.outcome === 'win' ? 'Pobjeda' : reward.outcome === 'draw' ? 'Remi' : 'Poraz'} · +{reward.amount.toLocaleString('sr')} 🪙
+            </div>
+          )}
 
           <table className="statline">
             <tbody>

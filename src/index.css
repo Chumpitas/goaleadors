@@ -204,6 +204,55 @@ body {
   color: #8aa394;
 }
 
+.pack-card {
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+  padding: 1rem;
+  border-radius: 14px;
+  background: linear-gradient(160deg, #1b2620, #0e1612);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+}
+
+.pack-card__buys {
+  display: flex;
+  gap: 0.4rem;
+  margin-top: auto;
+}
+
+.pay {
+  flex: 1;
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  border-radius: 8px;
+  padding: 0.4rem 0.3rem;
+  font-size: 0.78rem;
+  cursor: pointer;
+  background: rgba(255, 255, 255, 0.04);
+  color: #e8efe9;
+}
+
+.pay--coin:not(:disabled) { border-color: #e0a01e; }
+.pay--ball:not(:disabled) { border-color: #2c6e49; }
+
+.pay:disabled {
+  opacity: 0.35;
+  cursor: not-allowed;
+}
+
+.packs__error {
+  text-align: center;
+  color: #e8462f;
+  font-size: 0.85rem;
+  margin: 0 0 1rem;
+}
+
+.scoreboard__reward {
+  text-align: center;
+  color: #e0a01e;
+  font-size: 0.9rem;
+  margin-top: 0.4rem;
+}
+
 /* --- reveal overlay --- */
 .reveal {
   position: fixed;

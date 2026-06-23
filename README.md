@@ -29,6 +29,8 @@ React + Vite · Framer Motion · Zustand · HTML5 Canvas (match viz, kasnije) ·
 | `src/game/elo.js`           | ELO sistem: delte, matchmaking, napredovanje (§8.1)            |
 | `src/game/amateurSeason.js` | Amaterska sezona: AI klubovi, 30 dana, top 20% promocija (§8.1) |
 | `src/game/cosmetics.js`     | Države/gradovi, štitovi, simboli, dizajni dresa, kombinatorika (§9) |
+| `src/game/currency.js`      | Lopte/Kovanice, nagrade, paketi Loptica, ledger (§6)           |
+| `src/game/starterPack.js`   | Starter kompozicija + benefiti (§7)                            |
 | `src/game/rng.js`           | Seedable PRNG (deterministički draws)                          |
 | `src/game/*.test.js`        | Vitest: OVERALL, karte, packs + pity, pool, match engine       |
 | `src/store/useGameStore.js` | Zustand store (kolekcija, pity, openAndCollect)                |
@@ -62,8 +64,9 @@ nisu postavljene).
 - [x] **Match engine** — AR/DR, intervali, taktike, konverzija, haos + UI (§3)
 - [x] **Amaterska liga (ELO)** — delte, matchmaking, AI klubovi, top 20% + UI (§8.1)
 - [x] **Onboarding + grb/dres builder** — tok, SVG štit/dres, kombinatorika (§9)
-- [ ] Dvije valute + starter pack (§6, §7)
+- [x] **Valute + starter pack** — Lopte/Kovanice, kupovina kesica, nagrade, starter (§6, §7)
 - [ ] Edicije + penzija (§4)
+- [ ] Trade tržište (§5.4)
 
 ## Izdvajanje u vlastiti repo
 
