@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { motion } from 'framer-motion';
+import { motion, AnimatePresence } from 'framer-motion';
 import { useGameStore } from '../store/useGameStore.js';
 import CrestSVG from './CrestSVG.jsx';
 import JerseySVG from './JerseySVG.jsx';
@@ -14,26 +14,31 @@ import {
   defaultKit,
 } from '../game/cosmetics.js';
 
-// Onboarding tok (§9.1): Država -> Grad -> Ime -> Grb -> Dres -> Stadion
-const STEPS = ['Država', 'Grad', 'Ime kluba', 'Grb', 'Dres', 'Stadion'];
+const STEPS = [
+  { id: 'country',  label: 'Država',     icon: '🌍', hint: 'U kojoj ligi ćeš takmičiti?' },
+  { id: 'city',     label: 'Grad',       icon: '🏙️', hint: 'Odakle dolazi tvoj klub?' },
+  { id: 'name',     label: 'Ime kluba',  icon: '✏️', hint: 'Kako će se zvati tvoj klub?' },
+  { id: 'crest',    label: 'Grb',        icon: '🛡️', hint: 'Dizajniraj grb kluba' },
+  { id: 'kit',      label: 'Dres',       icon: '👕', hint: 'Odaberi boje i dizajn dresa' },
+  { id: 'stadium',  label: 'Stadion',    icon: '🏟️', hint: 'Kako se zove tvoj stadion?' },
+];
+
+const variants = {
+  enter: { opacity: 0, x: 40 },
+  center: { opacity: 1, x: 0 },
+  exit: { opacity: 0, x: -40 },
+};
 
 export default function ClubOnboarding({ initial, onDone }) {
   const setClub = useGameStore((s) => s.setClub);
   const [step, setStep] = useState(0);
   const [draft, setDraft] = useState(
-    initial || {
-      country: '',
-      city: '',
-      name: '',
-      crest: defaultCrest(),
-      kit: defaultKit(),
-      stadiumName: '',
-    }
+    initial || { country: '', city: '', name: '', crest: defaultCrest(), kit: defaultKit(), stadiumName: '' }
   );
 
-  const set = (patch) => setDraft((d) => ({ ...d, ...patch }));
-  const setCrest = (patch) => setDraft((d) => ({ ...d, crest: { ...d.crest, ...patch } }));
-  const setKit = (patch) => setDraft((d) => ({ ...d, kit: { ...d.kit, ...patch } }));
+  const patch = (p) => setDraft((d) => ({ ...d, ...p }));
+  const patchCrest = (p) => setDraft((d) => ({ ...d, crest: { ...d.crest, ...p } }));
+  const patchKit = (p) => setDraft((d) => ({ ...d, kit: { ...d.kit, ...p } }));
 
   const canNext = [
     !!draft.country,
@@ -45,141 +50,240 @@ export default function ClubOnboarding({ initial, onDone }) {
   ][step];
 
   const finish = () => {
-    setClub({ ...draft, stadiumCap: 2000 }); // starter stadion (§7)
+    setClub({ ...draft, stadiumCap: 2000 });
     onDone?.();
   };
 
+  const currentStep = STEPS[step];
+
   return (
-    <div className="onb">
-      <ol className="onb__steps">
+    <div className="club-ob">
+      {/* Progress bar */}
+      <div className="club-ob__progress">
+        <div className="club-ob__progress-fill" style={{ width: `${((step) / (STEPS.length - 1)) * 100}%` }} />
+      </div>
+
+      {/* Step indicators */}
+      <div className="club-ob__steps">
         {STEPS.map((s, i) => (
-          <li key={s} className={i === step ? 'is-active' : i < step ? 'is-done' : ''}>{s}</li>
+          <div
+            key={s.id}
+            className={`club-ob__step ${i === step ? 'is-active' : ''} ${i < step ? 'is-done' : ''}`}
+            onClick={() => i < step && setStep(i)}
+          >
+            <div className="club-ob__step-dot">
+              {i < step ? '✓' : s.icon}
+            </div>
+            <span className="club-ob__step-label">{s.label}</span>
+          </div>
         ))}
-      </ol>
+      </div>
 
-      <motion.div key={step} className="onb__body" initial={{ opacity: 0, x: 12 }} animate={{ opacity: 1, x: 0 }}>
-        {step === 0 && (
-          <Choices
-            label="Odaberi državu (§8.5)"
-            options={Object.keys(COUNTRIES)}
-            value={draft.country}
-            onChange={(country) => set({ country, city: '' })}
-          />
-        )}
+      {/* Main content */}
+      <div className="club-ob__main">
+        <div className="club-ob__header">
+          <h2 className="club-ob__title">{currentStep.icon} {currentStep.label}</h2>
+          <p className="club-ob__hint">{currentStep.hint}</p>
+        </div>
 
-        {step === 1 && (
-          <Choices
-            label={`Gradovi — ${draft.country}`}
-            options={COUNTRIES[draft.country] || []}
-            value={draft.city}
-            onChange={(city) => set({ city })}
-          />
-        )}
+        <AnimatePresence mode="wait">
+          <motion.div
+            key={step}
+            variants={variants}
+            initial="enter"
+            animate="center"
+            exit="exit"
+            transition={{ duration: 0.22, ease: 'easeInOut' }}
+            className="club-ob__body"
+          >
+            {step === 0 && (
+              <div className="club-ob__card-grid">
+                {Object.keys(COUNTRIES).map((c) => (
+                  <button
+                    key={c}
+                    className={`club-ob__option-card ${draft.country === c ? 'is-active' : ''}`}
+                    onClick={() => patch({ country: c, city: '' })}
+                  >
+                    <span className="club-ob__option-icon">{countryFlag(c)}</span>
+                    <span>{c}</span>
+                  </button>
+                ))}
+              </div>
+            )}
 
-        {step === 2 && (
-          <label className="onb__field">
-            Ime kluba
-            <input value={draft.name} maxLength={28} onChange={(e) => set({ name: e.target.value })} placeholder="npr. FC Madrid" />
-          </label>
-        )}
+            {step === 1 && (
+              <div className="club-ob__card-grid">
+                {(COUNTRIES[draft.country] || []).map((city) => (
+                  <button
+                    key={city}
+                    className={`club-ob__option-card ${draft.city === city ? 'is-active' : ''}`}
+                    onClick={() => patch({ city })}
+                  >
+                    <span className="club-ob__option-icon">📍</span>
+                    <span>{city}</span>
+                  </button>
+                ))}
+              </div>
+            )}
 
-        {step === 3 && (
-          <div className="onb__builder">
-            <div className="onb__preview"><CrestSVG crest={draft.crest} name={draft.name} size={180} /></div>
-            <div className="onb__controls">
-              <Picker label="Oblik štita" options={SHIELD_SHAPES} value={draft.crest.shape} onChange={(shape) => setCrest({ shape })} />
-              <Picker label="Pozadina" options={CREST_BACKGROUNDS} value={draft.crest.background} onChange={(background) => setCrest({ background })} />
-              <ColorRow label="Boja 1" value={draft.crest.color1} onChange={(color1) => setCrest({ color1 })} />
-              {draft.crest.background !== 'solid' && (
-                <ColorRow label="Boja 2" value={draft.crest.color2} onChange={(color2) => setCrest({ color2 })} />
-              )}
-              <SymbolGrid value={draft.crest.symbol} onChange={(symbol) => setCrest({ symbol })} />
-              <ColorRow label="Boja simbola" value={draft.crest.symbolColor} onChange={(symbolColor) => setCrest({ symbolColor })} />
-              <Picker label="Font natpisa" options={FONTS} value={draft.crest.font} onChange={(font) => setCrest({ font })} />
-              <label className="onb__field">
-                Natpis (prazno = inicijali)
-                <input value={draft.crest.text} maxLength={20} onChange={(e) => setCrest({ text: e.target.value })} placeholder={draft.name} />
-              </label>
-            </div>
-          </div>
-        )}
+            {step === 2 && (
+              <div className="club-ob__text-step">
+                <input
+                  className="club-ob__input"
+                  value={draft.name}
+                  maxLength={28}
+                  onChange={(e) => patch({ name: e.target.value })}
+                  placeholder="npr. FC Sarajevo"
+                  autoFocus
+                />
+                <p className="club-ob__input-hint">2–28 znakova</p>
+              </div>
+            )}
 
-        {step === 4 && (
-          <div className="onb__builder">
-            <div className="onb__preview"><JerseySVG kit={draft.kit} size={180} /></div>
-            <div className="onb__controls">
-              <Picker label="Dizajn" options={JERSEY_DESIGNS} value={draft.kit.design} onChange={(design) => setKit({ design })} />
-              <ColorRow label="Primarna" value={draft.kit.primary} onChange={(primary) => setKit({ primary })} />
-              <ColorRow label="Sekundarna" value={draft.kit.secondary} onChange={(secondary) => setKit({ secondary })} />
-              <Picker label="Font" options={FONTS} value={draft.kit.font} onChange={(font) => setKit({ font })} />
-              <p className="onb__hint">Sponzor se dodjeljuje automatski preko ugovora (§9.3).</p>
-            </div>
-          </div>
-        )}
+            {step === 3 && (
+              <div className="club-ob__builder">
+                {/* Preview */}
+                <div className="club-ob__preview">
+                  <CrestSVG crest={draft.crest} name={draft.name} size={160} />
+                  <p className="club-ob__preview-label">{draft.name || 'Tvoj klub'}</p>
+                </div>
+                {/* Controls */}
+                <div className="club-ob__controls">
+                  <OptionRow label="Oblik štita">
+                    {SHIELD_SHAPES.map((s) => (
+                      <button key={s.id} className={`club-ob__pill ${draft.crest.shape === s.id ? 'is-active' : ''}`} onClick={() => patchCrest({ shape: s.id })}>{s.name}</button>
+                    ))}
+                  </OptionRow>
+                  <OptionRow label="Pozadina">
+                    {CREST_BACKGROUNDS.map((b) => (
+                      <button key={b.id} className={`club-ob__pill ${draft.crest.background === b.id ? 'is-active' : ''}`} onClick={() => patchCrest({ background: b.id })}>{b.name}</button>
+                    ))}
+                  </OptionRow>
+                  <div className="club-ob__colors">
+                    <ColorSwatch label="Boja 1" value={draft.crest.color1} onChange={(v) => patchCrest({ color1: v })} />
+                    {draft.crest.background !== 'solid' && (
+                      <ColorSwatch label="Boja 2" value={draft.crest.color2} onChange={(v) => patchCrest({ color2: v })} />
+                    )}
+                    <ColorSwatch label="Simbol" value={draft.crest.symbolColor} onChange={(v) => patchCrest({ symbolColor: v })} />
+                  </div>
+                  <OptionRow label="Simbol">
+                    <div className="club-ob__emoji-grid">
+                      {SYMBOLS.map((s, i) => (
+                        <button key={i} className={`club-ob__emoji ${draft.crest.symbol === s ? 'is-active' : ''}`} onClick={() => patchCrest({ symbol: s })}>{s}</button>
+                      ))}
+                    </div>
+                  </OptionRow>
+                  <OptionRow label="Font">
+                    {FONTS.map((f) => (
+                      <button key={f.id} className={`club-ob__pill ${draft.crest.font === f.id ? 'is-active' : ''}`} style={{ fontFamily: f.family }} onClick={() => patchCrest({ font: f.id })}>{f.name}</button>
+                    ))}
+                  </OptionRow>
+                  <div className="club-ob__field">
+                    <label>Natpis (prazno = inicijali)</label>
+                    <input className="club-ob__input club-ob__input--sm" value={draft.crest.text} maxLength={20} onChange={(e) => patchCrest({ text: e.target.value })} placeholder={draft.name || 'tekst…'} />
+                  </div>
+                </div>
+              </div>
+            )}
 
-        {step === 5 && (
-          <label className="onb__field">
-            Ime stadiona
-            <input value={draft.stadiumName} maxLength={28} onChange={(e) => set({ stadiumName: e.target.value })} placeholder="npr. Stadion Maracana" />
-            <span className="onb__hint">Starter stadion — kapacitet 2.000 (§7).</span>
-          </label>
-        )}
-      </motion.div>
+            {step === 4 && (
+              <div className="club-ob__builder">
+                <div className="club-ob__preview">
+                  <JerseySVG kit={draft.kit} size={160} />
+                  <p className="club-ob__preview-label">Tvoj dres</p>
+                </div>
+                <div className="club-ob__controls">
+                  <OptionRow label="Dizajn">
+                    {JERSEY_DESIGNS.map((d) => (
+                      <button key={d.id} className={`club-ob__pill ${draft.kit.design === d.id ? 'is-active' : ''}`} onClick={() => patchKit({ design: d.id })}>{d.name}</button>
+                    ))}
+                  </OptionRow>
+                  <div className="club-ob__colors">
+                    <ColorSwatch label="Primarna" value={draft.kit.primary} onChange={(v) => patchKit({ primary: v })} />
+                    <ColorSwatch label="Sekundarna" value={draft.kit.secondary} onChange={(v) => patchKit({ secondary: v })} />
+                  </div>
+                  <OptionRow label="Font broja">
+                    {FONTS.map((f) => (
+                      <button key={f.id} className={`club-ob__pill ${draft.kit.font === f.id ? 'is-active' : ''}`} style={{ fontFamily: f.family }} onClick={() => patchKit({ font: f.id })}>{f.name}</button>
+                    ))}
+                  </OptionRow>
+                </div>
+              </div>
+            )}
 
-      <div className="onb__nav">
-        {step > 0 && <button className="onb__back" onClick={() => setStep(step - 1)}>Nazad</button>}
+            {step === 5 && (
+              <div className="club-ob__text-step">
+                <input
+                  className="club-ob__input"
+                  value={draft.stadiumName}
+                  maxLength={28}
+                  onChange={(e) => patch({ stadiumName: e.target.value })}
+                  placeholder="npr. Arena Sarajevo"
+                  autoFocus
+                />
+                <p className="club-ob__input-hint">Starter kapacitet: 2.000 mjesta</p>
+
+                {/* Summary card */}
+                <div className="club-ob__summary">
+                  <div className="club-ob__summary-crest">
+                    <CrestSVG crest={draft.crest} name={draft.name} size={64} />
+                  </div>
+                  <div className="club-ob__summary-info">
+                    <strong>{draft.name}</strong>
+                    <span>{draft.city}, {draft.country}</span>
+                  </div>
+                  <div className="club-ob__summary-jersey">
+                    <JerseySVG kit={draft.kit} size={48} />
+                  </div>
+                </div>
+              </div>
+            )}
+          </motion.div>
+        </AnimatePresence>
+      </div>
+
+      {/* Navigation */}
+      <div className="club-ob__nav">
+        <button
+          className="club-ob__btn club-ob__btn--back"
+          onClick={() => setStep(step - 1)}
+          style={{ visibility: step === 0 ? 'hidden' : 'visible' }}
+        >
+          ← Nazad
+        </button>
         {step < STEPS.length - 1 ? (
-          <button className="onb__next" disabled={!canNext} onClick={() => setStep(step + 1)}>Dalje</button>
+          <button className="club-ob__btn club-ob__btn--next" disabled={!canNext} onClick={() => setStep(step + 1)}>
+            Dalje →
+          </button>
         ) : (
-          <button className="onb__next" disabled={!canNext} onClick={finish}>Osnuj klub</button>
+          <button className="club-ob__btn club-ob__btn--finish" disabled={!canNext} onClick={finish}>
+            ⚽ Osnuj klub
+          </button>
         )}
       </div>
     </div>
   );
 }
 
-function Choices({ label, options, value, onChange }) {
+// Helpers
+const FLAGS = { Španija: '🇪🇸', Engleska: '🏴󠁧󠁢󠁥󠁮󠁧󠁿', Italija: '🇮🇹', Njemačka: '🇩🇪', Francuska: '🇫🇷' };
+function countryFlag(c) { return FLAGS[c] || '🌍'; }
+
+function OptionRow({ label, children }) {
   return (
-    <div className="onb__field">
-      <span>{label}</span>
-      <div className="onb__choices">
-        {options.map((o) => (
-          <button key={o} className={`chip ${value === o ? 'is-active' : ''}`} onClick={() => onChange(o)}>{o}</button>
-        ))}
-      </div>
+    <div className="club-ob__option-row">
+      <span className="club-ob__option-label">{label}</span>
+      <div className="club-ob__option-values">{children}</div>
     </div>
   );
 }
 
-function Picker({ label, options, value, onChange }) {
+function ColorSwatch({ label, value, onChange }) {
   return (
-    <label className="onb__field">
-      {label}
-      <select value={value} onChange={(e) => onChange(e.target.value)}>
-        {options.map((o) => <option key={o.id} value={o.id}>{o.name}</option>)}
-      </select>
-    </label>
-  );
-}
-
-function ColorRow({ label, value, onChange }) {
-  return (
-    <label className="onb__color">
-      <span>{label}</span>
+    <label className="club-ob__swatch">
       <input type="color" value={value} onChange={(e) => onChange(e.target.value)} />
+      <span>{label}</span>
+      <span className="club-ob__swatch-hex">{value}</span>
     </label>
-  );
-}
-
-function SymbolGrid({ value, onChange }) {
-  return (
-    <div className="onb__field">
-      <span>Simbol</span>
-      <div className="onb__symbols">
-        {SYMBOLS.map((s, i) => (
-          <button key={i} className={`sym ${value === s ? 'is-active' : ''}`} onClick={() => onChange(s)}>{s}</button>
-        ))}
-      </div>
-    </div>
   );
 }
