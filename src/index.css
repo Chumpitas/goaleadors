@@ -594,6 +594,51 @@ body {
 }
 .pass__row button:disabled { opacity: 0.5; cursor: not-allowed; }
 
+/* --- social: rivalstva + ultra --- */
+.social { max-width: 720px; margin: 0 auto; }
+.social section { margin-bottom: 1.75rem; }
+.social h3 { font-size: 0.95rem; margin: 0 0 0.6rem; }
+.social__add { display: flex; gap: 0.5rem; margin-bottom: 0.75rem; }
+.social__add input {
+  flex: 1; background: #0e1612; color: #e8efe9;
+  border: 1px solid rgba(255,255,255,0.15); border-radius: 8px; padding: 0.45rem 0.6rem;
+}
+.social__add button, .ultra__ch button, .rival__play {
+  background: #2c6e49; color: #fff; border: none;
+  padding: 0.45rem 1rem; border-radius: 999px; cursor: pointer; font-size: 0.82rem;
+}
+.social__msg { color: #e8462f; font-size: 0.82rem; }
+.social__derby { color: #e0a01e; font-size: 0.85rem; margin-top: 0.5rem; }
+
+.rival {
+  padding: 0.7rem 0.9rem; border-radius: 12px; margin-bottom: 0.6rem;
+  background: linear-gradient(160deg, #1b2620, #0e1612);
+  border: 1px solid rgba(255,255,255,0.1);
+}
+.rival__head { display: flex; justify-content: space-between; align-items: baseline; }
+.rival__lvl { font-size: 0.72rem; color: #e0a01e; }
+.rival__stats { display: flex; flex-wrap: wrap; gap: 0.6rem; font-size: 0.72rem; color: #8aa394; margin: 0.4rem 0; }
+.rival__w { color: #2c8c5e; }
+.rival__d { color: #8aa394; }
+.rival__l { color: #e8462f; }
+.rival__act { display: flex; gap: 0.5rem; }
+.rival__rm { background: transparent; color: #e8462f; border: 1px solid rgba(232,70,47,0.4); border-radius: 999px; padding: 0.4rem 0.7rem; cursor: pointer; }
+
+.ultra {
+  padding: 0.9rem; border-radius: 12px;
+  background: linear-gradient(160deg, #1b2620, #0e1612);
+  border: 1px solid rgba(255,255,255,0.1);
+}
+.ultra__head { display: flex; justify-content: space-between; align-items: flex-start; gap: 1rem; flex-wrap: wrap; }
+.ultra__lvl { display: block; font-size: 0.72rem; color: #e0a01e; }
+.ultra__cap { font-size: 0.7rem; color: #8aa394; text-align: right; }
+.ultra__members { display: flex; flex-wrap: wrap; gap: 0.4rem; margin: 0.75rem 0; }
+.ultra__member { font-size: 0.68rem; padding: 2px 8px; border-radius: 999px; background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.12); }
+.ultra__member--capo { border-color: #e0a01e; color: #e0a01e; }
+.ultra__sub { font-size: 0.72rem; color: #8aa394; }
+.ultra__ch { display: flex; justify-content: space-between; align-items: center; gap: 0.5rem; font-size: 0.78rem; padding: 0.35rem 0; }
+.ultra__ch button:disabled { opacity: 0.5; cursor: not-allowed; }
+
 /* --- editions / legacy --- */
 .editions {
   max-width: 720px;

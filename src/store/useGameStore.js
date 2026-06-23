@@ -18,8 +18,14 @@ import {
   trainingSlotsForLevel,
   applySeasonalGrowth,
   isExpired,
+  talentToCard,
   MAX_TALENTS_PER_CLUB,
 } from '../game/talents.js';
+import { buildLineup, simulateMatch } from '../game/matchEngine.js';
+import { outcomeFromScore } from '../game/elo.js';
+import { createRivalry, applyDerbyResult, derbyBonusPct, MAX_RIVALRIES } from '../game/rivalries.js';
+import { ultraPointsFor, WEEKLY_ULTRA_CHALLENGES } from '../game/ultras.js';
+import { mulberry32 } from '../game/rng.js';
 import { generateEditionSchedule, legacyEditions, seasonForDay } from '../game/editions.js';
 import { generateOffers, maxActiveSponsors } from '../game/sponsors.js';
 import {
@@ -393,6 +399,86 @@ export const useGameStore = create((set, get) => ({
     const amount = Math.round(base * (1 + pct / 100));
     get()._tx(CURRENCIES.KOVANICE, amount, `mec:${outcome}`);
     return amount;
+  },
+
+  // Socijalni sistemi (§14)
+  rivalries: [],
+  ultraGroup: null,
+
+  /** Dodaj rivalstvo (max 3, §14.2). */
+  addRivalry(name) {
+    if (!name?.trim()) return { ok: false, reason: 'unesi ime' };
+    if (get().rivalries.length >= MAX_RIVALRIES) return { ok: false, reason: 'maksimum 3 rivalstva' };
+    set((s) => ({ rivalries: [...s.rivalries, createRivalry(name.trim())] }));
+    return { ok: true };
+  },
+
+  removeRivalry(id) {
+    set((s) => ({ rivalries: s.rivalries.filter((r) => r.id !== id) }));
+  },
+
+  /** Odigraj derby protiv rivala: simulira meč, ažurira statistiku, isplaćuje Kovanice s derby bonusom. */
+  playDerby(id) {
+    const rivalry = get().rivalries.find((r) => r.id === id);
+    if (!rivalry) return { ok: false, reason: 'nema rivala' };
+
+    const pool = get().pool;
+    const talents = get().talents.filter((t) => t.status === 'signed').map(talentToCard);
+    const rng = mulberry32(Math.floor(Math.random() * 1e9));
+    const home = { name: 'Moj klub', cards: buildLineup(pool, '4-3-3', { extra: talents }), formation: '4-3-3', style: 'High Press', mentality: 'Attacking', isHome: true, crowdFill: 95 };
+    const away = { name: rivalry.opponent, cards: buildLineup(pool, '4-4-2', { rng }), formation: '4-4-2', style: 'Counter', mentality: 'Balanced' };
+    const result = simulateMatch(home, away);
+    const outcome = outcomeFromScore(result.score.home, result.score.away, 'home');
+
+    const bonusPct = derbyBonusPct(rivalry.played);
+    const base = matchReward(outcome);
+    const reward = Math.round(base * (1 + bonusPct / 100));
+    get()._tx(CURRENCIES.KOVANICE, reward, `derby:${outcome}`);
+    if (outcome === 'win') get().contributeUltraPoints('win');
+
+    set((s) => ({
+      rivalries: s.rivalries.map((r) =>
+        r.id === id ? applyDerbyResult(r, { scoreFor: result.score.home, scoreAgainst: result.score.away }) : r
+      ),
+    }));
+    return { ok: true, result, outcome, reward, bonusPct };
+  },
+
+  /** Osnuj Ultra grupu (§14.1) — igrač je Capo. */
+  createUltraGroup(name) {
+    if (!name?.trim()) return { ok: false, reason: 'unesi ime' };
+    const clubName = get().club?.name || 'Moj klub';
+    set({
+      ultraGroup: {
+        name: name.trim(),
+        points: 0,
+        members: [
+          { name: clubName, role: 'Capo' },
+          { name: 'Dinamo Ultras', role: 'Lieutenant' },
+          { name: 'Sjever 1989', role: 'Member' },
+        ],
+        weeklyClaimed: [],
+      },
+    });
+    return { ok: true };
+  },
+
+  /** Dodaj Ultra poene (§14.1). */
+  contributeUltraPoints(source) {
+    if (!get().ultraGroup) return;
+    set((s) => ({ ultraGroup: { ...s.ultraGroup, points: s.ultraGroup.points + ultraPointsFor(source) } }));
+  },
+
+  /** Pokupi nagradu sedmičnog Ultra izazova (§14.1). */
+  claimUltraChallenge(id) {
+    const group = get().ultraGroup;
+    if (!group) return { ok: false, reason: 'nema grupe' };
+    if (group.weeklyClaimed.includes(id)) return { ok: false, reason: 'već pokupljeno' };
+    const ch = WEEKLY_ULTRA_CHALLENGES.find((c) => c.id === id);
+    if (!ch) return { ok: false, reason: 'nepoznat izazov' };
+    get()._grantReward(ch.reward);
+    set((s) => ({ ultraGroup: { ...s.ultraGroup, weeklyClaimed: [...s.ultraGroup.weeklyClaimed, id] } }));
+    return { ok: true };
   },
 
   // Dnevni progression loop (§12)

@@ -11,6 +11,7 @@ import EditionsPanel from './components/EditionsPanel.jsx';
 import MedicalPanel from './components/MedicalPanel.jsx';
 import SponsorsPanel from './components/SponsorsPanel.jsx';
 import ProgressPanel from './components/ProgressPanel.jsx';
+import SocialPanel from './components/SocialPanel.jsx';
 import { SAMPLE_CARDS } from './game/sampleCards.js';
 
 const TABS = [
@@ -26,6 +27,7 @@ const TABS = [
   { id: 'league', label: 'Liga' },
   { id: 'editions', label: 'Edicije' },
   { id: 'progress', label: 'Sezona' },
+  { id: 'social', label: 'Društvo' },
 ];
 
 export default function App() {
@@ -70,6 +72,7 @@ export default function App() {
       {tab === 'league' && <LeagueTable />}
       {tab === 'editions' && <EditionsPanel />}
       {tab === 'progress' && <ProgressPanel />}
+      {tab === 'social' && <SocialPanel />}
     </main>
   );
 }

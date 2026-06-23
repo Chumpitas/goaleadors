@@ -40,6 +40,8 @@ React + Vite · Framer Motion · Zustand · HTML5 Canvas (match viz, kasnije) ·
 | `src/game/fatigue.js`       | Umor karata + Medicinski centar: oporavak, liječenje (§10.6–10.7) |
 | `src/game/sponsors.js`      | Marketinška agencija: ponude, tipovi, sezonska isplata (§10.8) |
 | `src/game/progression.js`   | Dnevni izazovi, streak, sezonski pass (§12)                    |
+| `src/game/rivalries.js`     | Rivalstva: derby nivoi, bonus, statistika (§14.2)             |
+| `src/game/ultras.js`        | Ultra grupe: nivoi, poeni, sedmični izazovi (§14.1)           |
 | `src/game/rng.js`           | Seedable PRNG (deterministički draws)                          |
 | `src/game/*.test.js`        | Vitest: OVERALL, karte, packs + pity, pool, match engine       |
 | `src/store/useGameStore.js` | Zustand store (kolekcija, pity, openAndCollect)                |
@@ -83,7 +85,7 @@ nisu postavljene).
 - [x] **Medicinski centar / umor** — energija, oporavak, hitno liječenje (§10.6–10.7)
 - [x] **Marketinška agencija + sponzori** — ponude po nivou, sezonska isplata (§10.8)
 - [x] **Dnevni loop** — izazovi, streak, sezonski pass (free + premium) (§12)
-- [ ] Rivalstva / Ultra grupe (§14)
+- [x] **Rivalstva + Ultra grupe** — derby mečevi, nivoi, poeni, izazovi (§14)
 - [ ] Trade tržište (§5.4)
 - [ ] Referral program (§17)
 
