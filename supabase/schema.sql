@@ -144,6 +144,51 @@ create table matches (
 );
 
 -- ---------------------------------------------------------------------------
+-- scout_talents  (mladi talenti — posebna kategorija van kesica, SCOUT_SYSTEM_UPDATE)
+-- ---------------------------------------------------------------------------
+create table scout_talents (
+  id                uuid primary key default gen_random_uuid(),
+  club_id           uuid references clubs (id) on delete cascade,
+  name              text not null,
+  nationality       text not null,
+  position          card_position not null,
+  region            text not null,           -- europe|south_america|africa|asia
+  potential         text not null,           -- fast|standard|high|exceptional
+  overall           smallint not null,       -- raste svake sezone (nije fiksan)
+  shooting          smallint not null,
+  passing           smallint not null,
+  tackling          smallint not null,
+  pace              smallint not null,
+  seasons_remaining smallint not null default 5,
+  training_slot     smallint,                -- null | 1 (standard) | 2 (focus)
+  abilities         text[] not null default '{}',
+  discovered_at     timestamptz not null default now(),
+  signed_at         timestamptz,
+  available_until   timestamptz,             -- discovered_at + 48h (FOMO)
+  status            text not null default 'available' -- available|signed|expired|released
+);
+create index scout_talents_club_idx on scout_talents (club_id, status);
+
+-- ---------------------------------------------------------------------------
+-- scout_missions  (misije koje pronalaze talente, SCOUT_SYSTEM_UPDATE)
+-- ---------------------------------------------------------------------------
+create table scout_missions (
+  id                uuid primary key default gen_random_uuid(),
+  club_id           uuid references clubs (id) on delete cascade,
+  scout_index       smallint not null,       -- koji skaut (1–5)
+  position          card_position not null,
+  region            text,
+  potential_type    text not null,
+  started_at        timestamptz not null default now(),
+  completes_at      timestamptz not null,
+  status            text not null default 'active', -- active|completed|failed
+  result_talent_id  uuid references scout_talents (id),
+  cost_paid         integer not null
+);
+create index scout_missions_club_idx on scout_missions (club_id, status);
+create index scout_missions_active_idx on scout_missions (completes_at) where status = 'active';
+
+-- ---------------------------------------------------------------------------
 -- transactions  (currency ledger: purchases, rewards, sinks — §6)
 -- ---------------------------------------------------------------------------
 create table transactions (

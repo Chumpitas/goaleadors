@@ -1,109 +1,99 @@
-// Scout mreža (§10.5) — ciljana potraga karata kroz vremenske misije.
+// Scout mreža (SCOUT_SYSTEM_UPDATE) — misije koje pronalaze mlade TALENTE.
+// Više NE traži edicijske karte (stari, pogrešan dizajn koji kvari kesica-ekonomiju).
+import { POTENTIAL_TYPES, generateTalent } from './talents.js';
 import { POSITIONS } from './constants.js';
-import { rarityById } from './constants.js';
-import { LOPTE_COSTS } from './currency.js';
 
-const HOUR_MS = 3600 * 1000;
+/** Nivoi scout mreže (SCOUT_SYSTEM_UPDATE). */
+export const SCOUT_NETWORK_LEVELS = Object.freeze({
+  1: { maxConcurrentScouts: 1, availablePotentialTypes: ['fast', 'standard'], durationMultiplier: 1.0, bonusTalentChance: 0, regionTargeting: false },
+  2: { maxConcurrentScouts: 2, availablePotentialTypes: ['fast', 'standard'], durationMultiplier: 0.85, bonusTalentChance: 0, regionTargeting: false },
+  3: { maxConcurrentScouts: 3, availablePotentialTypes: ['fast', 'standard', 'high'], durationMultiplier: 0.75, bonusTalentChance: 0, regionTargeting: false },
+  4: { maxConcurrentScouts: 4, availablePotentialTypes: ['fast', 'standard', 'high'], durationMultiplier: 0.65, bonusTalentChance: 0.15, regionTargeting: false },
+  5: { maxConcurrentScouts: 5, availablePotentialTypes: ['fast', 'standard', 'high', 'exceptional'], durationMultiplier: 0.55, bonusTalentChance: 0.25, regionTargeting: true },
+});
 
-/** Trajanje misije po raritetu fokusa (§10.5). */
-export const SCOUT_DURATION_HOURS = Object.freeze({ common: 4, rare: 12, epic: 48, legendary: 168 });
-
-/** Broj istovremenih skauta po nivou mreže (§10.5: nivo 1→1, 3→3, 5→5). */
-export const SCOUT_SLOTS_BY_LEVEL = Object.freeze({ 1: 1, 2: 2, 3: 3, 4: 4, 5: 5 });
-
-/** Od nivoa 5 skaut može tražiti i specifičan special ability (§10.5). */
-export const ABILITY_SEARCH_LEVEL = 5;
-
-export function scoutSlots(level) {
-  return SCOUT_SLOTS_BY_LEVEL[level] ?? 1;
+export function networkLevel(level) {
+  const n = SCOUT_NETWORK_LEVELS[level];
+  if (!n) throw new Error(`Nepoznat nivo scout mreže: ${level}`);
+  return n;
 }
 
-export function missionDurationMs(rarityFocus) {
-  const h = SCOUT_DURATION_HOURS[rarityFocus];
-  if (!h) throw new Error(`Nepoznat raritet fokus: ${rarityFocus}`);
-  return h * HOUR_MS;
+export function maxConcurrentScouts(level) {
+  return networkLevel(level).maxConcurrentScouts;
+}
+
+export function availablePotentials(level) {
+  return networkLevel(level).availablePotentialTypes;
+}
+
+export function regionTargetingAllowed(level) {
+  return networkLevel(level).regionTargeting;
+}
+
+/** Trajanje misije za tip potencijala uz multiplikator nivoa mreže. */
+export function missionDurationMs(potentialType, level) {
+  const pot = POTENTIAL_TYPES[potentialType];
+  if (!pot) throw new Error(`Nepoznat potencijal: ${potentialType}`);
+  return Math.round(pot.duration * networkLevel(level).durationMultiplier);
+}
+
+export function missionCost(potentialType) {
+  const pot = POTENTIAL_TYPES[potentialType];
+  if (!pot) throw new Error(`Nepoznat potencijal: ${potentialType}`);
+  return pot.cost;
 }
 
 /**
- * Pokreni scout misiju.
- * @param {object} params - { position, rarityFocus, minOverall?, nationality?, ability? }
+ * Pokreni scout misiju za talenta.
+ * @param {object} params - { position, potentialType, region? }
  * @param {object} opts - { level, now? }
- * @returns {object} misija
  */
 export function startMission(params, { level = 1, now = Date.now() } = {}) {
+  const net = networkLevel(level);
   if (!Object.values(POSITIONS).includes(params.position)) {
     throw new Error(`Nevažeća pozicija: ${params.position}`);
   }
-  if (!rarityById(params.rarityFocus)) {
-    throw new Error(`Nevažeći raritet fokus: ${params.rarityFocus}`);
+  if (!net.availablePotentialTypes.includes(params.potentialType)) {
+    throw new Error(`Potencijal '${params.potentialType}' nije dostupan na nivou ${level}`);
   }
-  if (params.ability && level < ABILITY_SEARCH_LEVEL) {
-    throw new Error(`Traženje ability-ja zahtijeva nivo ${ABILITY_SEARCH_LEVEL}+`);
+  if (params.region && params.region !== 'any' && !net.regionTargeting) {
+    throw new Error(`Ciljanje regije zahtijeva nivo 5`);
   }
-  const min = params.minOverall ?? 0;
-  if (min < 0 || min > 100) throw new Error('minOverall mora biti 0–100');
-
-  const duration = missionDurationMs(params.rarityFocus);
+  const duration = missionDurationMs(params.potentialType, level);
   return {
     id: `scout-${now}-${Math.floor(Math.random() * 1e6)}`,
-    params: { ...params, minOverall: min },
+    position: params.position,
+    region: params.region || 'any',
+    potentialType: params.potentialType,
     level,
     startedAt: now,
-    durationMs: duration,
-    finishesAt: now + duration,
+    completesAt: now + duration,
+    status: 'active',
   };
 }
 
 export function isComplete(mission, now = Date.now()) {
-  return now >= mission.finishesAt;
+  return now >= mission.completesAt;
 }
 
 export function remainingMs(mission, now = Date.now()) {
-  return Math.max(0, mission.finishesAt - now);
-}
-
-/** Cijena ubrzanja u Lopticama: preostali sati × stopa (§6.4 speedScoutHour). */
-export function speedUpCost(mission, now = Date.now()) {
-  const hours = Math.ceil(remainingMs(mission, now) / HOUR_MS);
-  return Math.max(0, hours) * LOPTE_COSTS.speedScoutHour;
+  return Math.max(0, mission.completesAt - now);
 }
 
 /**
- * Razriješi završenu misiju u kartu iz poola prema parametrima.
- * Ublažava ograničenja redom ako nema kandidata. Viši nivo → bolji rezultati.
- * @returns {object|null} izabrana karta
+ * Razriješi završenu misiju: roll uspjeha, pa generiši talent(e).
+ * Viši nivoi imaju šansu za bonus (2. talent).
+ * @returns {{ success: boolean, talents: object[] }}
  */
-export function resolveMission(mission, pool, rng = Math.random) {
-  const p = mission.params;
-  const base = pool.filter((c) => c.position === p.position);
-
-  // Lanac filtera od najstrožeg ka najblažem.
-  const filters = [
-    (c) => c.rarity === p.rarityFocus && c.overall >= p.minOverall && matchNat(c, p) && matchAbility(c, p),
-    (c) => c.rarity === p.rarityFocus && c.overall >= p.minOverall && matchNat(c, p),
-    (c) => c.rarity === p.rarityFocus && c.overall >= p.minOverall,
-    (c) => c.rarity === p.rarityFocus,
-    () => true,
-  ];
-
-  let candidates = [];
-  for (const f of filters) {
-    candidates = base.filter(f);
-    if (candidates.length) break;
+export function resolveMission(mission, rng = Math.random, now = Date.now()) {
+  const pot = POTENTIAL_TYPES[mission.potentialType];
+  if (rng() >= pot.successChance) {
+    return { success: false, talents: [] };
   }
-  if (!candidates.length) candidates = pool.slice();
-
-  // Bolji rezultati na višem nivou: suzi prozor ka vrhu po OVR-u.
-  const sorted = [...candidates].sort((a, b) => b.overall - a.overall);
-  const window = Math.max(1, Math.round(sorted.length * (1 - (mission.level - 1) * 0.18)));
-  return sorted[Math.floor(rng() * Math.min(window, sorted.length))];
-}
-
-function matchNat(card, params) {
-  return !params.nationality || card.nationality === params.nationality;
-}
-
-function matchAbility(card, params) {
-  if (!params.ability) return true;
-  return (card.abilities || []).some((a) => a.id === params.ability);
+  const talents = [generateTalent(mission, rng, now)];
+  const bonusChance = networkLevel(mission.level).bonusTalentChance;
+  if (bonusChance && rng() < bonusChance) {
+    talents.push(generateTalent(mission, rng, now));
+  }
+  return { success: true, talents };
 }

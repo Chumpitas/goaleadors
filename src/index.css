@@ -470,14 +470,75 @@ body {
   color: #e8462f !important;
 }
 
-.scout__found {
+.scout__top {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+  margin-bottom: 1rem;
+}
+.scout__levels { display: flex; align-items: center; gap: 0.3rem; font-size: 0.85rem; color: #8aa394; }
+.scout__meta { font-size: 0.8rem; color: #8aa394; }
+.scout__hint { text-align: center; font-size: 0.75rem; color: #8aa394; margin: 0.25rem 0; }
+
+/* --- talenti --- */
+.talents { margin-top: 1.75rem; }
+.talents h3 { font-size: 0.95rem; margin: 0 0 0.75rem; }
+.talents__empty { color: #8aa394; font-size: 0.85rem; }
+
+.talents__grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(210px, 1fr));
+  gap: 0.75rem;
+}
+
+.talent {
+  padding: 0.75rem;
+  border-radius: 12px;
+  background: linear-gradient(160deg, #1b2620, #0e1612);
+  border: 1px solid rgba(255, 255, 255, 0.12);
   display: flex;
   flex-direction: column;
-  align-items: center;
   gap: 0.5rem;
-  margin-top: 1.5rem;
-  color: #e0a01e;
 }
+
+.talent__head { display: flex; align-items: center; gap: 0.6rem; }
+.talent__ovr { font-size: 1.6rem; font-weight: 800; color: #2c8c5e; }
+.talent__id { display: flex; flex-direction: column; }
+.talent__id strong { font-size: 0.9rem; }
+.talent__id span { font-size: 0.68rem; color: #8aa394; }
+
+.talent__stats {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 2px 0.75rem;
+  font-size: 0.75rem;
+  color: #b9c9bd;
+}
+
+.talent__sub { display: flex; justify-content: space-between; font-size: 0.7rem; color: #8aa394; }
+.talent__pot { text-transform: uppercase; letter-spacing: 0.04em; font-weight: 700; }
+.talent__pot--fast { color: #9aa0a6; }
+.talent__pot--standard { color: #e0a01e; }
+.talent__pot--high { color: #8b3fd1; }
+.talent__pot--exceptional { color: #d63a3a; }
+
+.talent__abilities { display: flex; flex-wrap: wrap; gap: 3px; }
+.talent__abilities span {
+  font-size: 0.62rem; padding: 1px 6px; border-radius: 999px;
+  background: rgba(255, 255, 255, 0.06); border: 1px solid rgba(255, 255, 255, 0.15);
+}
+
+.talent__act { display: flex; gap: 0.4rem; align-items: center; margin-top: auto; }
+.talent__act select, .talent__act button {
+  background: rgba(255, 255, 255, 0.06); color: #e8efe9;
+  border: 1px solid rgba(255, 255, 255, 0.15); border-radius: 8px;
+  padding: 0.35rem 0.5rem; font-size: 0.72rem; cursor: pointer;
+}
+.talent__act > button { background: #2c6e49; border: none; flex-shrink: 0; }
+.talent__release { background: transparent !important; color: #e8462f !important; border-color: rgba(232,70,47,0.4) !important; }
+.talent__win { font-size: 0.7rem; color: #e0a01e; white-space: nowrap; }
 
 /* --- editions / legacy --- */
 .editions {

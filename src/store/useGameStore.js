@@ -6,7 +6,14 @@ import { CURRENCIES, applyTransaction, matchReward } from '../game/currency.js';
 import { grantStarterCards, STARTER_BONUS } from '../game/starterPack.js';
 import { trainCard, TRAINING_COST_KOVANICE } from '../game/training.js';
 import { generateYouth } from '../game/academy.js';
-import { startMission, isComplete, resolveMission, speedUpCost, scoutSlots } from '../game/scouting.js';
+import { startMission, isComplete, resolveMission, maxConcurrentScouts, missionCost } from '../game/scouting.js';
+import {
+  signingCost,
+  trainingSlotsForLevel,
+  applySeasonalGrowth,
+  isExpired,
+  MAX_TALENTS_PER_CLUB,
+} from '../game/talents.js';
 import { generateEditionSchedule, legacyEditions, seasonForDay } from '../game/editions.js';
 import { generateOffers, maxActiveSponsors } from '../game/sponsors.js';
 import {
@@ -171,6 +178,24 @@ export const useGameStore = create((set, get) => ({
       if (payout > 0) get()._tx(CURRENCIES.KOVANICE, payout, 'sponzor:sezona');
       set({ activeSponsors: remaining });
     }
+
+    // Sezonski rast potpisanih talenata; penzija nakon 5 sezona (SCOUT_SYSTEM_UPDATE).
+    if (seasonsCrossed > 0 && get().talents.some((t) => t.status === 'signed')) {
+      for (let i = 0; i < seasonsCrossed; i++) {
+        const retiring = [];
+        const kept = [];
+        for (const t of get().talents) {
+          if (t.status !== 'signed') {
+            kept.push(t);
+            continue;
+          }
+          const { talent } = applySeasonalGrowth(t);
+          if (talent.seasonsRemaining <= 0) retiring.push({ ...talent, status: 'released', seasonsPlayed: 5, peakOVR: talent.overall });
+          else kept.push(talent);
+        }
+        set((s) => ({ talents: kept, legacyTalents: retiring.length ? [...s.legacyTalents, ...retiring] : s.legacyTalents }));
+      }
+    }
   },
 
   setAgencyLevel(level) {
@@ -242,56 +267,104 @@ export const useGameStore = create((set, get) => ({
     return { ok: true };
   },
 
-  // Scout mreža (§10.5)
-  scoutLevel: 3,
+  // Scout mreža — mladi talenti (SCOUT_SYSTEM_UPDATE)
+  scoutLevel: 3, // nivo scout mreže
+  trainingCenterLevel: 3, // određuje trening slotove za talente
   scoutMissions: [],
+  talents: [], // status: available | signed
+  legacyTalents: [], // penzionisani/otpušteni talenti (sjećanje)
 
-  /** Pokreni scout misiju ako ima slobodnog skauta. */
+  /** Pokreni scout misiju za talenta (plaća se Kovanicama). */
   startScout(params) {
     const { scoutLevel, scoutMissions } = get();
-    if (scoutMissions.length >= scoutSlots(scoutLevel)) {
+    if (scoutMissions.length >= maxConcurrentScouts(scoutLevel)) {
       return { ok: false, reason: 'svi skauti zauzeti' };
     }
+    let cost;
+    try {
+      cost = missionCost(params.potentialType);
+    } catch (e) {
+      return { ok: false, reason: e.message };
+    }
+    if (get().kovanice < cost) return { ok: false, reason: 'nedovoljno Kovanica' };
+
     let mission;
     try {
       mission = startMission(params, { level: scoutLevel });
     } catch (e) {
       return { ok: false, reason: e.message };
     }
+    get()._tx(CURRENCIES.KOVANICE, -cost, `scout:${params.potentialType}`);
     set((s) => ({ scoutMissions: [...s.scoutMissions, mission] }));
     return { ok: true, mission };
   },
 
-  /** Ubrzaj misiju Lopticama (§6.4). */
-  speedUpScout(id) {
+  /** Razriješi završenu misiju → talent(i) u 'available' status (48h prozor). */
+  resolveScout(id) {
     const mission = get().scoutMissions.find((m) => m.id === id);
     if (!mission) return { ok: false, reason: 'nema misije' };
-    const cost = speedUpCost(mission);
-    if (get().lopte < cost) return { ok: false, reason: 'nedovoljno Loptica' };
-    get()._tx(CURRENCIES.LOPTE, -cost, 'scout:ubrzanje');
+    if (!isComplete(mission)) return { ok: false, reason: 'misija u toku' };
+    const result = resolveMission(mission);
     set((s) => ({
-      scoutMissions: s.scoutMissions.map((m) => (m.id === id ? { ...m, finishesAt: Date.now() } : m)),
+      talents: [...s.talents, ...result.talents],
+      scoutMissions: s.scoutMissions.filter((m) => m.id !== id),
+    }));
+    return { ok: true, success: result.success, talents: result.talents };
+  },
+
+  /** Potpiši dostupnog talenta (§ potpis): plati Kovanice, max 5 u klubu. */
+  signTalent(id) {
+    const t = get().talents.find((x) => x.id === id);
+    if (!t) return { ok: false, reason: 'nema talenta' };
+    if (t.status !== 'available') return { ok: false, reason: 'talent nije dostupan' };
+    if (isExpired(t)) return { ok: false, reason: 'prozor istekao' };
+    const signed = get().talents.filter((x) => x.status === 'signed').length;
+    if (signed >= MAX_TALENTS_PER_CLUB) return { ok: false, reason: 'maksimum 5 talenata' };
+    const cost = signingCost(t.potential);
+    if (get().kovanice < cost) return { ok: false, reason: 'nedovoljno Kovanica' };
+
+    get()._tx(CURRENCIES.KOVANICE, -cost, `talent:potpis:${t.potential}`);
+    set((s) => ({
+      talents: s.talents.map((x) => (x.id === id ? { ...x, status: 'signed', signedAt: Date.now() } : x)),
     }));
     return { ok: true };
   },
 
-  /** Preuzmi kartu sa završene misije. */
-  collectScout(id) {
-    const mission = get().scoutMissions.find((m) => m.id === id);
-    if (!mission) return { ok: false, reason: 'nema misije' };
-    if (!isComplete(mission)) return { ok: false, reason: 'misija u toku' };
-    const card = resolveMission(mission, get().pool);
+  /** Otpusti talenta → odlazi u Legacy (sjećanje), oslobađa slot. */
+  releaseTalent(id) {
+    const t = get().talents.find((x) => x.id === id);
+    if (!t) return;
     set((s) => ({
-      collection: card ? [...s.collection, card] : s.collection,
-      scoutMissions: s.scoutMissions.filter((m) => m.id !== id),
+      talents: s.talents.filter((x) => x.id !== id),
+      legacyTalents: [...s.legacyTalents, { ...t, status: 'released', seasonsPlayed: 5 - t.seasonsRemaining, peakOVR: t.overall }],
     }));
-    return { ok: true, card };
   },
 
-  /** DEMO: preskoči vrijeme misije (bez troška) radi isprobavanja. */
+  /** Dodijeli trening slot talentu: null | 1 (standard) | 2 (focus). */
+  setTalentTrainingSlot(id, slot) {
+    const available = trainingSlotsForLevel(get().trainingCenterLevel);
+    const used = get().talents
+      .filter((x) => x.status === 'signed' && x.id !== id)
+      .reduce((sum, x) => sum + (x.trainingSlot === 2 ? 2 : x.trainingSlot === 1 ? 1 : 0), 0);
+    const need = slot === 2 ? 2 : slot === 1 ? 1 : 0;
+    if (used + need > available) return { ok: false, reason: 'nema dovoljno trening slotova' };
+    set((s) => ({ talents: s.talents.map((x) => (x.id === id ? { ...x, trainingSlot: slot } : x)) }));
+    return { ok: true };
+  },
+
+  setTrainingCenterLevel(level) {
+    set({ trainingCenterLevel: level });
+  },
+
+  /** Ukloni istekle dostupne talente (48h FOMO). */
+  pruneExpiredTalents() {
+    set((s) => ({ talents: s.talents.filter((t) => !isExpired(t)) }));
+  },
+
+  /** DEMO: preskoči vrijeme misije radi isprobavanja. */
   skipScoutTime(id) {
     set((s) => ({
-      scoutMissions: s.scoutMissions.map((m) => (m.id === id ? { ...m, finishesAt: Date.now() } : m)),
+      scoutMissions: s.scoutMissions.map((m) => (m.id === id ? { ...m, completesAt: Date.now() } : m)),
     }));
   },
 

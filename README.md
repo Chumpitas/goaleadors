@@ -33,7 +33,8 @@ React + Vite · Framer Motion · Zustand · HTML5 Canvas (match viz, kasnije) ·
 | `src/game/starterPack.js`   | Starter kompozicija + benefiti (§7)                            |
 | `src/game/training.js`      | Trening centar: aktivni/pasivni boost, max +10 (§10.4)         |
 | `src/game/academy.js`       | Akademija: omladinske karte, domaći bias, OVR po nivou (§10.3) |
-| `src/game/scouting.js`      | Scout mreže: misije, trajanje, slotovi, ubrzanje, resolve (§10.5) |
+| `src/game/scouting.js`      | Scout misije: potencijali, nivoi mreže, resolve (SCOUT_SYSTEM_UPDATE) |
+| `src/game/talents.js`       | Scout talenti: rast, ability milestoni, potpis, 48h prozor (SCOUT_SYSTEM_UPDATE) |
 | `src/game/editions.js`      | Kalendar edicija, overlap, penzija (§4)                        |
 | `src/game/legacy.js`        | Legacy album + trajni bonusi (§13)                             |
 | `src/game/fatigue.js`       | Umor karata + Medicinski centar: oporavak, liječenje (§10.6–10.7) |
@@ -76,7 +77,7 @@ nisu postavljene).
 - [x] **Valute + starter pack** — Lopte/Kovanice, kupovina kesica, nagrade, starter (§6, §7)
 - [x] **Trening centar** — aktivni trening stata, max +10, ponovni OVERALL (§10.4)
 - [x] **Akademija** — omladinske karte, domaći bias, kvalitet po nivou (§10.3)
-- [x] **Scout mreža** — ciljane misije, trajanje po raritetu, ubrzanje, nivoi (§10.5)
+- [x] **Scout mreža (talenti)** — mladi talenti van kesica, rast, abilities, 48h FOMO (SCOUT_SYSTEM_UPDATE)
 - [x] **Edicije + penzija + Legacy** — kalendar, overlap, penzija, album, bonusi (§4, §13)
 - [x] **Medicinski centar / umor** — energija, oporavak, hitno liječenje (§10.6–10.7)
 - [x] **Marketinška agencija + sponzori** — ponude po nivou, sezonska isplata (§10.8)
