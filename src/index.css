@@ -687,6 +687,38 @@ body {
   border: 1px solid rgba(255,255,255,0.15); border-radius: 8px; padding: 0.3rem 0.4rem; font-size: 0.78rem;
 }
 
+/* --- referral --- */
+.referral { max-width: 680px; margin: 0 auto; }
+.ref__head { display: flex; justify-content: space-between; align-items: flex-start; gap: 1rem; flex-wrap: wrap; margin-bottom: 1rem; }
+.ref__head h3 { font-size: 0.9rem; margin: 0 0 0.3rem; }
+.ref__code { font-size: 0.8rem; color: #2c8c5e; background: rgba(44,110,73,0.12); padding: 0.3rem 0.6rem; border-radius: 8px; cursor: pointer; }
+.ref__tier { text-align: right; display: flex; flex-direction: column; }
+.ref__tname { font-weight: 800; font-size: 1.1rem; }
+.ref__tier--legenda .ref__tname { color: #e0a01e; }
+.ref__tier--director .ref__tname { color: #8b3fd1; }
+.ref__tier--agent .ref__tname { color: #16a3a3; }
+.ref__tmult { font-size: 0.7rem; color: #8aa394; }
+.ref__network {
+  padding: 0.6rem 0.9rem; border-radius: 10px; margin-bottom: 1rem; font-size: 0.82rem; color: #b9c9bd;
+  background: rgba(224,160,30,0.08); border: 1px solid rgba(224,160,30,0.25);
+}
+.friend {
+  padding: 0.7rem 0.9rem; border-radius: 12px; margin-bottom: 0.6rem;
+  background: linear-gradient(160deg, #1b2620, #0e1612); border: 1px solid rgba(255,255,255,0.1);
+}
+.friend__head { display: flex; justify-content: space-between; align-items: baseline; }
+.friend__status { font-size: 0.7rem; color: #8aa394; }
+.friend__status.is-val { color: #2c8c5e; }
+.friend__events { display: flex; flex-wrap: wrap; gap: 0.4rem; margin-top: 0.5rem; }
+.friend__events button {
+  background: rgba(255,255,255,0.06); color: #e8efe9;
+  border: 1px solid rgba(255,255,255,0.15); border-radius: 999px;
+  padding: 0.3rem 0.7rem; font-size: 0.72rem; cursor: pointer;
+}
+.friend__events button:disabled { opacity: 0.4; cursor: not-allowed; }
+.friend__l2 { border-color: #e0a01e !important; color: #e0a01e !important; }
+.friend__second { font-size: 0.7rem; color: #8aa394; margin-top: 0.4rem; }
+
 /* --- editions / legacy --- */
 .editions {
   max-width: 720px;

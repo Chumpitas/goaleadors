@@ -27,6 +27,13 @@ import { createRivalry, applyDerbyResult, derbyBonusPct, MAX_RIVALRIES } from '.
 import { ultraPointsFor, WEEKLY_ULTRA_CHALLENGES } from '../game/ultras.js';
 import { eloFromOverall } from '../game/elo.js';
 import { generateMarketListings, netProceeds } from '../game/market.js';
+import {
+  generateReferralCode,
+  REFERRAL_EVENTS,
+  tierMultiplier,
+  resolveInviterReward,
+  SECOND_LEVEL_PCT,
+} from '../game/referral.js';
 import { buildProLeague, runProSeason, simulateKnockout } from '../game/proLeague.js';
 import { generateAIClubs } from '../game/amateurSeason.js';
 import { mulberry32 } from '../game/rng.js';
@@ -403,6 +410,83 @@ export const useGameStore = create((set, get) => ({
     const amount = Math.round(base * (1 + pct / 100));
     get()._tx(CURRENCIES.KOVANICE, amount, `mec:${outcome}`);
     return amount;
+  },
+
+  // Referral program (§17)
+  referralCode: null,
+  referrals: [],
+  referralEarned: { kovanice: 0, lopte: 0, packs: 0 },
+
+  _ensureReferralCode() {
+    if (!get().referralCode) set({ referralCode: generateReferralCode(get().club?.name || 'GOAL') });
+    return get().referralCode;
+  },
+
+  referralValidatedCount() {
+    return get().referrals.filter((r) => r.validated && r.level === 1).length;
+  },
+
+  /** Interno: razriješi + isplati + evidentiraj referral nagradu (za „Moja mreža"). */
+  _grantReferralReward(rawReward, mult) {
+    const r = resolveInviterReward(rawReward, mult);
+    get()._grantReward(r);
+    set((s) => ({
+      referralEarned: {
+        kovanice: s.referralEarned.kovanice + (r.kovanice || 0),
+        lopte: s.referralEarned.lopte + (r.lopte || 0),
+        packs: s.referralEarned.packs + (r.pack ? 1 : 0),
+      },
+    }));
+  },
+
+  /** Pozovi prijatelja (§17.1). Registracijska nagrada čeka validaciju (§17.5). */
+  inviteFriend(name) {
+    if (!name?.trim()) return { ok: false, reason: 'unesi ime' };
+    get()._ensureReferralCode();
+    set((s) => ({
+      referrals: [...s.referrals, { id: `ref-${Date.now()}-${Math.floor(Math.random() * 1e6)}`, name: name.trim(), level: 1, matchesPlayed: 0, validated: false, pendingRegister: true, done: {} }],
+    }));
+    return { ok: true };
+  },
+
+  /**
+   * Označi referral događaj prijatelja i isplati nagradu pozivaču s tier bonusom (§17.2/§17.3).
+   * 'played7' validira referral (§17.5) i isplaćuje zaostalu registracijsku nagradu.
+   */
+  friendEvent(id, eventKey) {
+    const friend = get().referrals.find((r) => r.id === id);
+    if (!friend || friend.done[eventKey]) return { ok: false, reason: 'nedostupno' };
+    const ev = REFERRAL_EVENTS[eventKey];
+    if (!ev) return { ok: false, reason: 'nepoznat događaj' };
+
+    if (eventKey === 'played7') {
+      set((s) => ({ referrals: s.referrals.map((r) => (r.id === id ? { ...r, matchesPlayed: 7, validated: true, done: { ...r.done, played7: true } } : r)) }));
+      const mult = tierMultiplier(get().referralValidatedCount());
+      if (friend.pendingRegister) {
+        get()._grantReferralReward(REFERRAL_EVENTS.register.inviter, mult);
+        set((s) => ({ referrals: s.referrals.map((r) => (r.id === id ? { ...r, pendingRegister: false } : r)) }));
+      }
+      get()._grantReferralReward(ev.inviter, mult);
+      return { ok: true };
+    }
+
+    if (!friend.validated) return { ok: false, reason: 'referral nije validiran (7 mečeva)' };
+    const mult = tierMultiplier(get().referralValidatedCount());
+    get()._grantReferralReward(ev.inviter, mult);
+    set((s) => ({ referrals: s.referrals.map((r) => (r.id === id ? { ...r, done: { ...r.done, [eventKey]: true } } : r)) }));
+    return { ok: true };
+  },
+
+  /** Drugi nivo lanca: prijatelj pozove nekoga → 20% standardne nagrade (§17.4). */
+  inviteSecondLevel(parentId, name) {
+    const parent = get().referrals.find((r) => r.id === parentId);
+    if (!parent || !parent.validated) return { ok: false, reason: 'pozivač mora biti validiran' };
+    set((s) => ({
+      referrals: [...s.referrals, { id: `ref2-${Date.now()}-${Math.floor(Math.random() * 1e6)}`, name: (name || 'Drugi nivo').trim(), level: 2, parentId, validated: true, matchesPlayed: 7, done: { played7: true } }],
+    }));
+    const mult = tierMultiplier(get().referralValidatedCount()) * (SECOND_LEVEL_PCT / 100);
+    get()._grantReferralReward(REFERRAL_EVENTS.played7.inviter, mult);
+    return { ok: true };
   },
 
   // Trade tržište (§5.4)

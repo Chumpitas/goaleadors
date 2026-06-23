@@ -44,6 +44,7 @@ React + Vite · Framer Motion · Zustand · HTML5 Canvas (match viz, kasnije) ·
 | `src/game/ultras.js`        | Ultra grupe: nivoi, poeni, sedmični izazovi (§14.1)           |
 | `src/game/proLeague.js`     | Profesionalna liga (16), promocija/ispadanje, Evropa (§8.2–8.4) |
 | `src/game/market.js`        | Trade tržište: listing, kupovina, 5% fee, Legacy tržište (§5.4) |
+| `src/game/referral.js`      | Referral: kod, nagrade, tier, 2-nivo chain (§17)              |
 | `src/game/rng.js`           | Seedable PRNG (deterministički draws)                          |
 | `src/game/*.test.js`        | Vitest: OVERALL, karte, packs + pity, pool, match engine       |
 | `src/store/useGameStore.js` | Zustand store (kolekcija, pity, openAndCollect)                |
@@ -90,8 +91,9 @@ nisu postavljene).
 - [x] **Rivalstva + Ultra grupe** — derby mečevi, nivoi, poeni, izazovi (§14)
 - [x] **Profesionalne lige + Evropa** — liga 16, promocija/ispadanje, LŠ/LE/LK (§8.2–8.4)
 - [x] **Trade tržište** — transfer listing, kupovina, 5% fee, Legacy tržište (§5.4)
-- [ ] Referral program (§17)
-- [ ] Affiliate B2B (§11)
+- [x] **Referral program** — kod, nagrade obje strane, tier, 2-nivo chain (§17)
+- [ ] Affiliate B2B / kladionice (§11)
+- [ ] Hall of Fame (§14.4) · Premium kosmetika 1-of-1 (§9.4)
 
 ## Izdvajanje u vlastiti repo
 
