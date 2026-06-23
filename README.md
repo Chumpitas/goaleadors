@@ -34,6 +34,8 @@ React + Vite · Framer Motion · Zustand · HTML5 Canvas (match viz, kasnije) ·
 | `src/game/training.js`      | Trening centar: aktivni/pasivni boost, max +10 (§10.4)         |
 | `src/game/academy.js`       | Akademija: omladinske karte, domaći bias, OVR po nivou (§10.3) |
 | `src/game/scouting.js`      | Scout mreže: misije, trajanje, slotovi, ubrzanje, resolve (§10.5) |
+| `src/game/editions.js`      | Kalendar edicija, overlap, penzija (§4)                        |
+| `src/game/legacy.js`        | Legacy album + trajni bonusi (§13)                             |
 | `src/game/rng.js`           | Seedable PRNG (deterministički draws)                          |
 | `src/game/*.test.js`        | Vitest: OVERALL, karte, packs + pity, pool, match engine       |
 | `src/store/useGameStore.js` | Zustand store (kolekcija, pity, openAndCollect)                |
@@ -41,6 +43,8 @@ React + Vite · Framer Motion · Zustand · HTML5 Canvas (match viz, kasnije) ·
 | `src/components/PackOpening.jsx`| Pack shelf + reveal animacija (Framer Motion)              |
 | `src/components/MatchSim.jsx`| Izbor taktike + simulacija meča + event feed                  |
 | `src/components/LeagueTable.jsx`| Amaterska sezona: tabela + zona napredovanja              |
+| `src/components/AcademyPanel.jsx` / `ScoutPanel.jsx`| Akademija / Scout tabovi             |
+| `src/components/TrainingPanel.jsx` / `EditionsPanel.jsx`| Trening / Edicije+Legacy tabovi |
 | `src/components/ClubOnboarding.jsx`| Onboarding tok + grb/dres builder (live SVG preview)   |
 | `src/components/CrestSVG.jsx` / `JerseySVG.jsx`| SVG renderi grba i dresa                    |
 | `src/components/ClubPanel.jsx`| Tab Klub: onboarding ili prikaz identiteta               |
@@ -71,8 +75,9 @@ nisu postavljene).
 - [x] **Trening centar** — aktivni trening stata, max +10, ponovni OVERALL (§10.4)
 - [x] **Akademija** — omladinske karte, domaći bias, kvalitet po nivou (§10.3)
 - [x] **Scout mreža** — ciljane misije, trajanje po raritetu, ubrzanje, nivoi (§10.5)
-- [ ] Edicije + penzija / Legacy (§4)
+- [x] **Edicije + penzija + Legacy** — kalendar, overlap, penzija, album, bonusi (§4, §13)
 - [ ] Trade tržište (§5.4)
+- [ ] Medicinski centar / umor (§10.6–10.7)
 
 ## Izdvajanje u vlastiti repo
 

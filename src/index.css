@@ -479,6 +479,91 @@ body {
   color: #e0a01e;
 }
 
+/* --- editions / legacy --- */
+.editions {
+  max-width: 720px;
+  margin: 0 auto;
+}
+
+.editions__clock {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1.25rem;
+}
+
+.editions__btns {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.editions__btns button {
+  background: #2c6e49;
+  color: #fff;
+  border: none;
+  padding: 0.45rem 1rem;
+  border-radius: 999px;
+  cursor: pointer;
+  font-size: 0.85rem;
+}
+
+.editions__list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  margin-bottom: 2rem;
+}
+
+.edition {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0.7rem 1rem;
+  border-radius: 12px;
+  background: linear-gradient(160deg, #1b2620, #0e1612);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.edition--retiring { border-color: #e0a01e; }
+.edition--legacy { opacity: 0.55; }
+.edition--upcoming { opacity: 0.7; border-style: dashed; }
+
+.edition__main { display: flex; flex-direction: column; gap: 2px; }
+.edition__code { font-size: 0.7rem; color: #8aa394; }
+
+.edition__status { text-align: right; display: flex; flex-direction: column; gap: 2px; }
+.edition__badge { font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.05em; }
+.edition--active .edition__badge { color: #2c8c5e; }
+.edition--retiring .edition__badge { color: #e0a01e; }
+.edition__days { font-size: 0.7rem; color: #8aa394; }
+
+.legacy h2 { text-align: center; }
+
+.legacy__bonuses {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(130px, 1fr));
+  gap: 0.75rem;
+  margin-bottom: 1.5rem;
+}
+
+.legacy__bonus {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+  padding: 0.75rem;
+  border-radius: 12px;
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.legacy__bval { font-size: 1.4rem; font-weight: 800; color: #e0a01e; }
+.legacy__blabel { font-size: 0.8rem; }
+.legacy__bhint { font-size: 0.68rem; color: #8aa394; text-align: center; }
+
+.legacy__empty,
+.legacy__count { text-align: center; color: #8aa394; }
+
 /* --- reveal overlay --- */
 .reveal {
   position: fixed;

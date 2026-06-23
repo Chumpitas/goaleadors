@@ -7,6 +7,7 @@ import { grantStarterCards, STARTER_BONUS } from '../game/starterPack.js';
 import { trainCard, TRAINING_COST_KOVANICE } from '../game/training.js';
 import { generateYouth } from '../game/academy.js';
 import { startMission, isComplete, resolveMission, speedUpCost, scoutSlots } from '../game/scouting.js';
+import { generateEditionSchedule, legacyEditions } from '../game/editions.js';
 
 const EDITION = 'foundations';
 
@@ -109,6 +110,30 @@ export const useGameStore = create((set, get) => ({
       return { collection };
     });
     return { ok: true, applied: res.applied, capped: res.capped };
+  },
+
+  // Edicije + Legacy (§4, §13)
+  currentDay: 1,
+  editionSchedule: generateEditionSchedule(6),
+  legacy: [], // penzionisane karte
+
+  /**
+   * Napreduj kalendar; edicije koje pređu u Legacy sele svoje karte iz kolekcije
+   * u Legacy album (§4.2, §13).
+   */
+  advanceDay(days = 1) {
+    const nextDay = get().currentDay + days;
+    const legacyCodes = new Set(legacyEditions(get().editionSchedule, nextDay).map((e) => e.code));
+    set((s) => {
+      const toLegacy = s.collection.filter((c) => legacyCodes.has(c.editionId));
+      if (!toLegacy.length) return { currentDay: nextDay };
+      const remaining = s.collection.filter((c) => !legacyCodes.has(c.editionId));
+      return {
+        currentDay: nextDay,
+        collection: remaining,
+        legacy: [...s.legacy, ...toLegacy],
+      };
+    });
   },
 
   // Scout mreža (§10.5)

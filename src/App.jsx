@@ -7,6 +7,7 @@ import ClubPanel from './components/ClubPanel.jsx';
 import TrainingPanel from './components/TrainingPanel.jsx';
 import AcademyPanel from './components/AcademyPanel.jsx';
 import ScoutPanel from './components/ScoutPanel.jsx';
+import EditionsPanel from './components/EditionsPanel.jsx';
 import { SAMPLE_CARDS } from './game/sampleCards.js';
 
 const TABS = [
@@ -18,6 +19,7 @@ const TABS = [
   { id: 'train', label: 'Trening' },
   { id: 'match', label: 'Meč' },
   { id: 'league', label: 'Liga' },
+  { id: 'editions', label: 'Edicije' },
 ];
 
 export default function App() {
@@ -58,6 +60,7 @@ export default function App() {
       {tab === 'train' && <TrainingPanel />}
       {tab === 'match' && <MatchSim />}
       {tab === 'league' && <LeagueTable />}
+      {tab === 'editions' && <EditionsPanel />}
     </main>
   );
 }
