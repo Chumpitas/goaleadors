@@ -42,7 +42,11 @@ export default function MatchSim() {
   const pool = useGameStore((s) => s.pool);
   const rewardMatch = useGameStore((s) => s.rewardMatch);
   const signedTalents = useGameStore((s) => s.talents.filter((t) => t.status === 'signed'));
-  const [home, setHome] = useState({ formation: '4-3-3', style: 'High Press', mentality: 'Attacking' });
+  const collection = useGameStore((s) => s.collection);
+  const savedLineup = useGameStore((s) => s.lineup || {});
+  const savedFormation = useGameStore((s) => s.formation || '4-3-3');
+
+  const [home, setHome] = useState({ formation: savedFormation, style: 'High Press', mentality: 'Attacking' });
   const [away, setAway] = useState({ formation: '5-4-1', style: 'Defensive', mentality: 'Defensive' });
   const [includeTalents, setIncludeTalents] = useState(true);
   const [result, setResult] = useState(null);
@@ -50,11 +54,18 @@ export default function MatchSim() {
 
   const talentCards = useMemo(() => signedTalents.map(talentToCard), [signedTalents]);
 
-  // Postave (najbolji OVERALL po liniji) — talenti imaju prioritet u domaćem timu.
-  const homeLineup = useMemo(
-    () => buildLineup(pool, home.formation, { extra: includeTalents ? talentCards : [] }),
-    [pool, home.formation, includeTalents, talentCards]
-  );
+  // Provjeri ima li postavljena postava (min 5 igrača)
+  const myLineupCards = useMemo(() => {
+    const cards = Object.values(savedLineup).map((idx) => collection[idx]).filter(Boolean);
+    return cards.length >= 5 ? cards : null;
+  }, [savedLineup, collection]);
+
+  // Postave — koristi "Moj tim" ako je postavljen, inače automatski
+  const homeLineup = useMemo(() => {
+    if (myLineupCards) return myLineupCards;
+    return buildLineup(pool, home.formation, { extra: includeTalents ? talentCards : [] });
+  }, [myLineupCards, pool, home.formation, includeTalents, talentCards]);
+
   const awayLineup = useMemo(() => buildLineup(pool, away.formation), [pool, away.formation]);
 
   const play = () => {
@@ -74,7 +85,17 @@ export default function MatchSim() {
         <TacticsPicker label="Gosti" value={away} onChange={setAway} />
       </div>
 
-      {signedTalents.length > 0 && (
+      {myLineupCards ? (
+        <div className="match__lineup-notice match__lineup-notice--ok">
+          ✅ Koristiš svoju postavu ({myLineupCards.length} igrača) — postavi je u <strong>Moj tim</strong>
+        </div>
+      ) : (
+        <div className="match__lineup-notice">
+          ℹ️ Nema postave — koriste se nasumične karte. Postavi tim u <strong>Moj tim</strong>.
+        </div>
+      )}
+
+      {signedTalents.length > 0 && !myLineupCards && (
         <label className="match__talents">
           <input type="checkbox" checked={includeTalents} onChange={(e) => setIncludeTalents(e.target.checked)} />
           Uvrsti moje talente ({homeLineup.filter((c) => c.isTalent).length} u postavi)

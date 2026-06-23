@@ -1,5 +1,6 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useGameStore } from '../store/useGameStore.js';
+import { supabase } from '../lib/supabase.js';
 import { CURRENCIES } from '../game/currency.js';
 import { PACKS } from '../game/packs.js';
 
@@ -15,7 +16,74 @@ const MANAGER_STATS = [
   { key: 'totalSeasons', label: 'Sezone', min: 0, max: 60 },
 ];
 
-export default function AdminPanel() {
+function PlayersTab() {
+  const [players, setPlayers] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [err, setErr] = useState(null);
+
+  useEffect(() => {
+    supabase
+      .from('game_states')
+      .select('user_id, state, updated_at')
+      .order('updated_at', { ascending: false })
+      .then(({ data, error }) => {
+        if (error) { setErr(error.message); }
+        else {
+          setPlayers((data || []).map((row) => ({
+            userId: row.user_id,
+            club: row.state?.club?.name || '—',
+            country: row.state?.club?.country || '—',
+            lopte: Number(row.state?.lopte || 0),
+            kovanice: Number(row.state?.kovanice || 0),
+            cards: (row.state?.collection || []).length,
+            day: row.state?.currentDay || 1,
+            updated: row.updated_at,
+          })));
+        }
+        setLoading(false);
+      });
+  }, []);
+
+  if (loading) return <p className="admin__loading">Učitavam podatke…</p>;
+  if (err) return <p className="admin__err">Greška: {err}</p>;
+  if (!players.length) return <p className="admin__empty">Nema registrovanih igrača.</p>;
+
+  return (
+    <div className="admin__players">
+      <p className="admin__count">{players.length} igrač{players.length === 1 ? '' : 'a'}</p>
+      <div className="admin__table-wrap">
+        <table className="admin__table">
+          <thead>
+            <tr>
+              <th>Klub</th>
+              <th>Država</th>
+              <th>⚽ Lopte</th>
+              <th>🪙 Kovanice</th>
+              <th>Karte</th>
+              <th>Dan</th>
+              <th>Zadnja aktivnost</th>
+            </tr>
+          </thead>
+          <tbody>
+            {players.map((p) => (
+              <tr key={p.userId}>
+                <td><strong>{p.club}</strong></td>
+                <td>{p.country}</td>
+                <td>{p.lopte.toLocaleString()}</td>
+                <td>{p.kovanice.toLocaleString()}</td>
+                <td>{p.cards}</td>
+                <td>{p.day}</td>
+                <td className="admin__date">{new Date(p.updated).toLocaleDateString('sr')}</td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+    </div>
+  );
+}
+
+function DevTab() {
   const s = useGameStore();
   const [amt, setAmt] = useState(10000);
 
@@ -29,8 +97,8 @@ export default function AdminPanel() {
   };
 
   return (
-    <div className="admin">
-      <p className="admin__warn">⚙️ Admin / dev alati — zaobilaze cijene i ograničenja. Promjene se odmah čuvaju lokalno.</p>
+    <>
+      <p className="admin__warn">⚙️ Dev alati — zaobilaze cijene i ograničenja.</p>
 
       <section className="admin__sec">
         <h3>Valute i resursi</h3>
@@ -81,7 +149,7 @@ export default function AdminPanel() {
       </section>
 
       <section className="admin__sec">
-        <h3>Manager Rating (World Cup)</h3>
+        <h3>Manager Rating</h3>
         <div className="admin__levels">
           {MANAGER_STATS.map((m) => (
             <label key={m.key}>
@@ -103,6 +171,20 @@ export default function AdminPanel() {
         </div>
         <button className="admin__reset" onClick={() => s.resetGame()}>Reset cijele igre</button>
       </section>
+    </>
+  );
+}
+
+export default function AdminPanel() {
+  const [tab, setTab] = useState('players');
+
+  return (
+    <div className="admin">
+      <div className="admin__tabs">
+        <button className={`admin__tab${tab === 'players' ? ' is-active' : ''}`} onClick={() => setTab('players')}>👥 Igrači</button>
+        <button className={`admin__tab${tab === 'dev' ? ' is-active' : ''}`} onClick={() => setTab('dev')}>⚙️ Dev alati</button>
+      </div>
+      {tab === 'players' ? <PlayersTab /> : <DevTab />}
     </div>
   );
 }
