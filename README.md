@@ -46,6 +46,7 @@ React + Vite · Framer Motion · Zustand · HTML5 Canvas (match viz, kasnije) ·
 | `src/game/market.js`        | Trade tržište: listing, kupovina, 5% fee, Legacy tržište (§5.4) |
 | `src/game/referral.js`      | Referral: kod, nagrade, tier, 2-nivo chain (§17)              |
 | `src/game/affiliate.js`     | Affiliate B2B: kladionice, CPA, geo + 18+ zaštita (§11)        |
+| `src/game/friendlies.js` / `hallOfFame.js` | Prijateljski mečevi + Hall of Fame (§14.3–14.4) |
 | `src/game/rng.js`           | Seedable PRNG (deterministički draws)                          |
 | `src/game/*.test.js`        | Vitest: OVERALL, karte, packs + pity, pool, match engine       |
 | `src/store/useGameStore.js` | Zustand store (kolekcija, pity, openAndCollect)                |
@@ -94,7 +95,8 @@ nisu postavljene).
 - [x] **Trade tržište** — transfer listing, kupovina, 5% fee, Legacy tržište (§5.4)
 - [x] **Referral program** — kod, nagrade obje strane, tier, 2-nivo chain (§17)
 - [x] **Affiliate B2B** — kladionice, CPA/rev-share, 18+ verifikacija, geo-restrikcija (§11)
-- [ ] Hall of Fame (§14.4) · Premium kosmetika 1-of-1 (§9.4) · Friendly/AI sparring (§14.3)
+- [x] **Friendly mečevi + Hall of Fame** — egzibicije + sezonska priznanja (§14.3–14.4)
+- [ ] Premium kosmetika 1-of-1 (§9.4)
 
 ## Izdvajanje u vlastiti repo
 

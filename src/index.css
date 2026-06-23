@@ -638,6 +638,16 @@ body {
 .ultra__sub { font-size: 0.72rem; color: #8aa394; }
 .ultra__ch { display: flex; justify-content: space-between; align-items: center; gap: 0.5rem; font-size: 0.78rem; padding: 0.35rem 0; }
 .ultra__ch button:disabled { opacity: 0.5; cursor: not-allowed; }
+.friendly__btns { display: flex; flex-wrap: wrap; gap: 0.5rem; }
+.hof { display: flex; flex-direction: column; gap: 0.4rem; }
+.hof__row {
+  display: flex; justify-content: space-between; align-items: center;
+  padding: 0.55rem 0.9rem; border-radius: 10px;
+  background: linear-gradient(160deg, #241f0e, #0e1612);
+  border: 1px solid rgba(224,160,30,0.3);
+}
+.hof__title { font-size: 0.82rem; color: #e0a01e; }
+.hof__holder { font-size: 0.82rem; font-weight: 700; }
 
 /* --- pro league + euro --- */
 .proleague { max-width: 680px; margin: 0 auto; }

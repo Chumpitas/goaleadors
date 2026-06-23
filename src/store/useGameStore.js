@@ -35,6 +35,7 @@ import {
   SECOND_LEVEL_PCT,
 } from '../game/referral.js';
 import { AFFILIATE_ACTIONS, bookmakerById, estimatedRevenueEUR } from '../game/affiliate.js';
+import { rollFriendlyReward, FRIENDLY_TYPES } from '../game/friendlies.js';
 import { buildProLeague, runProSeason, simulateKnockout } from '../game/proLeague.js';
 import { generateAIClubs } from '../game/amateurSeason.js';
 import { mulberry32 } from '../game/rng.js';
@@ -646,6 +647,24 @@ export const useGameStore = create((set, get) => ({
   // Socijalni sistemi (§14)
   rivalries: [],
   ultraGroup: null,
+  lastFriendly: null,
+
+  /** Odigraj prijateljski/random/AI meč (§14.3) — ne utiče na standings. */
+  playFriendly(type) {
+    const cfg = FRIENDLY_TYPES[type];
+    if (!cfg) return { ok: false, reason: 'nepoznat tip' };
+    const pool = get().pool;
+    const talents = get().talents.filter((t) => t.status === 'signed').map(talentToCard);
+    const elo = get()._playerElo();
+    const rng = mulberry32(Math.floor(Math.random() * 1e9));
+    const home = { name: 'Moj klub', cards: buildLineup(pool, '4-3-3', { extra: talents }), formation: '4-3-3', style: 'Possession', mentality: 'Balanced', isHome: true };
+    const away = { name: cfg.label, cards: buildLineup(pool, '4-4-2', { rng }), formation: '4-4-2', style: 'Possession', mentality: 'Balanced' };
+    const result = simulateMatch(home, away);
+    const reward = rollFriendlyReward(type);
+    get()._tx(CURRENCIES.KOVANICE, reward, `friendly:${type}`);
+    set({ lastFriendly: { type, label: cfg.label, result, reward } });
+    return { ok: true, result, reward };
+  },
 
   /** Dodaj rivalstvo (max 3, §14.2). */
   addRivalry(name) {

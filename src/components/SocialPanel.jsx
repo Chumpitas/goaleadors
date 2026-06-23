@@ -3,6 +3,8 @@ import { useGameStore } from '../store/useGameStore.js';
 import { rivalryLevel, derbyBonusPct, streakLabel, MAX_RIVALRIES } from '../game/rivalries.js';
 import { ultraLevelFromPoints, groupCapacity, groupUnlock, WEEKLY_ULTRA_CHALLENGES } from '../game/ultras.js';
 import { describeReward } from '../game/progression.js';
+import { FRIENDLY_TYPES } from '../game/friendlies.js';
+import { buildHallOfFame } from '../game/hallOfFame.js';
 
 export default function SocialPanel() {
   const rivalries = useGameStore((s) => s.rivalries);
@@ -12,6 +14,11 @@ export default function SocialPanel() {
   const playDerby = useGameStore((s) => s.playDerby);
   const createUltraGroup = useGameStore((s) => s.createUltraGroup);
   const claimUltraChallenge = useGameStore((s) => s.claimUltraChallenge);
+  const playFriendly = useGameStore((s) => s.playFriendly);
+  const lastFriendly = useGameStore((s) => s.lastFriendly);
+  const hof = useGameStore((s) => buildHallOfFame({
+    proSeason: s.proSeason, euroResult: s.euroResult, ultraGroup: s.ultraGroup, rivalries: s.rivalries, clubName: s.club?.name,
+  }));
 
   const [name, setName] = useState('');
   const [groupName, setGroupName] = useState('');
@@ -105,6 +112,38 @@ export default function SocialPanel() {
                 );
               })}
             </div>
+          </div>
+        )}
+      </section>
+
+      <section>
+        <h3>Prijateljski mečevi (§14.3)</h3>
+        <div className="friendly__btns">
+          {Object.values(FRIENDLY_TYPES).map((t) => (
+            <button key={t.id} className="prog__btn" onClick={() => playFriendly(t.id)}>
+              {t.label} (+{t.reward[0]}{t.reward[1] !== t.reward[0] ? `–${t.reward[1]}` : ''} 🪙)
+            </button>
+          ))}
+        </div>
+        {lastFriendly && (
+          <p className="social__derby">
+            {lastFriendly.label}: {lastFriendly.result.score.home}:{lastFriendly.result.score.away} · +{lastFriendly.reward.toLocaleString('sr')} 🪙 (ne utiče na tabelu)
+          </p>
+        )}
+      </section>
+
+      <section>
+        <h3>Sezonski Hall of Fame (§14.4)</h3>
+        {hof.length === 0 ? (
+          <p className="prog__muted">Osvoji ligu/Evropu, gradi rivalstva i Ultra grupu da popuniš Hall of Fame.</p>
+        ) : (
+          <div className="hof">
+            {hof.map((h, i) => (
+              <div key={i} className="hof__row">
+                <span className="hof__title">🏆 {h.title}</span>
+                <span className="hof__holder">{h.holder}</span>
+              </div>
+            ))}
           </div>
         )}
       </section>
