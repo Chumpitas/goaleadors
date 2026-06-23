@@ -34,7 +34,7 @@ export default function CardView({ card }) {
       </header>
 
       <h3 className="card__name">{card.name}</h3>
-      <div className="card__rarity">{rarity.label}</div>
+      <div className="card__rarity">{card.isTalent ? `★ Talent · ${card.potential}` : rarity.label}</div>
 
       <ul className="card__attrs">
         {attrKeys.map((key) => (

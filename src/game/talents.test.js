@@ -6,11 +6,16 @@ import {
   signingCost,
   trainingSlotsForLevel,
   isExpired,
+  talentToCard,
+  potentialToRarity,
   POTENTIAL_TYPES,
   GROWTH_RATES,
   TALENT_AVAILABILITY_WINDOW,
   MAX_TALENTS_PER_CLUB,
 } from './talents.js';
+import { computeOverall } from './overall.js';
+import { buildLineup, simulateMatch } from './matchEngine.js';
+import { generateEdition } from './editionGenerator.js';
 import { mulberry32 } from './rng.js';
 
 describe('scout talent (SCOUT_SYSTEM_UPDATE)', () => {
@@ -84,5 +89,40 @@ describe('potpis i slotovi', () => {
     const t = generateTalent({ position: 'GK', potentialType: 'fast' }, mulberry32(1), 0);
     expect(isExpired(t, t.availableUntil - 1)).toBe(false);
     expect(isExpired(t, t.availableUntil + 1)).toBe(true);
+  });
+});
+
+describe('talentToCard adapter (integracija u meč)', () => {
+  it('outfield talent → karta s 4 atributa i mapom rariteta', () => {
+    const t = generateTalent({ position: 'ATT', potentialType: 'exceptional' }, mulberry32(3), 0);
+    const card = talentToCard(t);
+    expect(card.position).toBe('ATT');
+    expect(card.rarity).toBe(potentialToRarity('exceptional')); // legendary
+    expect(card.attributes).toHaveProperty('shooting');
+    expect(card.isTalent).toBe(true);
+  });
+
+  it('GK talent → GK atributi (REFLEXES/POSITIONING), kompatibilan s OVERALL', () => {
+    const t = { ...generateTalent({ position: 'GK', potentialType: 'high' }, mulberry32(4), 0), overall: 80, passing: 70, pace: 60 };
+    const card = talentToCard(t);
+    expect(card.attributes).toHaveProperty('reflexes');
+    expect(card.attributes).toHaveProperty('positioning');
+    expect(card.attributes).not.toHaveProperty('shooting');
+    // OVERALL formula radi bez greške i daje smislen broj
+    expect(computeOverall(card)).toBeGreaterThan(60);
+  });
+
+  it('simulateMatch radi s postavom koja sadrži talente (uklj. GK)', () => {
+    const pool = generateEdition('foundations');
+    const talents = [
+      talentToCard({ ...generateTalent({ position: 'GK', potentialType: 'high' }, mulberry32(1), 0), overall: 82, passing: 70, pace: 60 }),
+      talentToCard({ ...generateTalent({ position: 'ATT', potentialType: 'exceptional' }, mulberry32(2), 0), overall: 90, shooting: 92, passing: 70, tackling: 40, pace: 90 }),
+    ];
+    const home = { cards: buildLineup(pool, '4-3-3', { extra: talents }), formation: '4-3-3', style: 'High Press', mentality: 'Attacking', isHome: true };
+    const away = { cards: buildLineup(pool, '4-4-2'), formation: '4-4-2', style: 'Possession', mentality: 'Balanced' };
+    const res = simulateMatch(home, away, { seed: 'talent-mec' });
+    expect(res.score.home).toBeGreaterThanOrEqual(0);
+    // talenti su zaista u postavi
+    expect(home.cards.some((c) => c.isTalent)).toBe(true);
   });
 });

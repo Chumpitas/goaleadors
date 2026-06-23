@@ -1,7 +1,7 @@
 // Scout talenti (SCOUT_SYSTEM_UPDATE) — mladi talenti, posebna kategorija van kesica.
 // Razlike od edicijskih karata: traju 5 sezona, rastu kroz trening, razvijaju
 // abilities kroz napredak, nestaju nakon 48h ako se ne potpišu, nisu tradable.
-import { INDIVIDUAL_ABILITIES, AURA_ABILITIES, SITUATIONAL_ABILITIES, KONTRA_ABILITIES } from './abilities.js';
+import { INDIVIDUAL_ABILITIES, AURA_ABILITIES, SITUATIONAL_ABILITIES, KONTRA_ABILITIES, abilityById } from './abilities.js';
 import { randInt, pick } from './rng.js';
 
 const HOUR_MS = 3600 * 1000;
@@ -168,4 +168,37 @@ export function applySeasonalGrowth(talent, rng = Math.random) {
 /** Da li je dostupni talent istekao (48h prozor). */
 export function isExpired(talent, now = Date.now()) {
   return talent.status === 'available' && talent.availableUntil < now;
+}
+
+/** Mapiranje potencijala na raritet (radi boje/tiera pri prikazu). */
+const POTENTIAL_TO_RARITY = { fast: 'common', standard: 'rare', high: 'epic', exceptional: 'legendary' };
+export function potentialToRarity(potential) {
+  return POTENTIAL_TO_RARITY[potential] || 'common';
+}
+
+/**
+ * Adapter: pretvori talent u "kartu" kompatibilnu s match engine-om i CardView-om.
+ * GK talent (čiji su statovi SHO/PAS/TAC/PAC po spec interfejsu) mapira se na
+ * GK atribute: REFLEXES/POSITIONING iz `overall`, plus PASSING/PACE talenta.
+ */
+export function talentToCard(talent) {
+  const isGK = talent.position === 'GK';
+  const attributes = isGK
+    ? { reflexes: talent.overall, positioning: talent.overall, passing: talent.passing, pace: talent.pace }
+    : { shooting: talent.shooting, passing: talent.passing, tackling: talent.tackling, pace: talent.pace };
+
+  return {
+    name: talent.name,
+    position: talent.position,
+    nationality: talent.nationality,
+    rarity: potentialToRarity(talent.potential),
+    attributes,
+    abilities: (talent.abilities || []).map(abilityById).filter(Boolean),
+    overall: talent.overall,
+    energy: talent.energy ?? 100,
+    editionId: null,
+    isTalent: true,
+    potential: talent.potential,
+    talentId: talent.id,
+  };
 }

@@ -844,6 +844,16 @@ body {
   font-size: 0.85rem;
 }
 
+.match__talents {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  font-size: 0.82rem;
+  color: #b9c9bd;
+  margin-bottom: 0.75rem;
+}
+
 .match__play {
   display: block;
   margin: 0 auto 1.5rem;

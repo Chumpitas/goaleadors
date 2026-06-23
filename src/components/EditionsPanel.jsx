@@ -7,6 +7,7 @@ import {
   EDITION_STATUS,
 } from '../game/editions.js';
 import { legacyBonuses, LEGACY_RULES } from '../game/legacy.js';
+import { talentToCard } from '../game/talents.js';
 
 const STATUS_LABEL = {
   [EDITION_STATUS.UPCOMING]: 'najavljena',
@@ -19,6 +20,7 @@ export default function EditionsPanel() {
   const currentDay = useGameStore((s) => s.currentDay);
   const schedule = useGameStore((s) => s.editionSchedule);
   const legacy = useGameStore((s) => s.legacy);
+  const legacyTalents = useGameStore((s) => s.legacyTalents);
   const advanceDay = useGameStore((s) => s.advanceDay);
 
   const bonuses = legacyBonuses(legacy);
@@ -72,6 +74,17 @@ export default function EditionsPanel() {
             <div className="app__grid">
               {legacy.map((card, i) => (
                 <CardView key={i} card={card} />
+              ))}
+            </div>
+          </>
+        )}
+
+        {legacyTalents.length > 0 && (
+          <>
+            <p className="legacy__count">Penzionisani talenti ({legacyTalents.length})</p>
+            <div className="app__grid">
+              {legacyTalents.map((t, i) => (
+                <CardView key={`t-${i}`} card={talentToCard(t)} />
               ))}
             </div>
           </>

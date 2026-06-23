@@ -4,6 +4,7 @@ import { useGameStore } from '../store/useGameStore.js';
 import { buildLineup, simulateMatch } from '../game/matchEngine.js';
 import { FORMATIONS, STYLES, MENTALITIES } from '../game/tactics.js';
 import { outcomeFromScore } from '../game/elo.js';
+import { talentToCard } from '../game/talents.js';
 
 const FORMATION_OPTS = Object.keys(FORMATIONS);
 const STYLE_OPTS = Object.keys(STYLES);
@@ -40,13 +41,20 @@ function TacticsPicker({ label, value, onChange }) {
 export default function MatchSim() {
   const pool = useGameStore((s) => s.pool);
   const rewardMatch = useGameStore((s) => s.rewardMatch);
+  const signedTalents = useGameStore((s) => s.talents.filter((t) => t.status === 'signed'));
   const [home, setHome] = useState({ formation: '4-3-3', style: 'High Press', mentality: 'Attacking' });
   const [away, setAway] = useState({ formation: '5-4-1', style: 'Defensive', mentality: 'Defensive' });
+  const [includeTalents, setIncludeTalents] = useState(true);
   const [result, setResult] = useState(null);
   const [reward, setReward] = useState(null);
 
-  // Postave (najbolji OVERALL po liniji) — memoizirane po formaciji.
-  const homeLineup = useMemo(() => buildLineup(pool, home.formation), [pool, home.formation]);
+  const talentCards = useMemo(() => signedTalents.map(talentToCard), [signedTalents]);
+
+  // Postave (najbolji OVERALL po liniji) — talenti imaju prioritet u domaćem timu.
+  const homeLineup = useMemo(
+    () => buildLineup(pool, home.formation, { extra: includeTalents ? talentCards : [] }),
+    [pool, home.formation, includeTalents, talentCards]
+  );
   const awayLineup = useMemo(() => buildLineup(pool, away.formation), [pool, away.formation]);
 
   const play = () => {
@@ -65,6 +73,13 @@ export default function MatchSim() {
         <TacticsPicker label="Domaći" value={home} onChange={setHome} />
         <TacticsPicker label="Gosti" value={away} onChange={setAway} />
       </div>
+
+      {signedTalents.length > 0 && (
+        <label className="match__talents">
+          <input type="checkbox" checked={includeTalents} onChange={(e) => setIncludeTalents(e.target.checked)} />
+          Uvrsti moje talente ({homeLineup.filter((c) => c.isTalent).length} u postavi)
+        </label>
+      )}
 
       <button className="match__play" onClick={play}>Simuliraj meč</button>
 

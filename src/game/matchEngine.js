@@ -253,15 +253,17 @@ function round1(n) {
 
 /**
  * Sastavi postavu iz edition poola za zadanu formaciju.
- * Bira karte s najvećim OVERALL-om po liniji.
+ * Bira karte s najvećim OVERALL-om po liniji. `extra` (npr. potpisani talenti
+ * pretvoreni u karte) imaju prioritet — uvrštavaju se prvi po poziciji.
  */
-export function buildLineup(pool, formation, { rng } = {}) {
+export function buildLineup(pool, formation, { rng, extra = [] } = {}) {
   const line = lineForFormation(formation);
   const take = (position, n) => {
+    const ex = extra.filter((c) => c.position === position).sort((a, b) => b.overall - a.overall);
     let candidates = pool.filter((c) => c.position === position);
     if (rng) candidates = [...candidates].sort(() => rng() - 0.5);
     else candidates = [...candidates].sort((a, b) => b.overall - a.overall);
-    return candidates.slice(0, n);
+    return [...ex, ...candidates].slice(0, n);
   };
   return [
     ...take(POS.GK, line.gk),
