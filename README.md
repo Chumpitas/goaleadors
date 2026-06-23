@@ -45,6 +45,7 @@ React + Vite · Framer Motion · Zustand · HTML5 Canvas (match viz, kasnije) ·
 | `src/game/proLeague.js`     | Profesionalna liga (16), promocija/ispadanje, Evropa (§8.2–8.4) |
 | `src/game/market.js`        | Trade tržište: listing, kupovina, 5% fee, Legacy tržište (§5.4) |
 | `src/game/referral.js`      | Referral: kod, nagrade, tier, 2-nivo chain (§17)              |
+| `src/game/affiliate.js`     | Affiliate B2B: kladionice, CPA, geo + 18+ zaštita (§11)        |
 | `src/game/rng.js`           | Seedable PRNG (deterministički draws)                          |
 | `src/game/*.test.js`        | Vitest: OVERALL, karte, packs + pity, pool, match engine       |
 | `src/store/useGameStore.js` | Zustand store (kolekcija, pity, openAndCollect)                |
@@ -92,8 +93,8 @@ nisu postavljene).
 - [x] **Profesionalne lige + Evropa** — liga 16, promocija/ispadanje, LŠ/LE/LK (§8.2–8.4)
 - [x] **Trade tržište** — transfer listing, kupovina, 5% fee, Legacy tržište (§5.4)
 - [x] **Referral program** — kod, nagrade obje strane, tier, 2-nivo chain (§17)
-- [ ] Affiliate B2B / kladionice (§11)
-- [ ] Hall of Fame (§14.4) · Premium kosmetika 1-of-1 (§9.4)
+- [x] **Affiliate B2B** — kladionice, CPA/rev-share, 18+ verifikacija, geo-restrikcija (§11)
+- [ ] Hall of Fame (§14.4) · Premium kosmetika 1-of-1 (§9.4) · Friendly/AI sparring (§14.3)
 
 ## Izdvajanje u vlastiti repo
 

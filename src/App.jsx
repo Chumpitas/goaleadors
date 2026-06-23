@@ -15,6 +15,7 @@ import SocialPanel from './components/SocialPanel.jsx';
 import ProLeaguePanel from './components/ProLeaguePanel.jsx';
 import MarketPanel from './components/MarketPanel.jsx';
 import ReferralPanel from './components/ReferralPanel.jsx';
+import AffiliatePanel from './components/AffiliatePanel.jsx';
 import { SAMPLE_CARDS } from './game/sampleCards.js';
 
 const TABS = [
@@ -34,6 +35,7 @@ const TABS = [
   { id: 'progress', label: 'Sezona' },
   { id: 'social', label: 'Društvo' },
   { id: 'referral', label: 'Referral' },
+  { id: 'affiliate', label: 'Affiliate' },
 ];
 
 export default function App() {
@@ -82,6 +84,7 @@ export default function App() {
       {tab === 'progress' && <ProgressPanel />}
       {tab === 'social' && <SocialPanel />}
       {tab === 'referral' && <ReferralPanel />}
+      {tab === 'affiliate' && <AffiliatePanel />}
     </main>
   );
 }

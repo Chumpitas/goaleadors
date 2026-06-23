@@ -719,6 +719,43 @@ body {
 .friend__l2 { border-color: #e0a01e !important; color: #e0a01e !important; }
 .friend__second { font-size: 0.7rem; color: #8aa394; margin-top: 0.4rem; }
 
+/* --- affiliate --- */
+.affiliate { max-width: 680px; margin: 0 auto; }
+.affiliate section { margin-bottom: 1.75rem; }
+.affiliate h3 { font-size: 0.95rem; margin: 0 0 0.6rem; }
+.aff__gate {
+  text-align: center; padding: 1.5rem; border-radius: 14px;
+  background: linear-gradient(160deg, #1b2620, #0e1612); border: 1px solid rgba(224,160,30,0.3);
+}
+.aff__disc { font-size: 0.72rem; color: #8aa394; }
+.aff__disc--top {
+  text-align: center; padding: 0.5rem 0.8rem; border-radius: 8px; margin-bottom: 1rem;
+  background: rgba(232,70,47,0.08); border: 1px solid rgba(232,70,47,0.25); color: #d6a96a;
+}
+.aff__geo { font-size: 0.72rem; color: #8aa394; margin: 0.5rem 0 1rem; }
+.aff__book {
+  padding: 0.7rem 0.9rem; border-radius: 12px; margin-bottom: 0.6rem;
+  background: linear-gradient(160deg, #1b2620, #0e1612); border: 1px solid rgba(255,255,255,0.1);
+}
+.aff__bhead { display: flex; justify-content: space-between; align-items: baseline; }
+.aff__pkg { font-size: 0.7rem; color: #e0a01e; }
+.aff__actions { display: flex; flex-wrap: wrap; gap: 0.5rem; align-items: center; margin-top: 0.6rem; }
+.aff__actions button {
+  background: rgba(255,255,255,0.06); color: #e8efe9;
+  border: 1px solid rgba(255,255,255,0.15); border-radius: 999px;
+  padding: 0.4rem 0.9rem; font-size: 0.75rem; cursor: pointer;
+}
+.aff__reg { border-color: #2c6e49 !important; }
+.aff__actions button:disabled { opacity: 0.5; cursor: not-allowed; }
+.aff__done { font-size: 0.75rem; color: #2c8c5e; }
+.aff__pkgs { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 0.6rem; margin-bottom: 0.75rem; }
+.aff__pkgcard {
+  display: flex; flex-direction: column; gap: 3px; padding: 0.6rem; border-radius: 10px;
+  background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.1); font-size: 0.72rem;
+}
+.aff__pkgcard strong { font-size: 0.85rem; }
+.aff__rev { font-size: 0.8rem; color: #b9c9bd; }
+
 /* --- editions / legacy --- */
 .editions {
   max-width: 720px;

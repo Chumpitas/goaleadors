@@ -34,6 +34,7 @@ import {
   resolveInviterReward,
   SECOND_LEVEL_PCT,
 } from '../game/referral.js';
+import { AFFILIATE_ACTIONS, bookmakerById, estimatedRevenueEUR } from '../game/affiliate.js';
 import { buildProLeague, runProSeason, simulateKnockout } from '../game/proLeague.js';
 import { generateAIClubs } from '../game/amateurSeason.js';
 import { mulberry32 } from '../game/rng.js';
@@ -410,6 +411,46 @@ export const useGameStore = create((set, get) => ({
     const amount = Math.round(base * (1 + pct / 100));
     get()._tx(CURRENCIES.KOVANICE, amount, `mec:${outcome}`);
     return amount;
+  },
+
+  // Affiliate B2B (§11)
+  affiliateAgeVerified: false,
+  affiliateActivations: [], // { bookmakerId, mode, deposited }
+  affiliateDevRevenueEUR: 0, // procjena prihoda developera
+
+  /** Dobna verifikacija 18+ prije prikaza ponude (§11.5). */
+  verifyAffiliateAge() {
+    set({ affiliateAgeVerified: true });
+  },
+
+  /** Aktiviraj affiliate kod kladionice (poveži ili registruj se). Jedan po kladionici (§11.5). */
+  activateAffiliate(bookmakerId, mode) {
+    if (!get().affiliateAgeVerified) return { ok: false, reason: 'potrebna dobna verifikacija (18+)' };
+    if (!bookmakerById(bookmakerId)) return { ok: false, reason: 'nepoznata kladionica' };
+    if (mode !== 'link' && mode !== 'register') return { ok: false, reason: 'nepoznata akcija' };
+    if (get().affiliateActivations.some((a) => a.bookmakerId === bookmakerId)) {
+      return { ok: false, reason: 'već aktivirano za ovu kladionicu' };
+    }
+    // Bonus se isplaćuje kad kladionica "potvrdi" (ovdje simulirano odmah).
+    get()._grantReward(AFFILIATE_ACTIONS[mode].playerBonus);
+    set((s) => ({
+      affiliateActivations: [...s.affiliateActivations, { bookmakerId, mode, deposited: false }],
+      affiliateDevRevenueEUR: s.affiliateDevRevenueEUR + estimatedRevenueEUR(mode),
+    }));
+    return { ok: true };
+  },
+
+  /** Prvi depozit prijatelja na kladionici → bonus + revenue share (§11.2). */
+  affiliateDeposit(bookmakerId) {
+    const act = get().affiliateActivations.find((a) => a.bookmakerId === bookmakerId);
+    if (!act) return { ok: false, reason: 'nije aktivirano' };
+    if (act.deposited) return { ok: false, reason: 'depozit već evidentiran' };
+    get()._grantReward(AFFILIATE_ACTIONS.firstDeposit.playerBonus);
+    set((s) => ({
+      affiliateActivations: s.affiliateActivations.map((a) => (a.bookmakerId === bookmakerId ? { ...a, deposited: true } : a)),
+      affiliateDevRevenueEUR: s.affiliateDevRevenueEUR + estimatedRevenueEUR('firstDeposit'),
+    }));
+    return { ok: true };
   },
 
   // Referral program (§17)
