@@ -28,6 +28,7 @@ React + Vite · Framer Motion · Zustand · HTML5 Canvas (match viz, kasnije) ·
 | `src/game/matchEngine.js`   | Simulacija meča: AR/DR, 18 intervala, konverzija, scoreboard (§3) |
 | `src/game/elo.js`           | ELO sistem: delte, matchmaking, napredovanje (§8.1)            |
 | `src/game/amateurSeason.js` | Amaterska sezona: AI klubovi, 30 dana, top 20% promocija (§8.1) |
+| `src/game/cosmetics.js`     | Države/gradovi, štitovi, simboli, dizajni dresa, kombinatorika (§9) |
 | `src/game/rng.js`           | Seedable PRNG (deterministički draws)                          |
 | `src/game/*.test.js`        | Vitest: OVERALL, karte, packs + pity, pool, match engine       |
 | `src/store/useGameStore.js` | Zustand store (kolekcija, pity, openAndCollect)                |
@@ -35,6 +36,9 @@ React + Vite · Framer Motion · Zustand · HTML5 Canvas (match viz, kasnije) ·
 | `src/components/PackOpening.jsx`| Pack shelf + reveal animacija (Framer Motion)              |
 | `src/components/MatchSim.jsx`| Izbor taktike + simulacija meča + event feed                  |
 | `src/components/LeagueTable.jsx`| Amaterska sezona: tabela + zona napredovanja              |
+| `src/components/ClubOnboarding.jsx`| Onboarding tok + grb/dres builder (live SVG preview)   |
+| `src/components/CrestSVG.jsx` / `JerseySVG.jsx`| SVG renderi grba i dresa                    |
+| `src/components/ClubPanel.jsx`| Tab Klub: onboarding ili prikaz identiteta               |
 | `src/lib/supabase.js`       | Supabase klijent (radi i bez konfiguracije za demo)            |
 | `supabase/schema.sql`       | Phase-1 DB skeleton (§15.2 tabele)                             |
 | `docs/GOALEADORS_SPEC.md`   | Kompletan GDD v1.3 (kanonski kontekst)                         |
@@ -57,7 +61,8 @@ nisu postavljene).
 - [x] **Kesica opening** — pull odds, garancije, pity, edition pool + reveal UI (§5)
 - [x] **Match engine** — AR/DR, intervali, taktike, konverzija, haos + UI (§3)
 - [x] **Amaterska liga (ELO)** — delte, matchmaking, AI klubovi, top 20% + UI (§8.1)
-- [ ] Onboarding + grb/dres builder (§9)
+- [x] **Onboarding + grb/dres builder** — tok, SVG štit/dres, kombinatorika (§9)
+- [ ] Dvije valute + starter pack (§6, §7)
 - [ ] Edicije + penzija (§4)
 
 ## Izdvajanje u vlastiti repo

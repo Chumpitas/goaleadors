@@ -3,9 +3,11 @@ import CardView from './components/CardView.jsx';
 import PackOpening from './components/PackOpening.jsx';
 import MatchSim from './components/MatchSim.jsx';
 import LeagueTable from './components/LeagueTable.jsx';
+import ClubPanel from './components/ClubPanel.jsx';
 import { SAMPLE_CARDS } from './game/sampleCards.js';
 
 const TABS = [
+  { id: 'club', label: 'Klub' },
   { id: 'cards', label: 'Karte' },
   { id: 'packs', label: 'Kesice' },
   { id: 'match', label: 'Meč' },
@@ -13,7 +15,7 @@ const TABS = [
 ];
 
 export default function App() {
-  const [tab, setTab] = useState('cards');
+  const [tab, setTab] = useState('club');
 
   return (
     <main className="app">
@@ -33,6 +35,8 @@ export default function App() {
           </button>
         ))}
       </nav>
+
+      {tab === 'club' && <ClubPanel />}
 
       {tab === 'cards' && (
         <section className="app__grid">

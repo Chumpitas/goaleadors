@@ -11,6 +11,16 @@ export const useGameStore = create((set, get) => ({
   collection: [], // cards the player owns (user_cards, §15.2)
   pity: 0, // packs opened without a Legendary (§5.3)
   lastOpening: null, // cards revealed by the most recent pack open
+  club: null, // klub identitet iz onboardinga (§9)
+
+  /** Snimi/izmijeni klub identitet. */
+  setClub(club) {
+    set({ club });
+  },
+
+  resetClub() {
+    set({ club: null });
+  },
 
   /** Open a pack, draw concrete cards, bank them and advance pity. */
   openAndCollect(packCode) {
