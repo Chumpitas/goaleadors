@@ -253,6 +253,70 @@ body {
   margin-top: 0.4rem;
 }
 
+/* --- training --- */
+.train__bar {
+  display: flex;
+  justify-content: center;
+  gap: 2rem;
+  margin-bottom: 1rem;
+  color: #8aa394;
+  font-size: 0.85rem;
+}
+
+.train__msg {
+  text-align: center;
+  color: #e0a01e;
+  font-size: 0.85rem;
+  margin: 0 0 1rem;
+}
+
+.train__empty {
+  text-align: center;
+  color: #8aa394;
+}
+
+.train__cell {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.train__ctl {
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+}
+
+.train__meter {
+  font-size: 0.7rem;
+  color: #8aa394;
+  text-align: center;
+}
+
+.train__ctl select {
+  background: #0e1612;
+  color: #e8efe9;
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  border-radius: 8px;
+  padding: 0.3rem;
+  font-size: 0.8rem;
+}
+
+.train__btn {
+  background: #2c6e49;
+  color: #fff;
+  border: none;
+  padding: 0.4rem;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 0.8rem;
+}
+
+.train__btn:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
 /* --- reveal overlay --- */
 .reveal {
   position: fixed;

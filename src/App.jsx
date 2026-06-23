@@ -4,12 +4,14 @@ import PackOpening from './components/PackOpening.jsx';
 import MatchSim from './components/MatchSim.jsx';
 import LeagueTable from './components/LeagueTable.jsx';
 import ClubPanel from './components/ClubPanel.jsx';
+import TrainingPanel from './components/TrainingPanel.jsx';
 import { SAMPLE_CARDS } from './game/sampleCards.js';
 
 const TABS = [
   { id: 'club', label: 'Klub' },
   { id: 'cards', label: 'Karte' },
   { id: 'packs', label: 'Kesice' },
+  { id: 'train', label: 'Trening' },
   { id: 'match', label: 'Meč' },
   { id: 'league', label: 'Liga' },
 ];
@@ -47,6 +49,7 @@ export default function App() {
       )}
 
       {tab === 'packs' && <PackOpening />}
+      {tab === 'train' && <TrainingPanel />}
       {tab === 'match' && <MatchSim />}
       {tab === 'league' && <LeagueTable />}
     </main>

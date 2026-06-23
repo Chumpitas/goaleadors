@@ -4,6 +4,7 @@ import { generateEdition, drawCards } from '../game/editionGenerator.js';
 import { openPack, packByCode } from '../game/packs.js';
 import { CURRENCIES, applyTransaction, matchReward } from '../game/currency.js';
 import { grantStarterCards, STARTER_BONUS } from '../game/starterPack.js';
+import { trainCard, TRAINING_COST_KOVANICE } from '../game/training.js';
 
 const EDITION = 'foundations';
 
@@ -84,6 +85,28 @@ export const useGameStore = create((set, get) => ({
 
   resetClub() {
     set({ club: null });
+  },
+
+  /**
+   * Treniraj kartu iz kolekcije (§10.4): plati Kovanice, pojačaj fokus stat.
+   * @returns {{ ok: boolean, reason?: string, applied?: number, capped?: boolean }}
+   */
+  trainCardAt(index, focusAttr) {
+    const card = get().collection[index];
+    if (!card) return { ok: false, reason: 'nema karte' };
+    if ((card.trainingBoost ?? 0) >= 10) return { ok: false, reason: 'maksimalno istrenirana' };
+    if (get().kovanice < TRAINING_COST_KOVANICE) return { ok: false, reason: 'nedovoljno Kovanica' };
+
+    const res = trainCard(card, focusAttr);
+    if (res.applied <= 0) return { ok: false, reason: 'stat na maksimumu' };
+
+    get()._tx(CURRENCIES.KOVANICE, -TRAINING_COST_KOVANICE, 'trening');
+    set((s) => {
+      const collection = s.collection.slice();
+      collection[index] = res.card;
+      return { collection };
+    });
+    return { ok: true, applied: res.applied, capped: res.capped };
   },
 
   /** Pripiši nagradu u Kovanicama za ishod meča (§6.2). */
