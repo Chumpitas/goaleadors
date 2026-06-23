@@ -2,6 +2,7 @@ import { useEffect, useRef, useState } from 'react';
 import { useGameStore } from './store/useGameStore.js';
 import Landing from './components/Landing.jsx';
 import OnboardingFlow from './components/OnboardingFlow.jsx';
+import StarterPackOpening from './components/StarterPackOpening.jsx';
 import AdminPanel from './components/AdminPanel.jsx';
 import AccountPanel from './components/AccountPanel.jsx';
 import CardView from './components/CardView.jsx';
@@ -81,8 +82,11 @@ export default function App() {
   const managerStats = useGameStore((s) => s.managerStats);
   const saveTimer = useRef(null);
 
+  const collection = useGameStore((s) => s.collection);
+  const starterClaimed = useGameStore((s) => s.starterClaimed);
   const [tab, setTab] = useState('club');
   const [authReady, setAuthReady] = useState(false);
+  const [starterDone, setStarterDone] = useState(false);
   // Dev mode — drži skriveno, aktivira se s ?dev=1 u URL-u
   const devMode = typeof window !== 'undefined' && new URLSearchParams(window.location.search).has('dev');
 
@@ -115,6 +119,11 @@ export default function App() {
 
   // 2. Prijavljen ali nema kluba → Onboarding
   if (!club) return <OnboardingFlow />;
+
+  // 2b. Starter pack opening — prikazuje se jednom, odmah nakon onboardinga
+  if (starterClaimed && !starterDone && collection.length > 0 && collection.length <= 25) {
+    return <StarterPackOpening cards={collection} onDone={() => setStarterDone(true)} />;
+  }
 
   // 3. Prijavljen + klub → Dashboard
   const tabs = visibleTabs(devMode, managerStats);
