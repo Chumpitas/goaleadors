@@ -7,7 +7,8 @@ import { grantStarterCards, STARTER_BONUS } from '../game/starterPack.js';
 import { trainCard, TRAINING_COST_KOVANICE } from '../game/training.js';
 import { generateYouth } from '../game/academy.js';
 import { startMission, isComplete, resolveMission, speedUpCost, scoutSlots } from '../game/scouting.js';
-import { generateEditionSchedule, legacyEditions } from '../game/editions.js';
+import { generateEditionSchedule, legacyEditions, seasonForDay } from '../game/editions.js';
+import { generateOffers, maxActiveSponsors } from '../game/sponsors.js';
 import {
   applyMatchFatigue,
   recover,
@@ -125,6 +126,11 @@ export const useGameStore = create((set, get) => ({
   medicalLevel: 2, // medicinski centar (§10.7)
   emergencyHealsUsed: 0, // potrošeno ove sedmice
 
+  // Marketinška agencija + sponzori (§10.8)
+  agencyLevel: 3,
+  sponsorOffers: [],
+  activeSponsors: [],
+
   /**
    * Napreduj kalendar: penzioniši edicije u Legacy (§4.2), oporavi energiju karata
    * (§10.6/§10.7) i resetuj sedmična hitna liječenja.
@@ -149,6 +155,44 @@ export const useGameStore = create((set, get) => ({
         emergencyHealsUsed: weekChanged ? 0 : s.emergencyHealsUsed,
       };
     });
+
+    // Sezonska isplata sponzora (§10.8).
+    const seasonsCrossed = seasonForDay(nextDay) - seasonForDay(prevDay);
+    if (seasonsCrossed > 0 && get().activeSponsors.length) {
+      let payout = 0;
+      const remaining = [];
+      for (const sp of get().activeSponsors) {
+        const seasonsPaid = Math.min(seasonsCrossed, sp.seasonsLeft);
+        payout += sp.perSeason * seasonsPaid;
+        const left = sp.seasonsLeft - seasonsPaid;
+        if (left > 0) remaining.push({ ...sp, seasonsLeft: left });
+      }
+      if (payout > 0) get()._tx(CURRENCIES.KOVANICE, payout, 'sponzor:sezona');
+      set({ activeSponsors: remaining });
+    }
+  },
+
+  setAgencyLevel(level) {
+    set({ agencyLevel: level, sponsorOffers: [] });
+  },
+
+  /** Generiši nove sezonske sponzorske ponude (§10.8). */
+  generateSponsorOffers() {
+    set({ sponsorOffers: generateOffers(get().agencyLevel) });
+  },
+
+  /** Potpiši sponzora ako ima slobodan slot (§10.8). */
+  signSponsor(offerId) {
+    const offer = get().sponsorOffers.find((o) => o.id === offerId);
+    if (!offer) return { ok: false, reason: 'nema ponude' };
+    if (get().activeSponsors.length >= maxActiveSponsors(get().agencyLevel)) {
+      return { ok: false, reason: 'svi slotovi popunjeni' };
+    }
+    set((s) => ({
+      activeSponsors: [...s.activeSponsors, { ...offer, seasonsLeft: offer.seasons }],
+      sponsorOffers: s.sponsorOffers.filter((o) => o.id !== offerId),
+    }));
+    return { ok: true };
   },
 
   setMedicalLevel(level) {

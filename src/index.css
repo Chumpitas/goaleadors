@@ -630,6 +630,62 @@ body {
 .medical__actions button:disabled { opacity: 0.4; cursor: not-allowed; }
 .medical__warn { display: block; margin-top: 0.4rem; font-size: 0.7rem; color: #e8462f; }
 
+/* --- sponsors --- */
+.sponsors { max-width: 720px; margin: 0 auto; }
+
+.sponsors__head {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+  margin-bottom: 1rem;
+}
+
+.sponsors__levels { display: flex; align-items: center; gap: 0.3rem; font-size: 0.85rem; color: #8aa394; }
+.sponsors__meta { font-size: 0.8rem; color: #8aa394; }
+
+.sponsors__gen {
+  display: block;
+  margin: 0 auto 1rem;
+  background: #2c6e49; color: #fff; border: none;
+  padding: 0.6rem 1.6rem; border-radius: 999px; cursor: pointer;
+}
+
+.sponsors__msg { text-align: center; color: #e8462f; font-size: 0.85rem; }
+
+.sponsors__cols {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1.5rem;
+}
+
+.sponsors__cols h3 { font-size: 0.95rem; margin: 0 0 0.6rem; }
+
+.sponsor {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.6rem 0.8rem;
+  border-radius: 10px;
+  background: linear-gradient(160deg, #1b2620, #0e1612);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  margin-bottom: 0.5rem;
+}
+
+.sponsor--active { border-color: #2c6e49; }
+.sponsor__sub { display: block; font-size: 0.68rem; color: #8aa394; }
+.sponsor__left { font-size: 0.72rem; color: #e0a01e; }
+
+.sponsor button {
+  background: #2c6e49; color: #fff; border: none;
+  padding: 0.4rem 0.9rem; border-radius: 999px; cursor: pointer; font-size: 0.78rem;
+}
+.sponsor button:disabled { opacity: 0.4; cursor: not-allowed; }
+
+.sponsors__empty, .sponsors__hint { font-size: 0.75rem; color: #8aa394; }
+
 /* --- reveal overlay --- */
 .reveal {
   position: fixed;

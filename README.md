@@ -37,6 +37,7 @@ React + Vite · Framer Motion · Zustand · HTML5 Canvas (match viz, kasnije) ·
 | `src/game/editions.js`      | Kalendar edicija, overlap, penzija (§4)                        |
 | `src/game/legacy.js`        | Legacy album + trajni bonusi (§13)                             |
 | `src/game/fatigue.js`       | Umor karata + Medicinski centar: oporavak, liječenje (§10.6–10.7) |
+| `src/game/sponsors.js`      | Marketinška agencija: ponude, tipovi, sezonska isplata (§10.8) |
 | `src/game/rng.js`           | Seedable PRNG (deterministički draws)                          |
 | `src/game/*.test.js`        | Vitest: OVERALL, karte, packs + pity, pool, match engine       |
 | `src/store/useGameStore.js` | Zustand store (kolekcija, pity, openAndCollect)                |
@@ -78,8 +79,10 @@ nisu postavljene).
 - [x] **Scout mreža** — ciljane misije, trajanje po raritetu, ubrzanje, nivoi (§10.5)
 - [x] **Edicije + penzija + Legacy** — kalendar, overlap, penzija, album, bonusi (§4, §13)
 - [x] **Medicinski centar / umor** — energija, oporavak, hitno liječenje (§10.6–10.7)
+- [x] **Marketinška agencija + sponzori** — ponude po nivou, sezonska isplata (§10.8)
 - [ ] Trade tržište (§5.4)
-- [ ] Marketinška agencija + sponzori (§10.8)
+- [ ] Rivalstva / Ultra grupe (§14)
+- [ ] Sezonski pass + dnevni izazovi (§12)
 
 ## Izdvajanje u vlastiti repo
 

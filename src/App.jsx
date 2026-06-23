@@ -9,6 +9,7 @@ import AcademyPanel from './components/AcademyPanel.jsx';
 import ScoutPanel from './components/ScoutPanel.jsx';
 import EditionsPanel from './components/EditionsPanel.jsx';
 import MedicalPanel from './components/MedicalPanel.jsx';
+import SponsorsPanel from './components/SponsorsPanel.jsx';
 import { SAMPLE_CARDS } from './game/sampleCards.js';
 
 const TABS = [
@@ -19,6 +20,7 @@ const TABS = [
   { id: 'scout', label: 'Scout' },
   { id: 'train', label: 'Trening' },
   { id: 'medical', label: 'Medicinski' },
+  { id: 'sponsors', label: 'Sponzori' },
   { id: 'match', label: 'Meč' },
   { id: 'league', label: 'Liga' },
   { id: 'editions', label: 'Edicije' },
@@ -61,6 +63,7 @@ export default function App() {
       {tab === 'scout' && <ScoutPanel />}
       {tab === 'train' && <TrainingPanel />}
       {tab === 'medical' && <MedicalPanel />}
+      {tab === 'sponsors' && <SponsorsPanel />}
       {tab === 'match' && <MatchSim />}
       {tab === 'league' && <LeagueTable />}
       {tab === 'editions' && <EditionsPanel />}
