@@ -1009,6 +1009,12 @@ export const useGameStore = create(persist((set, get) => ({
   adminSetManagerStat(key, value) {
     set((s) => ({ managerStats: { ...s.managerStats, [key]: value } }));
   },
+
+  // MyTeam lineup
+  lineup: {},       // { slotIndex: collectionIndex }
+  formation: '4-3-3',
+  setLineup(lineup) { set({ lineup }); },
+  setFormation(f) { set({ formation: f, lineup: {} }); },
 }), {
   name: 'goaleadors',
   version: 1,

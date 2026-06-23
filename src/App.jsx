@@ -25,42 +25,45 @@ import PremiumPanel from './components/PremiumPanel.jsx';
 import WorldCupPanel from './components/WorldCupPanel.jsx';
 import ShopPanel from './components/ShopPanel.jsx';
 import MatchCanvas from './components/MatchCanvas.jsx';
+import MyTeamPanel from './components/MyTeamPanel.jsx';
 import { SAMPLE_CARDS } from './game/sampleCards.js';
 
-// Svi dostupni tabovi — vidljivost se kontroliše kroz VISIBLE_TABS
+// Svi dostupni tabovi — vidljivost se kontroliše kroz visibleTabs()
 const ALL_TABS = [
   { id: 'club',      label: 'Moj klub',    icon: '🏠' },
-  { id: 'cards',     label: 'Karte',       icon: '🃏' },
-  { id: 'packs',     label: 'Kesice',      icon: '📦' },
-  { id: 'match',     label: 'Meč',         icon: '⚽' },
-  { id: 'league',    label: 'Liga',        icon: '🏆' },
-  { id: 'shop',      label: 'Kupi Lopte',  icon: '🛒' },
-  { id: 'account',   label: 'Nalog',       icon: '👤' },
+  { id: 'myteam',   label: 'Moj tim',     icon: '👥' },
+  { id: 'cards',    label: 'Karte',       icon: '🃏' },
+  { id: 'packs',    label: 'Kesice',      icon: '📦' },
+  { id: 'match',    label: 'Meč',         icon: '⚽' },
+  { id: 'league',   label: 'Liga',        icon: '🏆' },
+  { id: 'shop',     label: 'Kupi Lopte',  icon: '🛒' },
+  { id: 'account',  label: 'Nalog',       icon: '👤' },
   // --- Otključavaju se progresijom ---
-  { id: 'market',    label: 'Tržište',     icon: '🏪',  unlock: 'liga_1' },
-  { id: 'train',     label: 'Trening',     icon: '💪',  unlock: 'liga_1' },
-  { id: 'medical',   label: 'Medicinski',  icon: '⚕️',  unlock: 'liga_1' },
-  { id: 'academy',   label: 'Akademija',   icon: '🎓',  unlock: 'liga_5' },
-  { id: 'scout',     label: 'Scout',       icon: '🔭',  unlock: 'liga_5' },
-  { id: 'sponsors',  label: 'Sponzori',    icon: '💼',  unlock: 'liga_5' },
-  { id: 'livematch', label: 'Live Meč',    icon: '🎬',  unlock: 'liga_5' },
-  { id: 'proleague', label: 'Profi liga',  icon: '⭐',  unlock: 'promo' },
-  { id: 'editions',  label: 'Edicije',     icon: '📅',  unlock: 'promo' },
-  { id: 'progress',  label: 'Sezona',      icon: '📈',  unlock: 'promo' },
-  { id: 'social',    label: 'Društvo',     icon: '👥',  unlock: 'promo' },
-  { id: 'referral',  label: 'Referral',    icon: '🔗',  unlock: 'promo' },
-  { id: 'worldcup',  label: 'World Cup',   icon: '🌍',  unlock: 'promo' },
-  { id: 'affiliate', label: 'Affiliate',   icon: '💰',  unlock: 'promo' },
-  { id: 'premium',   label: 'Premium',     icon: '💎',  unlock: 'promo' },
-  { id: 'admin',     label: 'Admin',       icon: '⚙️',  unlock: 'dev' },
+  { id: 'market',   label: 'Tržište',     icon: '🏪',  unlock: 'liga_1' },
+  { id: 'train',    label: 'Trening',     icon: '💪',  unlock: 'liga_1' },
+  { id: 'medical',  label: 'Medicinski',  icon: '⚕️',  unlock: 'liga_1' },
+  { id: 'academy',  label: 'Akademija',   icon: '🎓',  unlock: 'liga_5' },
+  { id: 'scout',    label: 'Scout',       icon: '🔭',  unlock: 'liga_5' },
+  { id: 'sponsors', label: 'Sponzori',    icon: '💼',  unlock: 'liga_5' },
+  { id: 'livematch',label: 'Live Meč',    icon: '🎬',  unlock: 'liga_5' },
+  { id: 'proleague',label: 'Profi liga',  icon: '⭐',  unlock: 'promo' },
+  { id: 'editions', label: 'Edicije',     icon: '📅',  unlock: 'promo' },
+  { id: 'progress', label: 'Sezona',      icon: '📈',  unlock: 'promo' },
+  { id: 'social',   label: 'Društvo',     icon: '🤝',  unlock: 'promo' },
+  { id: 'referral', label: 'Referral',    icon: '🔗',  unlock: 'promo' },
+  { id: 'worldcup', label: 'World Cup',   icon: '🌍',  unlock: 'promo' },
+  { id: 'affiliate',label: 'Affiliate',   icon: '💰',  unlock: 'promo' },
+  { id: 'premium',  label: 'Premium',     icon: '💎',  unlock: 'promo' },
+  { id: 'admin',    label: 'Admin',       icon: '⚙️',  unlock: 'dev' },
 ];
 
-// Tabovi uvijek vidljivi (bez unlock uvjeta)
-function visibleTabs(devMode = false) {
+function visibleTabs(devMode = false, { currentLeagueLevel = 1, totalSeasons = 0 } = {}) {
   return ALL_TABS.filter((t) => {
-    if (!t.unlock) return true;                  // uvijek vidljiv
-    if (t.unlock === 'dev') return devMode;      // samo u dev modu
-    // TODO: provjeriti napredak igrača — za sada samo core tabovi
+    if (!t.unlock) return true;
+    if (t.unlock === 'dev') return devMode;
+    if (t.unlock === 'liga_1') return currentLeagueLevel >= 1 || totalSeasons >= 1;
+    if (t.unlock === 'liga_5') return currentLeagueLevel >= 2 || totalSeasons >= 3;
+    if (t.unlock === 'promo') return currentLeagueLevel >= 3 || totalSeasons >= 6;
     return false;
   });
 }
@@ -75,6 +78,7 @@ export default function App() {
   const lopte = useGameStore((s) => s.lopte);
   const kovanice = useGameStore((s) => s.kovanice);
   const resetGame = useGameStore((s) => s.resetGame);
+  const managerStats = useGameStore((s) => s.managerStats);
   const saveTimer = useRef(null);
 
   const [tab, setTab] = useState('club');
@@ -113,7 +117,14 @@ export default function App() {
   if (!club) return <OnboardingFlow />;
 
   // 3. Prijavljen + klub → Dashboard
-  const tabs = visibleTabs(devMode);
+  const tabs = visibleTabs(devMode, managerStats);
+  const totalSeasons = managerStats?.totalSeasons ?? 0;
+
+  // Locked tabs shown greyed out after first season
+  const lockedTabs = totalSeasons >= 1
+    ? ALL_TABS.filter((t) => t.unlock && t.unlock !== 'dev' && !tabs.find((v) => v.id === t.id))
+    : [];
+
   const bottomTabs = BOTTOM_IDS.map((id) => tabs.find((t) => t.id === id)).filter(Boolean);
   const currentTab = tabs.find((t) => t.id === tab) || tabs[0];
 
@@ -142,6 +153,22 @@ export default function App() {
               </span>
             );
           })}
+          {lockedTabs.length > 0 && (
+            <>
+              <div className="sidebar__divider" />
+              {lockedTabs.map((t) => (
+                <button
+                  key={t.id}
+                  className="sidebar__item sidebar__item--locked"
+                  disabled
+                  title={`${t.label} — otključaj napredovanjem`}
+                >
+                  <span className="sidebar__icon">{t.icon}</span>
+                  <span className="sidebar__label">{t.label} 🔒</span>
+                </button>
+              ))}
+            </>
+          )}
         </nav>
       </aside>
 
@@ -166,6 +193,7 @@ export default function App() {
       {/* Main content */}
       <main className="content">
         {activeTab === 'club'      && <ClubPanel />}
+        {activeTab === 'myteam'    && <MyTeamPanel />}
         {activeTab === 'cards'     && (
           <section className="app__grid">
             {SAMPLE_CARDS.map((card) => <CardView key={card.name} card={card} />)}
