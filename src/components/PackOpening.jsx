@@ -34,8 +34,16 @@ export default function PackOpening() {
       {error && <p className="packs__error">{error}</p>}
 
       <div className="packs__shelf">
-        {Object.values(PACKS).map((pack) => (
+        {Object.values(PACKS).filter(p => p.priceLopte != null || p.priceKovanice != null).map((pack) => (
           <div key={pack.code} className="pack-card">
+            {pack.image && (
+              <img
+                src={pack.image}
+                alt={pack.name}
+                className="pack-card__img"
+                style={{ '--pack-color': pack.color }}
+              />
+            )}
             <span className="pack-btn__name">{pack.name}</span>
             <span className="pack-btn__meta">
               {pack.cards} karata · {Object.entries(pack.guarantee).map(([r, n]) => `min ${n} ${r}`).join(', ')}

@@ -314,8 +314,18 @@ select, input { font-family: inherit; }
   border-radius: var(--radius-lg);
   background: linear-gradient(145deg, #1a2030, #0d1018);
   border: 1px solid var(--border-bright);
+  align-items: center; text-align: center;
 }
-.pack-card__buys { display: flex; gap: 6px; margin-top: auto; }
+.pack-card__img {
+  width: 100%; max-width: 160px; height: auto;
+  object-fit: contain;
+  border-radius: var(--radius-md);
+  margin-bottom: 4px;
+  filter: drop-shadow(0 4px 12px color-mix(in srgb, var(--pack-color, #22c55e) 50%, transparent));
+  transition: transform .2s;
+}
+.pack-card:hover .pack-card__img { transform: translateY(-4px) scale(1.03); }
+.pack-card__buys { display: flex; gap: 6px; margin-top: auto; width: 100%; }
 .pay {
   flex: 1; border: 1px solid var(--border-bright); border-radius: var(--radius-sm);
   padding: 6px; font-size: 0.76rem; background: rgba(255,255,255,.04); color: var(--text);
