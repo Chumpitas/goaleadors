@@ -13,12 +13,14 @@ import SponsorsPanel from './components/SponsorsPanel.jsx';
 import ProgressPanel from './components/ProgressPanel.jsx';
 import SocialPanel from './components/SocialPanel.jsx';
 import ProLeaguePanel from './components/ProLeaguePanel.jsx';
+import MarketPanel from './components/MarketPanel.jsx';
 import { SAMPLE_CARDS } from './game/sampleCards.js';
 
 const TABS = [
   { id: 'club', label: 'Klub' },
   { id: 'cards', label: 'Karte' },
   { id: 'packs', label: 'Kesice' },
+  { id: 'market', label: 'Tržište' },
   { id: 'academy', label: 'Akademija' },
   { id: 'scout', label: 'Scout' },
   { id: 'train', label: 'Trening' },
@@ -65,6 +67,7 @@ export default function App() {
       )}
 
       {tab === 'packs' && <PackOpening />}
+      {tab === 'market' && <MarketPanel />}
       {tab === 'academy' && <AcademyPanel />}
       {tab === 'scout' && <ScoutPanel />}
       {tab === 'train' && <TrainingPanel />}

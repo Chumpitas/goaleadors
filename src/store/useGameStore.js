@@ -26,6 +26,7 @@ import { outcomeFromScore } from '../game/elo.js';
 import { createRivalry, applyDerbyResult, derbyBonusPct, MAX_RIVALRIES } from '../game/rivalries.js';
 import { ultraPointsFor, WEEKLY_ULTRA_CHALLENGES } from '../game/ultras.js';
 import { eloFromOverall } from '../game/elo.js';
+import { generateMarketListings, netProceeds } from '../game/market.js';
 import { buildProLeague, runProSeason, simulateKnockout } from '../game/proLeague.js';
 import { generateAIClubs } from '../game/amateurSeason.js';
 import { mulberry32 } from '../game/rng.js';
@@ -402,6 +403,69 @@ export const useGameStore = create((set, get) => ({
     const amount = Math.round(base * (1 + pct / 100));
     get()._tx(CURRENCIES.KOVANICE, amount, `mec:${outcome}`);
     return amount;
+  },
+
+  // Trade tržište (§5.4)
+  marketListings: [],
+  legacyMarketListings: [],
+  myListings: [],
+  myLegacyListings: [],
+
+  /** Osvježi AI ponudu na tržištu (transfer + Legacy). */
+  refreshMarket() {
+    const pool = get().pool;
+    set({
+      marketListings: generateMarketListings(pool, 8, Math.random),
+      legacyMarketListings: generateMarketListings(pool, 4, Math.random, { legacy: true }),
+    });
+  },
+
+  /** Kupi kartu s tržišta (puna cijena). `legacy` bira tržište/odredište. */
+  buyListing(id, legacy = false) {
+    const key = legacy ? 'legacyMarketListings' : 'marketListings';
+    const listing = get()[key].find((l) => l.id === id);
+    if (!listing) return { ok: false, reason: 'nema oglasa' };
+    if (get().kovanice < listing.price) return { ok: false, reason: 'nedovoljno Kovanica' };
+    get()._tx(CURRENCIES.KOVANICE, -listing.price, legacy ? 'legacy:kupovina' : 'tržište:kupovina');
+    set((s) => ({
+      [key]: s[key].filter((l) => l.id !== id),
+      ...(legacy ? { legacy: [...s.legacy, listing.card] } : { collection: [...s.collection, listing.card] }),
+    }));
+    return { ok: true };
+  },
+
+  /** Izloži kartu iz kolekcije (ili Legacy) na tržište po cijeni. */
+  listCard(index, price, legacy = false) {
+    const src = legacy ? 'legacy' : 'collection';
+    const dest = legacy ? 'myLegacyListings' : 'myListings';
+    const card = get()[src][index];
+    if (!card) return { ok: false, reason: 'nema karte' };
+    if (!price || price < 50) return { ok: false, reason: 'cijena min 50' };
+    set((s) => ({
+      [src]: s[src].filter((_, i) => i !== index),
+      [dest]: [...s[dest], { id: `mine-${Date.now()}-${Math.floor(Math.random() * 1e6)}`, card, price, legacy }],
+    }));
+    return { ok: true };
+  },
+
+  /** Prodaja izložene karte (simulirani kupac): neto = cijena − 5% fee (§5.4). */
+  sellMyListing(id, legacy = false) {
+    const key = legacy ? 'myLegacyListings' : 'myListings';
+    const listing = get()[key].find((l) => l.id === id);
+    if (!listing) return { ok: false, reason: 'nema oglasa' };
+    const net = netProceeds(listing.price);
+    get()._tx(CURRENCIES.KOVANICE, net, legacy ? 'legacy:prodaja' : 'tržište:prodaja');
+    set((s) => ({ [key]: s[key].filter((l) => l.id !== id) }));
+    return { ok: true, net };
+  },
+
+  /** Povuci izloženu kartu nazad u kolekciju/Legacy. */
+  cancelListing(id, legacy = false) {
+    const key = legacy ? 'myLegacyListings' : 'myListings';
+    const dest = legacy ? 'legacy' : 'collection';
+    const listing = get()[key].find((l) => l.id === id);
+    if (!listing) return;
+    set((s) => ({ [key]: s[key].filter((l) => l.id !== id), [dest]: [...s[dest], listing.card] }));
   },
 
   // Profesionalne lige + Evropa (§8.2–8.4)

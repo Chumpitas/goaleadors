@@ -43,6 +43,7 @@ React + Vite · Framer Motion · Zustand · HTML5 Canvas (match viz, kasnije) ·
 | `src/game/rivalries.js`     | Rivalstva: derby nivoi, bonus, statistika (§14.2)             |
 | `src/game/ultras.js`        | Ultra grupe: nivoi, poeni, sedmični izazovi (§14.1)           |
 | `src/game/proLeague.js`     | Profesionalna liga (16), promocija/ispadanje, Evropa (§8.2–8.4) |
+| `src/game/market.js`        | Trade tržište: listing, kupovina, 5% fee, Legacy tržište (§5.4) |
 | `src/game/rng.js`           | Seedable PRNG (deterministički draws)                          |
 | `src/game/*.test.js`        | Vitest: OVERALL, karte, packs + pity, pool, match engine       |
 | `src/store/useGameStore.js` | Zustand store (kolekcija, pity, openAndCollect)                |
@@ -88,8 +89,9 @@ nisu postavljene).
 - [x] **Dnevni loop** — izazovi, streak, sezonski pass (free + premium) (§12)
 - [x] **Rivalstva + Ultra grupe** — derby mečevi, nivoi, poeni, izazovi (§14)
 - [x] **Profesionalne lige + Evropa** — liga 16, promocija/ispadanje, LŠ/LE/LK (§8.2–8.4)
-- [ ] Trade tržište (§5.4)
+- [x] **Trade tržište** — transfer listing, kupovina, 5% fee, Legacy tržište (§5.4)
 - [ ] Referral program (§17)
+- [ ] Affiliate B2B (§11)
 
 ## Izdvajanje u vlastiti repo
 

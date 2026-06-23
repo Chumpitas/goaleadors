@@ -657,6 +657,36 @@ body {
 .bracket__label { font-size: 0.7rem; color: #8aa394; text-transform: uppercase; letter-spacing: 0.05em; }
 .bracket__match { font-size: 0.78rem; color: #b9c9bd; }
 
+/* --- market --- */
+.market { max-width: 900px; margin: 0 auto; }
+.market section { margin-bottom: 1.75rem; }
+.market h3 { font-size: 0.95rem; margin: 0 0 0.6rem; }
+.market__head { display: flex; align-items: center; gap: 1rem; flex-wrap: wrap; margin-bottom: 1rem; }
+.market__sub { margin: 0; }
+.market__meta { font-size: 0.8rem; color: #8aa394; }
+.market__msg { color: #e0a01e; font-size: 0.85rem; }
+.market__cell { display: flex; flex-direction: column; gap: 0.4rem; }
+.market__buy, .market__row button {
+  background: #2c6e49; color: #fff; border: none;
+  padding: 0.4rem 0.7rem; border-radius: 8px; cursor: pointer; font-size: 0.78rem;
+}
+.market__buy:disabled { opacity: 0.4; cursor: not-allowed; }
+.market__listings { display: flex; flex-direction: column; gap: 0.4rem; }
+.market__row {
+  display: flex; align-items: center; gap: 0.75rem; flex-wrap: wrap;
+  padding: 0.5rem 0.8rem; border-radius: 10px;
+  background: linear-gradient(160deg, #1b2620, #0e1612);
+  border: 1px solid rgba(255,255,255,0.1); font-size: 0.8rem;
+}
+.market__row > span:first-child { flex: 1; min-width: 160px; }
+.market__price { color: #e0a01e; font-size: 0.72rem; }
+.market__rowact { display: flex; gap: 0.4rem; }
+.market__cancel { background: transparent !important; color: #e8462f !important; border: 1px solid rgba(232,70,47,0.4) !important; }
+.market__input {
+  width: 90px; background: #0e1612; color: #e8efe9;
+  border: 1px solid rgba(255,255,255,0.15); border-radius: 8px; padding: 0.3rem 0.4rem; font-size: 0.78rem;
+}
+
 /* --- editions / legacy --- */
 .editions {
   max-width: 720px;
