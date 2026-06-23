@@ -51,7 +51,8 @@ React + Vite · Framer Motion · Zustand · HTML5 Canvas (match viz, kasnije) ·
 | `src/game/worldCup.js`      | World Cup: Manager Rating, kvalifikacije, turnir, nagrade (WC_SYSTEM) |
 | `src/game/rng.js`           | Seedable PRNG (deterministički draws)                          |
 | `src/game/*.test.js`        | Vitest: OVERALL, karte, packs + pity, pool, match engine       |
-| `src/store/useGameStore.js` | Zustand store (kolekcija, pity, openAndCollect)                |
+| `src/store/useGameStore.js` | Zustand store (sve stanje) + localStorage perzistencija + admin alati |
+| `src/components/AdminPanel.jsx` | Admin/dev panel: valute, kesice, nivoi, vrijeme, reset       |
 | `src/components/CardView.jsx`| Panini-style render karte (Framer Motion)                     |
 | `src/components/PackOpening.jsx`| Pack shelf + reveal animacija (Framer Motion)              |
 | `src/components/MatchSim.jsx`| Izbor taktike + simulacija meča + event feed                  |
@@ -102,9 +103,16 @@ nisu postavljene).
 
 - [x] **World Cup** — Manager Rating, prijava/kvalifikacije, grupna faza + knockout, nagrade (WORLD_CUP_SYSTEM)
 
+- [x] **Perzistencija + Admin** — localStorage (preživi reload) + admin/dev panel
+
 > ✅ **Cijeli GDD + dopune pokriveni** — svi sistemi iz spec-a (§2–§17) + Scout redizajn +
-> World Cup, implementirani kao logika + UI + Vitest pokrivenost (188 testova).
-> Vidi `docs/GOALEADORS_SPEC.md` za referencu.
+> World Cup, implementirani kao logika + UI + Vitest pokrivenost (188 testova) +
+> localStorage perzistencija + admin panel. Vidi `docs/GOALEADORS_SPEC.md` za referencu.
+
+## Infrastruktura / sljedeći koraci (van GDD-a)
+Stanje se trenutno čuva u **localStorage** (single-player). Za multiplayer/produkciju:
+Supabase wiring (auth + tabele iz `supabase/schema.sql`), HTML5 Canvas match
+vizualizacija (§15.1), interaktivni live meč s izmjenama (§3.8).
 
 ## Izdvajanje u vlastiti repo
 

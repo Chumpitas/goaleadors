@@ -1,5 +1,6 @@
-// Global game state (Zustand, §15.1). Phase-1 client-side only — no persistence yet.
+// Global game state (Zustand, §15.1). Perzistira u localStorage (preživi reload).
 import { create } from 'zustand';
+import { persist, createJSONStorage } from 'zustand/middleware';
 import { generateEdition, drawCards } from '../game/editionGenerator.js';
 import { openPack, packByCode } from '../game/packs.js';
 import { CURRENCIES, applyTransaction, matchReward, rollKovanice } from '../game/currency.js';
@@ -52,9 +53,15 @@ import {
 
 const EDITION = 'foundations';
 
-export const useGameStore = create((set, get) => ({
+export const useGameStore = create(persist((set, get) => ({
   editionCode: EDITION,
-  pool: generateEdition(EDITION), // 110-card active edition (§4.4)
+  pool: generateEdition(EDITION), // 110-card active edition (§4.4) — deterministička, ne perzistira se
+  resetGame() {
+    if (typeof window !== 'undefined') {
+      try { window.localStorage.removeItem('goaleadors'); } catch { /* ignore */ }
+      window.location.reload();
+    }
+  },
   collection: [], // cards the player owns (user_cards, §15.2)
   pity: 0, // packs opened without a Legendary (§5.3)
   lastOpening: null, // cards revealed by the most recent pack open
@@ -906,5 +913,38 @@ export const useGameStore = create((set, get) => ({
 
   clearOpening() {
     set({ lastOpening: null });
+  },
+
+  // --- Admin / dev alati (zaobilaze cijene i ograničenja) ---
+  adminCredit(currency, amount) {
+    get()._tx(currency, amount, 'admin');
+  },
+  adminAddVeteranTokens(n) {
+    set((s) => ({ veteranTokens: s.veteranTokens + n }));
+  },
+  /** Otvori kesicu besplatno (puni kolekciju). */
+  adminOpenPack(code) {
+    get().openAndCollect(code);
+  },
+  /** Dodaj N nasumičnih karata zadanog rariteta u kolekciju. */
+  adminGrantCards(rarity, n = 1) {
+    for (let i = 0; i < n; i++) get()._grantCardOfRarity(rarity);
+  },
+  /** Generička izmjena polja (nivoi, managerStats, flagovi). */
+  adminSet(patch) {
+    set(patch);
+  },
+  adminSetManagerStat(key, value) {
+    set((s) => ({ managerStats: { ...s.managerStats, [key]: value } }));
+  },
+}), {
+  name: 'goaleadors',
+  version: 1,
+  storage: createJSONStorage(() => localStorage),
+  // Perzistiraj samo trajno stanje; `pool` se determinizmom regeneriše, `lastOpening` je tranzijentno.
+  partialize: (s) => {
+    const { pool, lastOpening, ...rest } = s;
+    // izbaci funkcije (akcije)
+    return Object.fromEntries(Object.entries(rest).filter(([, v]) => typeof v !== 'function'));
   },
 }));

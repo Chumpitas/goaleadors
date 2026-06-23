@@ -1,4 +1,6 @@
 import { useState } from 'react';
+import { useGameStore } from './store/useGameStore.js';
+import AdminPanel from './components/AdminPanel.jsx';
 import CardView from './components/CardView.jsx';
 import PackOpening from './components/PackOpening.jsx';
 import MatchSim from './components/MatchSim.jsx';
@@ -40,16 +42,19 @@ const TABS = [
   { id: 'referral', label: 'Referral' },
   { id: 'affiliate', label: 'Affiliate' },
   { id: 'premium', label: 'Premium' },
+  { id: 'admin', label: 'Admin' },
 ];
 
 export default function App() {
   const [tab, setTab] = useState('club');
+  const resetGame = useGameStore((s) => s.resetGame);
 
   return (
     <main className="app">
       <header className="app__header">
         <h1>Goaleadors</h1>
-        <p>Phase 1 — card, pack & match systems</p>
+        <p>Football manager — card game · napredak se čuva lokalno</p>
+        <button className="app__reset" onClick={resetGame} title="Obriši sačuvani napredak">Reset</button>
       </header>
 
       <nav className="app__tabs">
@@ -91,6 +96,7 @@ export default function App() {
       {tab === 'referral' && <ReferralPanel />}
       {tab === 'affiliate' && <AffiliatePanel />}
       {tab === 'premium' && <PremiumPanel />}
+      {tab === 'admin' && <AdminPanel />}
     </main>
   );
 }
