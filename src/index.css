@@ -564,6 +564,72 @@ body {
 .legacy__empty,
 .legacy__count { text-align: center; color: #8aa394; }
 
+/* --- medical / fatigue --- */
+.medical { max-width: 820px; margin: 0 auto; }
+
+.medical__head {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  gap: 1rem;
+  align-items: center;
+  margin-bottom: 1rem;
+}
+
+.medical__levels { display: flex; align-items: center; gap: 0.4rem; font-size: 0.85rem; color: #8aa394; }
+.medical__info { display: flex; align-items: center; gap: 1rem; font-size: 0.8rem; color: #8aa394; flex-wrap: wrap; }
+
+.medical__rest {
+  background: #2c6e49; color: #fff; border: none;
+  padding: 0.4rem 1rem; border-radius: 999px; cursor: pointer;
+}
+
+.medical__msg { text-align: center; color: #e8462f; font-size: 0.85rem; }
+.medical__empty { text-align: center; color: #8aa394; }
+
+.medical__grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(190px, 1fr));
+  gap: 0.75rem;
+}
+
+.medical__cell {
+  padding: 0.75rem;
+  border-radius: 12px;
+  background: linear-gradient(160deg, #1b2620, #0e1612);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.medical__name { font-size: 0.85rem; font-weight: 600; margin-bottom: 0.5rem; }
+.medical__pos { color: #8aa394; font-size: 0.7rem; }
+
+.medical__bar {
+  height: 8px;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.08);
+  overflow: hidden;
+}
+
+.medical__fill { height: 100%; transition: width 0.25s ease; }
+
+.medical__row { font-size: 0.72rem; margin: 0.4rem 0; }
+
+.medical__actions { display: flex; gap: 0.4rem; }
+
+.medical__actions button {
+  flex: 1;
+  background: rgba(255, 255, 255, 0.06);
+  color: #e8efe9;
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  border-radius: 8px;
+  padding: 0.35rem;
+  font-size: 0.75rem;
+  cursor: pointer;
+}
+
+.medical__actions button:disabled { opacity: 0.4; cursor: not-allowed; }
+.medical__warn { display: block; margin-top: 0.4rem; font-size: 0.7rem; color: #e8462f; }
+
 /* --- reveal overlay --- */
 .reveal {
   position: fixed;

@@ -8,6 +8,12 @@ import { trainCard, TRAINING_COST_KOVANICE } from '../game/training.js';
 import { generateYouth } from '../game/academy.js';
 import { startMission, isComplete, resolveMission, speedUpCost, scoutSlots } from '../game/scouting.js';
 import { generateEditionSchedule, legacyEditions } from '../game/editions.js';
+import {
+  applyMatchFatigue,
+  recover,
+  emergencyHealsPerWeek,
+  ENERGY_MAX,
+} from '../game/fatigue.js';
 
 const EDITION = 'foundations';
 
@@ -112,28 +118,66 @@ export const useGameStore = create((set, get) => ({
     return { ok: true, applied: res.applied, capped: res.capped };
   },
 
-  // Edicije + Legacy (§4, §13)
+  // Edicije + Legacy (§4, §13) i umor (§10.6–10.7)
   currentDay: 1,
   editionSchedule: generateEditionSchedule(6),
   legacy: [], // penzionisane karte
+  medicalLevel: 2, // medicinski centar (§10.7)
+  emergencyHealsUsed: 0, // potrošeno ove sedmice
 
   /**
-   * Napreduj kalendar; edicije koje pređu u Legacy sele svoje karte iz kolekcije
-   * u Legacy album (§4.2, §13).
+   * Napreduj kalendar: penzioniši edicije u Legacy (§4.2), oporavi energiju karata
+   * (§10.6/§10.7) i resetuj sedmična hitna liječenja.
    */
   advanceDay(days = 1) {
-    const nextDay = get().currentDay + days;
+    const prevDay = get().currentDay;
+    const nextDay = prevDay + days;
+    const level = get().medicalLevel;
     const legacyCodes = new Set(legacyEditions(get().editionSchedule, nextDay).map((e) => e.code));
+    const weekChanged = Math.floor((nextDay - 1) / 7) !== Math.floor((prevDay - 1) / 7);
+
     set((s) => {
-      const toLegacy = s.collection.filter((c) => legacyCodes.has(c.editionId));
-      if (!toLegacy.length) return { currentDay: nextDay };
-      const remaining = s.collection.filter((c) => !legacyCodes.has(c.editionId));
+      const recovered = s.collection.map((c) =>
+        legacyCodes.has(c.editionId) ? c : { ...c, energy: recover(c.energy ?? ENERGY_MAX, level, days) }
+      );
+      const toLegacy = recovered.filter((c) => legacyCodes.has(c.editionId));
+      const remaining = recovered.filter((c) => !legacyCodes.has(c.editionId));
       return {
         currentDay: nextDay,
         collection: remaining,
-        legacy: [...s.legacy, ...toLegacy],
+        legacy: toLegacy.length ? [...s.legacy, ...toLegacy] : s.legacy,
+        emergencyHealsUsed: weekChanged ? 0 : s.emergencyHealsUsed,
       };
     });
+  },
+
+  setMedicalLevel(level) {
+    set({ medicalLevel: level });
+  },
+
+  /** DEMO: odigraj meč jedne karte → potroši energiju (§10.6). */
+  drainCardEnergy(index, minutes = 90) {
+    set((s) => {
+      const collection = s.collection.slice();
+      const c = collection[index];
+      if (!c) return {};
+      collection[index] = { ...c, energy: applyMatchFatigue(c.energy ?? ENERGY_MAX, minutes) };
+      return { collection };
+    });
+  },
+
+  /** Hitno liječenje karte na puno (§10.7), uz sedmični limit po nivou. */
+  emergencyHeal(index) {
+    const limit = emergencyHealsPerWeek(get().medicalLevel);
+    if (get().emergencyHealsUsed >= limit) return { ok: false, reason: 'nema hitnih liječenja ove sedmice' };
+    set((s) => {
+      const collection = s.collection.slice();
+      const c = collection[index];
+      if (!c) return {};
+      collection[index] = { ...c, energy: ENERGY_MAX };
+      return { collection, emergencyHealsUsed: s.emergencyHealsUsed + 1 };
+    });
+    return { ok: true };
   },
 
   // Scout mreža (§10.5)
