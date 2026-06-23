@@ -108,7 +108,7 @@ export default function App() {
   if (!authReady) {
     return (
       <div className="splash">
-        <div className="splash__logo">G</div>
+        <div className="splash__logo"><img src="/logo-goal.svg" alt="Goaleadors" /></div>
         <div className="splash__dot" />
       </div>
     );
@@ -144,7 +144,7 @@ export default function App() {
     <div className="app">
       {/* Sidebar — Desktop */}
       <aside className="sidebar">
-        <div className="sidebar__logo">G</div>
+        <div className="sidebar__logo"><img src="/logo-goal.svg" alt="Goaleadors" /></div>
         <nav className="sidebar__nav">
           {tabs.map((t) => {
             const showDivider = t.id === 'admin';

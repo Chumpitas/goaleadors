@@ -21,46 +21,56 @@ export const ZLATNA_ODDS = Object.freeze({ common: 0.6, rare: 0.3, epic: 0.09, l
  *  - `pityEligible` : whether the 50-pack pity guarantee can trigger here (§5.3)
  *  - prices in Lopte / Kovanice (null = not purchasable with that currency)
  */
+const CDN = 'https://d8j0ntlcm91z4.cloudfront.net/user_2zCFsJmlhH6t01iCupOrbjaSRvW';
+
 export const PACKS = Object.freeze({
-  srebrna: {
-    code: 'srebrna',
-    name: 'Srebrna',
+  starter: {
+    code: 'starter',
+    name: 'Starter Pack',
+    cards: 23,
+    image: `${CDN}/hf_20260623_174817_ece8ea76-2457-4d4d-8c48-c56c0c2c64e4.png`,
+    color: '#16a34a',
+    guarantee: { common: 10, rare: 5 },
+    odds: { common: 0.60, rare: 0.30, epic: 0.08, legendary: 0.02 },
+    pityEligible: false,
+    priceLopte: null,
+    priceKovanice: null, // starter se dobija besplatno
+  },
+  standard: {
+    code: 'standard',
+    name: 'Standard Pack',
     cards: 5,
+    image: `${CDN}/hf_20260623_174818_3f61f6e4-c128-4ac4-8719-c53934a5a7b2.png`,
+    color: '#1d4ed8',
     guarantee: { common: 3 },
-    odds: { common: 0.78, rare: 0.19, epic: 0.027, legendary: 0.003 }, // default, not spec-pinned
+    odds: { common: 0.78, rare: 0.19, epic: 0.027, legendary: 0.003 },
     pityEligible: false,
     priceLopte: 50,
     priceKovanice: 2000,
   },
-  zlatna: {
-    code: 'zlatna',
-    name: 'Zlatna',
-    cards: 5,
-    guarantee: { rare: 1 },
-    odds: { ...ZLATNA_ODDS }, // §5.2
-    pityEligible: false,
-    priceLopte: 150,
-    priceKovanice: 6000,
-  },
-  dijamantska: {
-    code: 'dijamantska',
-    name: 'Dijamantska',
-    cards: 8,
-    guarantee: { epic: 1 },
-    odds: { common: 0.45, rare: 0.35, epic: 0.16, legendary: 0.04 }, // default, not spec-pinned
+  premium: {
+    code: 'premium',
+    name: 'Premium Pack',
+    cards: 10,
+    image: `${CDN}/hf_20260623_174820_f3c37d2d-4fc8-4d5c-be10-088f37570f20.png`,
+    color: '#7e22ce',
+    guarantee: { rare: 2, epic: 1 },
+    odds: { common: 0.45, rare: 0.35, epic: 0.16, legendary: 0.04 },
     pityEligible: true,
-    priceLopte: 400,
-    priceKovanice: 18000,
+    priceLopte: 200,
+    priceKovanice: 8000,
   },
   elite: {
     code: 'elite',
-    name: 'Elite',
-    cards: 5,
-    guarantee: { legendary: 1 },
-    odds: { common: 0.3, rare: 0.4, epic: 0.22, legendary: 0.08 }, // default, not spec-pinned
+    name: 'Elite Pack',
+    cards: 20,
+    image: `${CDN}/hf_20260623_174821_66b7aa2c-9e24-4679-b3bc-710116772e51.png`,
+    color: '#92400e',
+    guarantee: { epic: 3, legendary: 1 },
+    odds: { common: 0.3, rare: 0.4, epic: 0.22, legendary: 0.08 },
     pityEligible: true,
-    priceLopte: 1200,
-    priceKovanice: null, // "Nije dostupna" za Kovanice (§5.1)
+    priceLopte: 500,
+    priceKovanice: null,
   },
 });
 
