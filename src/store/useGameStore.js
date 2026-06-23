@@ -2,7 +2,13 @@
 import { create } from 'zustand';
 import { generateEdition, drawCards } from '../game/editionGenerator.js';
 import { openPack, packByCode } from '../game/packs.js';
-import { CURRENCIES, applyTransaction, matchReward } from '../game/currency.js';
+import { CURRENCIES, applyTransaction, matchReward, rollKovanice } from '../game/currency.js';
+import {
+  streakReward,
+  dailyChallengeSet,
+  SEASON_PASS_WEEKS,
+  PREMIUM_PASS_COST_LOPTE,
+} from '../game/progression.js';
 import { grantStarterCards, STARTER_BONUS } from '../game/starterPack.js';
 import { trainCard, TRAINING_COST_KOVANICE } from '../game/training.js';
 import { generateYouth } from '../game/academy.js';
@@ -387,6 +393,69 @@ export const useGameStore = create((set, get) => ({
     const amount = Math.round(base * (1 + pct / 100));
     get()._tx(CURRENCIES.KOVANICE, amount, `mec:${outcome}`);
     return amount;
+  },
+
+  // Dnevni progression loop (§12)
+  streak: 0,
+  dailyChallenges: [],
+  seasonPassPremium: false,
+  passClaimed: { free: [], premium: [] },
+
+  /** Interno: dodijeli nagradu (Kovanice/Lopte/kesica/karta određenog rariteta). */
+  _grantReward(reward = {}) {
+    if (reward.kovanice) get()._tx(CURRENCIES.KOVANICE, reward.kovanice, 'nagrada');
+    if (reward.lopte) get()._tx(CURRENCIES.LOPTE, reward.lopte, 'nagrada');
+    if (reward.pack) {
+      const count = reward.count || 1;
+      for (let i = 0; i < count; i++) get().openAndCollect(reward.pack);
+    }
+    if (reward.cardRarity) get()._grantCardOfRarity(reward.cardRarity);
+  },
+
+  _grantCardOfRarity(rarity) {
+    const candidates = get().pool.filter((c) => c.rarity === rarity);
+    if (!candidates.length) return;
+    const card = candidates[Math.floor(Math.random() * candidates.length)];
+    set((s) => ({ collection: [...s.collection, card] }));
+  },
+
+  /** Dnevni login (§12.1/§12.3): streak +1, login bonus, streak nagrada, novi izazovi. */
+  dailyLogin() {
+    const nextStreak = get().streak + 1;
+    set({ streak: nextStreak, dailyChallenges: dailyChallengeSet() });
+    get()._tx(CURRENCIES.KOVANICE, rollKovanice('dailyLogin'), 'dnevni-login');
+    const sr = streakReward(nextStreak);
+    if (sr) get()._grantReward(sr);
+    return { streak: nextStreak, streakReward: sr };
+  },
+
+  /** Ispuni dnevni izazov i pokupi nagradu (§12.2). */
+  completeChallenge(id) {
+    const ch = get().dailyChallenges.find((c) => c.id === id);
+    if (!ch || ch.done) return { ok: false };
+    get()._grantReward(ch.reward);
+    set((s) => ({ dailyChallenges: s.dailyChallenges.map((c) => (c.id === id ? { ...c, done: true } : c)) }));
+    return { ok: true };
+  },
+
+  /** Kupi premium sezonski pass za Lopte (§12.4/§6.4). */
+  buyPremiumPass() {
+    if (get().seasonPassPremium) return { ok: false, reason: 'već aktivan' };
+    if (get().lopte < PREMIUM_PASS_COST_LOPTE) return { ok: false, reason: 'nedovoljno Loptica' };
+    get()._tx(CURRENCIES.LOPTE, -PREMIUM_PASS_COST_LOPTE, 'sezonski-pass:premium');
+    set({ seasonPassPremium: true });
+    return { ok: true };
+  },
+
+  /** Pokupi nagradu sezonskog passa za sedmicu i track ('free'|'premium'). */
+  claimPassReward(week, track) {
+    if (track === 'premium' && !get().seasonPassPremium) return { ok: false, reason: 'nema premium passa' };
+    if (get().passClaimed[track].includes(week)) return { ok: false, reason: 'već pokupljeno' };
+    const wk = SEASON_PASS_WEEKS.find((w) => w.week === week);
+    if (!wk) return { ok: false, reason: 'nepoznata sedmica' };
+    get()._grantReward(wk[track]);
+    set((s) => ({ passClaimed: { ...s.passClaimed, [track]: [...s.passClaimed[track], week] } }));
+    return { ok: true };
   },
 
   clearOpening() {

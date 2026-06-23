@@ -10,6 +10,7 @@ import ScoutPanel from './components/ScoutPanel.jsx';
 import EditionsPanel from './components/EditionsPanel.jsx';
 import MedicalPanel from './components/MedicalPanel.jsx';
 import SponsorsPanel from './components/SponsorsPanel.jsx';
+import ProgressPanel from './components/ProgressPanel.jsx';
 import { SAMPLE_CARDS } from './game/sampleCards.js';
 
 const TABS = [
@@ -24,6 +25,7 @@ const TABS = [
   { id: 'match', label: 'Meč' },
   { id: 'league', label: 'Liga' },
   { id: 'editions', label: 'Edicije' },
+  { id: 'progress', label: 'Sezona' },
 ];
 
 export default function App() {
@@ -67,6 +69,7 @@ export default function App() {
       {tab === 'match' && <MatchSim />}
       {tab === 'league' && <LeagueTable />}
       {tab === 'editions' && <EditionsPanel />}
+      {tab === 'progress' && <ProgressPanel />}
     </main>
   );
 }

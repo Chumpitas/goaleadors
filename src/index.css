@@ -540,6 +540,60 @@ body {
 .talent__release { background: transparent !important; color: #e8462f !important; border-color: rgba(232,70,47,0.4) !important; }
 .talent__win { font-size: 0.7rem; color: #e0a01e; white-space: nowrap; }
 
+/* --- progression / season pass --- */
+.progress { max-width: 760px; margin: 0 auto; }
+.progress section { margin-bottom: 1.75rem; }
+.progress h3 { font-size: 0.95rem; margin: 0 0 0.6rem; }
+
+.prog__streak {
+  display: flex; justify-content: space-between; align-items: center;
+  padding: 1rem 1.25rem; border-radius: 14px;
+  background: linear-gradient(160deg, #1b2620, #0e1612);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+.prog__big { font-size: 2rem; font-weight: 800; margin: 0.2rem 0; color: #e0a01e; }
+.prog__big span { font-size: 0.9rem; color: #8aa394; font-weight: 400; }
+.prog__hint, .prog__muted { font-size: 0.75rem; color: #8aa394; }
+.prog__btn {
+  background: #2c6e49; color: #fff; border: none;
+  padding: 0.55rem 1.3rem; border-radius: 999px; cursor: pointer; font-size: 0.85rem;
+}
+.prog__btn:disabled { opacity: 0.4; cursor: not-allowed; }
+
+.challenge {
+  display: flex; justify-content: space-between; align-items: center; gap: 0.75rem;
+  padding: 0.6rem 0.9rem; border-radius: 10px; margin-bottom: 0.5rem;
+  background: linear-gradient(160deg, #1b2620, #0e1612);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+.challenge.is-done { opacity: 0.55; }
+.challenge__reward { display: block; font-size: 0.7rem; color: #e0a01e; }
+.challenge button {
+  background: #2c6e49; color: #fff; border: none;
+  padding: 0.4rem 1rem; border-radius: 999px; cursor: pointer; font-size: 0.78rem;
+}
+.challenge button:disabled { opacity: 0.5; cursor: not-allowed; }
+
+.pass__head { display: flex; justify-content: space-between; align-items: center; }
+.pass__active { color: #e0a01e; font-size: 0.85rem; }
+.pass__grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); gap: 0.75rem; margin-top: 0.6rem; }
+.pass__week {
+  padding: 0.75rem; border-radius: 12px;
+  background: linear-gradient(160deg, #1b2620, #0e1612);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+.pass__wk { font-weight: 700; font-size: 0.8rem; margin-bottom: 0.5rem; text-align: center; }
+.pass__row { display: flex; flex-direction: column; gap: 3px; padding: 0.4rem 0; border-top: 1px solid rgba(255,255,255,0.06); }
+.pass__row--prem { color: #e0a01e; }
+.pass__label { font-size: 0.65rem; text-transform: uppercase; letter-spacing: 0.05em; color: #8aa394; }
+.pass__desc { font-size: 0.72rem; }
+.pass__row button {
+  margin-top: 3px; background: rgba(255,255,255,0.06); color: #e8efe9;
+  border: 1px solid rgba(255,255,255,0.15); border-radius: 8px;
+  padding: 0.25rem; font-size: 0.72rem; cursor: pointer;
+}
+.pass__row button:disabled { opacity: 0.5; cursor: not-allowed; }
+
 /* --- editions / legacy --- */
 .editions {
   max-width: 720px;
