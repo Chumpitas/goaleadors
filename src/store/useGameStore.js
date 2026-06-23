@@ -75,6 +75,12 @@ export const useGameStore = create(persist((set, get) => ({
   lastOpening: null, // cards revealed by the most recent pack open
   club: null, // klub identitet iz onboardinga (§9)
 
+  // Postava (§3.8)
+  formation: '4-3-3',
+  lineup: {}, // { slotIndex: collectionIndex }
+  setFormation: (f) => set({ formation: f, lineup: {} }),
+  setLineup: (lineup) => set({ lineup }),
+
   // Valute (§6) + ledger (transactions, §15.2)
   lopte: 0,
   kovanice: 0,

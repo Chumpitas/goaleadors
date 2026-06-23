@@ -1,176 +1,180 @@
 import { useState } from 'react';
 import { useGameStore } from '../store/useGameStore.js';
+import { FORMATIONS } from '../game/tactics.js';
 
-const FORMATIONS_SLOTS = {
-  '4-3-3': [
-    { pos: 'GK', row: 5 },
-    { pos: 'LB', row: 4 }, { pos: 'CB', row: 4 }, { pos: 'CB', row: 4 }, { pos: 'RB', row: 4 },
-    { pos: 'MID', row: 3 }, { pos: 'MID', row: 3 }, { pos: 'MID', row: 3 },
-    { pos: 'LW', row: 2 }, { pos: 'ATT', row: 2 }, { pos: 'RW', row: 2 },
-  ],
-  '4-4-2': [
-    { pos: 'GK', row: 5 },
-    { pos: 'LB', row: 4 }, { pos: 'CB', row: 4 }, { pos: 'CB', row: 4 }, { pos: 'RB', row: 4 },
-    { pos: 'LW', row: 3 }, { pos: 'MID', row: 3 }, { pos: 'MID', row: 3 }, { pos: 'RW', row: 3 },
-    { pos: 'ATT', row: 2 }, { pos: 'ATT', row: 2 },
-  ],
-  '3-5-2': [
-    { pos: 'GK', row: 5 },
-    { pos: 'CB', row: 4 }, { pos: 'CB', row: 4 }, { pos: 'CB', row: 4 },
-    { pos: 'LW', row: 3 }, { pos: 'MID', row: 3 }, { pos: 'MID', row: 3 }, { pos: 'MID', row: 3 }, { pos: 'RW', row: 3 },
-    { pos: 'ATT', row: 2 }, { pos: 'ATT', row: 2 },
-  ],
-  '4-2-3-1': [
-    { pos: 'GK', row: 5 },
-    { pos: 'LB', row: 4 }, { pos: 'CB', row: 4 }, { pos: 'CB', row: 4 }, { pos: 'RB', row: 4 },
-    { pos: 'MID', row: 3 }, { pos: 'MID', row: 3 },
-    { pos: 'LW', row: 2 }, { pos: 'MID', row: 2 }, { pos: 'RW', row: 2 },
-    { pos: 'ATT', row: 1 },
-  ],
-  '5-3-2': [
-    { pos: 'GK', row: 5 },
-    { pos: 'LB', row: 4 }, { pos: 'CB', row: 4 }, { pos: 'CB', row: 4 }, { pos: 'CB', row: 4 }, { pos: 'RB', row: 4 },
-    { pos: 'MID', row: 3 }, { pos: 'MID', row: 3 }, { pos: 'MID', row: 3 },
-    { pos: 'ATT', row: 2 }, { pos: 'ATT', row: 2 },
-  ],
-};
+const FORMATION_LIST = Object.keys(FORMATIONS);
 
-const FORMATION_OPTS = Object.keys(FORMATIONS_SLOTS);
+// Build slot list from formation string e.g. '4-3-3' → [{pos:'GK'}, {pos:'DEF'}×4, ...]
+function buildSlots(formationKey) {
+  const f = FORMATIONS[formationKey];
+  if (!f) return [];
+  const slots = [{ pos: 'GK', label: 'GK' }];
+  for (let i = 0; i < f.def; i++) slots.push({ pos: 'DEF', label: `DEF ${i + 1}` });
+  for (let i = 0; i < f.mid; i++) slots.push({ pos: 'MID', label: `MID ${i + 1}` });
+  for (let i = 0; i < f.att; i++) slots.push({ pos: 'ATT', label: `ATT ${i + 1}` });
+  return slots;
+}
 
-// Loose position matching: any card can go anywhere but highlight if position matches
-function posMatch(cardPos, slotPos) {
-  if (!cardPos) return false;
-  const c = cardPos.toUpperCase();
-  const s = slotPos.toUpperCase();
-  if (c === s) return true;
-  // GK is strict
-  if (s === 'GK') return c === 'GK';
-  if (c === 'GK') return false;
-  return true;
+// Pitch visual — rows by position line
+function PitchView({ slots, lineup, onSlotClick }) {
+  const rows = ['GK', 'DEF', 'MID', 'ATT'];
+  return (
+    <div className="myteam__pitch">
+      <div className="myteam__pitch-inner">
+        {rows.map((pos) => {
+          const posSlots = slots.map((s, i) => ({ ...s, idx: i })).filter((s) => s.pos === pos);
+          return (
+            <div key={pos} className="myteam__row">
+              {posSlots.map((s) => {
+                const card = lineup[s.idx];
+                return (
+                  <button
+                    key={s.idx}
+                    className={`myteam__slot${card ? ' is-filled' : ''}`}
+                    onClick={() => onSlotClick(s.idx, s.pos)}
+                  >
+                    {card ? (
+                      <>
+                        <span className="myteam__slot-ovr">{card.overall}</span>
+                        <span className="myteam__slot-name">{card.name.split(' ').pop()}</span>
+                      </>
+                    ) : (
+                      <span className="myteam__slot-pos">{s.pos}</span>
+                    )}
+                  </button>
+                );
+              })}
+            </div>
+          );
+        })}
+      </div>
+    </div>
+  );
+}
+
+// Card picker modal/drawer
+function CardPicker({ pos, collection, usedIds, onPick, onClose }) {
+  const eligible = collection
+    .map((c, i) => ({ ...c, collIdx: i }))
+    .filter((c) => !usedIds.has(c.collIdx))
+    .sort((a, b) => {
+      // Prefer position match
+      const am = a.position === pos ? 1 : 0;
+      const bm = b.position === pos ? 1 : 0;
+      if (bm !== am) return bm - am;
+      return b.overall - a.overall;
+    });
+
+  return (
+    <div className="myteam__picker-overlay" onClick={onClose}>
+      <div className="myteam__picker" onClick={(e) => e.stopPropagation()}>
+        <div className="myteam__picker-header">
+          <strong>Odaberi {pos}</strong>
+          <button onClick={onClose}>✕</button>
+        </div>
+        {eligible.length === 0 && <p className="myteam__picker-empty">Nema dostupnih karata.</p>}
+        <ul className="myteam__picker-list">
+          {eligible.map((c) => (
+            <li key={c.collIdx} className={`myteam__picker-card${c.position === pos ? ' is-match' : ''}`} onClick={() => onPick(c.collIdx)}>
+              <span className="myteam__picker-ovr">{c.overall}</span>
+              <span className="myteam__picker-name">{c.name}</span>
+              <span className="myteam__picker-pos">{c.position}</span>
+            </li>
+          ))}
+        </ul>
+      </div>
+    </div>
+  );
 }
 
 export default function MyTeamPanel() {
   const collection = useGameStore((s) => s.collection);
-  const lineup = useGameStore((s) => s.lineup);
-  const formation = useGameStore((s) => s.formation);
-  const setLineup = useGameStore((s) => s.setLineup);
+  const formation = useGameStore((s) => s.formation || '4-3-3');
+  const lineup = useGameStore((s) => s.lineup || {});
   const setFormation = useGameStore((s) => s.setFormation);
+  const setLineup = useGameStore((s) => s.setLineup);
 
-  const [pickerSlot, setPickerSlot] = useState(null);
+  const [picker, setPicker] = useState(null); // { slotIdx, pos }
 
-  const slots = FORMATIONS_SLOTS[formation] || FORMATIONS_SLOTS['4-3-3'];
+  const slots = buildSlots(formation);
 
-  // Group slots by row for pitch rendering
-  const rows = {};
-  slots.forEach((slot, idx) => {
-    if (!rows[slot.row]) rows[slot.row] = [];
-    rows[slot.row].push({ ...slot, idx });
+  // Resolve lineup: slotIdx → card object
+  const resolvedLineup = {};
+  Object.entries(lineup).forEach(([slotIdx, collIdx]) => {
+    if (collection[collIdx]) resolvedLineup[slotIdx] = collection[collIdx];
   });
-  const rowKeys = Object.keys(rows).sort((a, b) => Number(b) - Number(a));
 
-  const assignedIndices = new Set(Object.values(lineup).map(Number));
+  const usedCollIdxs = new Set(Object.values(lineup).map(Number));
 
-  function assignCard(slotIdx, collIdx) {
-    const next = { ...lineup };
-    // Remove card from any other slot it might be in
-    for (const [k, v] of Object.entries(next)) {
-      if (Number(v) === collIdx) delete next[k];
-    }
-    if (collIdx === null) {
+  function handleSlotClick(slotIdx, pos) {
+    // If slot filled — clear it
+    if (lineup[slotIdx] !== undefined) {
+      const next = { ...lineup };
       delete next[slotIdx];
+      setLineup(next);
     } else {
-      next[slotIdx] = collIdx;
+      setPicker({ slotIdx, pos });
     }
-    setLineup(next);
-    setPickerSlot(null);
   }
 
-  const bench = collection
-    .map((c, i) => ({ card: c, i }))
-    .filter(({ i }) => !assignedIndices.has(i))
+  function handlePick(collIdx) {
+    setLineup({ ...lineup, [picker.slotIdx]: collIdx });
+    setPicker(null);
+  }
+
+  const filledCount = Object.keys(lineup).length;
+
+  // Bench: cards not in lineup
+  const benchCards = collection
+    .map((c, i) => ({ ...c, collIdx: i }))
+    .filter((c) => !usedCollIdxs.has(c.collIdx))
+    .sort((a, b) => b.overall - a.overall)
     .slice(0, 7);
 
   return (
     <div className="myteam">
-      <div className="myteam__controls">
-        <label>
-          Formacija
-          <select value={formation} onChange={(e) => setFormation(e.target.value)}>
-            {FORMATION_OPTS.map((f) => <option key={f} value={f}>{f}</option>)}
-          </select>
-        </label>
-        <span className="myteam__count">
-          {Object.keys(lineup).length}/11 igrača raspoređeno
-        </span>
+      <div className="myteam__header">
+        <div className="myteam__formation-pick">
+          {FORMATION_LIST.map((f) => (
+            <button
+              key={f}
+              className={`myteam__f-btn${formation === f ? ' is-active' : ''}`}
+              onClick={() => setFormation(f)}
+            >
+              {f}
+            </button>
+          ))}
+        </div>
+        <div className="myteam__status">
+          {filledCount}/11 igrača · <span className={filledCount >= 5 ? 'myteam__ok' : 'myteam__warn'}>{filledCount >= 11 ? '✅ Postava kompletna' : filledCount >= 5 ? '⚡ Koristi se u meču' : '⚠️ Klikni slot za dodavanje'}</span>
+        </div>
       </div>
 
-      {/* Pitch */}
-      <div className="myteam__pitch">
-        {rowKeys.map((row) => (
-          <div key={row} className="myteam__row">
-            {rows[row].map(({ pos, idx }) => {
-              const collIdx = lineup[idx] ?? null;
-              const card = collIdx !== null ? collection[collIdx] : null;
-              const isOpen = pickerSlot === idx;
+      <PitchView slots={slots} lineup={resolvedLineup} onSlotClick={handleSlotClick} />
 
-              return (
-                <div key={idx} className="myteam__slot" onClick={() => setPickerSlot(isOpen ? null : idx)}>
-                  <div className="myteam__slot-pos">{pos}</div>
-                  {card ? (
-                    <>
-                      <div className="myteam__slot-name">{card.name.split(' ').pop()}</div>
-                      <div className="myteam__slot-ovr">{card.overall}</div>
-                      <button className="myteam__slot-remove" onClick={(e) => { e.stopPropagation(); assignCard(idx, null); }}>✕</button>
-                    </>
-                  ) : (
-                    <div className="myteam__slot-empty">+</div>
-                  )}
-
-                  {isOpen && (
-                    <div className="myteam__picker" onClick={(e) => e.stopPropagation()}>
-                      {collection.length === 0 && <div className="myteam__picker-empty">Nema karata</div>}
-                      {collection
-                        .map((c, i) => ({ c, i }))
-                        .sort((a, b) => {
-                          const am = posMatch(a.c.position, pos) ? 1 : 0;
-                          const bm = posMatch(b.c.position, pos) ? 1 : 0;
-                          if (bm !== am) return bm - am;
-                          return b.c.overall - a.c.overall;
-                        })
-                        .map(({ c, i }) => (
-                          <div
-                            key={i}
-                            className={`myteam__picker-item${assignedIndices.has(i) && lineup[idx] !== i ? ' is-used' : ''}${posMatch(c.position, pos) ? ' is-match' : ''}`}
-                            onClick={() => assignCard(idx, i)}
-                          >
-                            <span className="myteam__picker-pos">{c.position}</span>
-                            <span className="myteam__picker-name">{c.name}</span>
-                            <span className="myteam__picker-ovr">{c.overall}</span>
-                          </div>
-                        ))}
-                    </div>
-                  )}
-                </div>
-              );
-            })}
-          </div>
-        ))}
-      </div>
-
-      {/* Bench */}
-      {bench.length > 0 && (
+      {benchCards.length > 0 && (
         <div className="myteam__bench">
-          <h3>Klupa</h3>
+          <h4>Klupa</h4>
           <div className="myteam__bench-list">
-            {bench.map(({ card, i }) => (
-              <div key={i} className="myteam__bench-card">
-                <span className="myteam__bench-pos">{card.position}</span>
-                <span className="myteam__bench-name">{card.name}</span>
-                <span className="myteam__bench-ovr">{card.overall}</span>
+            {benchCards.map((c) => (
+              <div key={c.collIdx} className="myteam__bench-card">
+                <span className="myteam__bench-ovr">{c.overall}</span>
+                <span className="myteam__bench-name">{c.name}</span>
+                <span className="myteam__bench-pos">{c.position}</span>
               </div>
             ))}
           </div>
         </div>
+      )}
+
+      {picker && (
+        <CardPicker
+          pos={picker.pos}
+          collection={collection}
+          usedIds={usedCollIdxs}
+          onPick={handlePick}
+          onClose={() => setPicker(null)}
+        />
       )}
     </div>
   );

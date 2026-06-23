@@ -9,6 +9,7 @@ import PackOpening from './components/PackOpening.jsx';
 import MatchSim from './components/MatchSim.jsx';
 import LeagueTable from './components/LeagueTable.jsx';
 import ClubPanel from './components/ClubPanel.jsx';
+import MyTeamPanel from './components/MyTeamPanel.jsx';
 import TrainingPanel from './components/TrainingPanel.jsx';
 import AcademyPanel from './components/AcademyPanel.jsx';
 import ScoutPanel from './components/ScoutPanel.jsx';
@@ -25,7 +26,6 @@ import PremiumPanel from './components/PremiumPanel.jsx';
 import WorldCupPanel from './components/WorldCupPanel.jsx';
 import ShopPanel from './components/ShopPanel.jsx';
 import MatchCanvas from './components/MatchCanvas.jsx';
-import MyTeamPanel from './components/MyTeamPanel.jsx';
 import { SAMPLE_CARDS } from './game/sampleCards.js';
 
 // Svi dostupni tabovi — vidljivost se kontroliše kroz visibleTabs()
@@ -69,7 +69,7 @@ function visibleTabs(devMode = false, { currentLeagueLevel = 1, totalSeasons = 0
 }
 
 // Mobile bottom nav — 5 najvažnijih
-const BOTTOM_IDS = ['club', 'packs', 'match', 'league', 'shop'];
+const BOTTOM_IDS = ['club', 'myteam', 'match', 'league', 'shop'];
 
 export default function App() {
   const user = useGameStore((s) => s.user);

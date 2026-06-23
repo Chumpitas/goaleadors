@@ -43,10 +43,10 @@ export default function MatchSim() {
   const rewardMatch = useGameStore((s) => s.rewardMatch);
   const signedTalents = useGameStore((s) => s.talents.filter((t) => t.status === 'signed'));
   const collection = useGameStore((s) => s.collection);
-  const storedLineup = useGameStore((s) => s.lineup);
-  const storedFormation = useGameStore((s) => s.formation);
+  const savedLineup = useGameStore((s) => s.lineup || {});
+  const savedFormation = useGameStore((s) => s.formation || '4-3-3');
 
-  const [home, setHome] = useState({ formation: storedFormation || '4-3-3', style: 'High Press', mentality: 'Attacking' });
+  const [home, setHome] = useState({ formation: savedFormation, style: 'High Press', mentality: 'Attacking' });
   const [away, setAway] = useState({ formation: '5-4-1', style: 'Defensive', mentality: 'Defensive' });
   const [includeTalents, setIncludeTalents] = useState(true);
   const [result, setResult] = useState(null);
@@ -54,20 +54,17 @@ export default function MatchSim() {
 
   const talentCards = useMemo(() => signedTalents.map(talentToCard), [signedTalents]);
 
-  // Check if user has a custom lineup from MyTeam (at least 5 cards assigned)
-  const myTeamCards = useMemo(() => {
-    const assigned = Object.values(storedLineup || {}).map(Number);
-    if (assigned.length < 5) return null;
-    return assigned.map((i) => collection[i]).filter(Boolean);
-  }, [storedLineup, collection]);
+  // Provjeri ima li postavljena postava (min 5 igrača)
+  const myLineupCards = useMemo(() => {
+    const cards = Object.values(savedLineup).map((idx) => collection[idx]).filter(Boolean);
+    return cards.length >= 5 ? cards : null;
+  }, [savedLineup, collection]);
 
-  const usingMyTeam = myTeamCards !== null;
-
-  // Postave (najbolji OVERALL po liniji) — talenti imaju prioritet u domaćem timu.
+  // Postave — koristi "Moj tim" ako je postavljen, inače automatski
   const homeLineup = useMemo(() => {
-    if (usingMyTeam) return myTeamCards;
+    if (myLineupCards) return myLineupCards;
     return buildLineup(pool, home.formation, { extra: includeTalents ? talentCards : [] });
-  }, [usingMyTeam, myTeamCards, pool, home.formation, includeTalents, talentCards]);
+  }, [myLineupCards, pool, home.formation, includeTalents, talentCards]);
 
   const awayLineup = useMemo(() => buildLineup(pool, away.formation), [pool, away.formation]);
 
@@ -83,19 +80,22 @@ export default function MatchSim() {
 
   return (
     <div className="match">
-      {/* My Team notice */}
-      <div className={`match__lineup-notice ${usingMyTeam ? 'match__lineup-notice--active' : ''}`}>
-        {usingMyTeam
-          ? `✅ Koristiš svoju postavu (${myTeamCards.length} igrača) · ${storedFormation}`
-          : '⚠️ Nema postave — koristi nasumične karte'}
-      </div>
+      {myLineupCards ? (
+        <div className="match__lineup-notice match__lineup-notice--active">
+          ✅ Koristiš svoju postavu ({myLineupCards.length} igrača) · {savedFormation}
+        </div>
+      ) : (
+        <div className="match__lineup-notice">
+          ⚠️ Nema postave — koristi nasumične karte
+        </div>
+      )}
 
       <div className="match__tactics">
         <TacticsPicker label="Domaći" value={home} onChange={setHome} />
         <TacticsPicker label="Gosti" value={away} onChange={setAway} />
       </div>
 
-      {!usingMyTeam && signedTalents.length > 0 && (
+      {signedTalents.length > 0 && !myLineupCards && (
         <label className="match__talents">
           <input type="checkbox" checked={includeTalents} onChange={(e) => setIncludeTalents(e.target.checked)} />
           Uvrsti moje talente ({homeLineup.filter((c) => c.isTalent).length} u postavi)
