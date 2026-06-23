@@ -21,6 +21,8 @@ import ReferralPanel from './components/ReferralPanel.jsx';
 import AffiliatePanel from './components/AffiliatePanel.jsx';
 import PremiumPanel from './components/PremiumPanel.jsx';
 import WorldCupPanel from './components/WorldCupPanel.jsx';
+import ShopPanel from './components/ShopPanel.jsx';
+import MatchCanvas from './components/MatchCanvas.jsx';
 import { SAMPLE_CARDS } from './game/sampleCards.js';
 
 const TABS = [
@@ -34,6 +36,7 @@ const TABS = [
   { id: 'medical', label: 'Medicinski' },
   { id: 'sponsors', label: 'Sponzori' },
   { id: 'match', label: 'Meč' },
+  { id: 'livematch', label: 'Live Meč' },
   { id: 'league', label: 'Liga' },
   { id: 'proleague', label: 'Profi liga' },
   { id: 'worldcup', label: 'World Cup' },
@@ -42,6 +45,7 @@ const TABS = [
   { id: 'social', label: 'Društvo' },
   { id: 'referral', label: 'Referral' },
   { id: 'affiliate', label: 'Affiliate' },
+  { id: 'shop', label: '⚽ Kupi Lopte' },
   { id: 'premium', label: 'Premium' },
   { id: 'account', label: 'Nalog' },
   { id: 'admin', label: 'Admin' },
@@ -105,6 +109,7 @@ export default function App() {
       {tab === 'medical' && <MedicalPanel />}
       {tab === 'sponsors' && <SponsorsPanel />}
       {tab === 'match' && <MatchSim />}
+      {tab === 'livematch' && <MatchCanvas />}
       {tab === 'league' && <LeagueTable />}
       {tab === 'proleague' && <ProLeaguePanel />}
       {tab === 'worldcup' && <WorldCupPanel />}
@@ -113,6 +118,7 @@ export default function App() {
       {tab === 'social' && <SocialPanel />}
       {tab === 'referral' && <ReferralPanel />}
       {tab === 'affiliate' && <AffiliatePanel />}
+      {tab === 'shop' && <ShopPanel />}
       {tab === 'premium' && <PremiumPanel />}
       {tab === 'account' && <AccountPanel />}
       {tab === 'admin' && <AdminPanel />}
