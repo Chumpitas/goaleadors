@@ -36,6 +36,7 @@ import {
 } from '../game/referral.js';
 import { AFFILIATE_ACTIONS, bookmakerById, estimatedRevenueEUR } from '../game/affiliate.js';
 import { rollFriendlyReward, FRIENDLY_TYPES } from '../game/friendlies.js';
+import { PREMIUM_PRICES, stadiumById } from '../game/cosmeticsPremium.js';
 import { buildProLeague, runProSeason, simulateKnockout } from '../game/proLeague.js';
 import { generateAIClubs } from '../game/amateurSeason.js';
 import { mulberry32 } from '../game/rng.js';
@@ -451,6 +452,33 @@ export const useGameStore = create((set, get) => ({
       affiliateActivations: s.affiliateActivations.map((a) => (a.bookmakerId === bookmakerId ? { ...a, deposited: true } : a)),
       affiliateDevRevenueEUR: s.affiliateDevRevenueEUR + estimatedRevenueEUR('firstDeposit'),
     }));
+    return { ok: true };
+  },
+
+  // Premium kosmetika (§9.4)
+  ownedCosmetics: { stadiumId: null, crestId: null, kitId: null },
+
+  /** Kupi legendarni stadion (1-of-1 po državi, §9.4). */
+  buyLegendaryStadium(id) {
+    const st = stadiumById(id);
+    if (!st) return { ok: false, reason: 'nepoznat stadion' };
+    if (st.country !== get().club?.country) return { ok: false, reason: 'nije u tvojoj državi' };
+    if (st.preTaken) return { ok: false, reason: 'ZAUZETO u tvojoj državi' };
+    if (get().lopte < PREMIUM_PRICES.stadium) return { ok: false, reason: 'nedovoljno Loptica' };
+    get()._tx(CURRENCIES.LOPTE, -PREMIUM_PRICES.stadium, 'kosmetika:stadion');
+    set((s) => ({
+      ownedCosmetics: { ...s.ownedCosmetics, stadiumId: id },
+      club: s.club ? { ...s.club, stadiumName: st.name, stadiumCap: 50000 } : s.club, // elitni (§9.5)
+    }));
+    return { ok: true };
+  },
+
+  /** Kupi premium kosmetiku (grb ili dres) za Lopte (§9.4/§6.4). */
+  buyPremiumCosmetic(kind, id) {
+    const price = kind === 'crest' ? PREMIUM_PRICES.crest : PREMIUM_PRICES.kit;
+    if (get().lopte < price) return { ok: false, reason: 'nedovoljno Loptica' };
+    get()._tx(CURRENCIES.LOPTE, -price, `kosmetika:${kind}`);
+    set((s) => ({ ownedCosmetics: { ...s.ownedCosmetics, [kind === 'crest' ? 'crestId' : 'kitId']: id } }));
     return { ok: true };
   },
 

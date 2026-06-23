@@ -649,6 +649,31 @@ body {
 .hof__title { font-size: 0.82rem; color: #e0a01e; }
 .hof__holder { font-size: 0.82rem; font-weight: 700; }
 
+/* --- premium kosmetika --- */
+.premium { max-width: 760px; margin: 0 auto; }
+.premium section { margin-bottom: 1.75rem; }
+.premium h3 { font-size: 0.92rem; margin: 0 0 0.6rem; }
+.premium__bar { text-align: center; color: #8aa394; font-size: 0.85rem; margin-bottom: 1rem; }
+.prem__grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 0.75rem; }
+.prem__card {
+  display: flex; flex-direction: column; align-items: center; gap: 0.5rem;
+  padding: 0.9rem 0.6rem; border-radius: 12px;
+  background: linear-gradient(160deg, #1b2620, #0e1612); border: 1px solid rgba(255,255,255,0.1);
+  text-align: center;
+}
+.prem__card.is-taken { opacity: 0.55; }
+.prem__card.is-mine { border-color: #e0a01e; }
+.prem__name { font-size: 0.82rem; font-weight: 600; }
+.prem__art { font-size: 2rem; }
+.prem__kit { width: 48px; height: 56px; border-radius: 8px; border: 1px solid rgba(255,255,255,0.2); }
+.prem__taken { font-size: 0.75rem; font-weight: 800; color: #e8462f; letter-spacing: 0.05em; }
+.prem__owned { font-size: 0.72rem; color: #2c8c5e; }
+.prem__card button {
+  background: #2c6e49; color: #fff; border: none;
+  padding: 0.4rem 0.9rem; border-radius: 999px; cursor: pointer; font-size: 0.76rem;
+}
+.prem__card button:disabled { opacity: 0.4; cursor: not-allowed; }
+
 /* --- pro league + euro --- */
 .proleague { max-width: 680px; margin: 0 auto; }
 .proleague__head { display: flex; justify-content: space-between; align-items: center; gap: 1rem; margin-bottom: 1rem; flex-wrap: wrap; }

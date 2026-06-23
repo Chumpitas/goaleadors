@@ -47,6 +47,7 @@ React + Vite · Framer Motion · Zustand · HTML5 Canvas (match viz, kasnije) ·
 | `src/game/referral.js`      | Referral: kod, nagrade, tier, 2-nivo chain (§17)              |
 | `src/game/affiliate.js`     | Affiliate B2B: kladionice, CPA, geo + 18+ zaštita (§11)        |
 | `src/game/friendlies.js` / `hallOfFame.js` | Prijateljski mečevi + Hall of Fame (§14.3–14.4) |
+| `src/game/cosmeticsPremium.js` | Premium kosmetika: legendarni stadioni 1-of-1, grbovi, dresovi (§9.4) |
 | `src/game/rng.js`           | Seedable PRNG (deterministički draws)                          |
 | `src/game/*.test.js`        | Vitest: OVERALL, karte, packs + pity, pool, match engine       |
 | `src/store/useGameStore.js` | Zustand store (kolekcija, pity, openAndCollect)                |
@@ -96,7 +97,10 @@ nisu postavljene).
 - [x] **Referral program** — kod, nagrade obje strane, tier, 2-nivo chain (§17)
 - [x] **Affiliate B2B** — kladionice, CPA/rev-share, 18+ verifikacija, geo-restrikcija (§11)
 - [x] **Friendly mečevi + Hall of Fame** — egzibicije + sezonska priznanja (§14.3–14.4)
-- [ ] Premium kosmetika 1-of-1 (§9.4)
+- [x] **Premium kosmetika 1-of-1** — legendarni stadioni, historijski grbovi, special dresovi (§9.4)
+
+> ✅ **Cijeli GDD je pokriven** — svi sistemi iz spec-a (§2–§17) implementirani kao logika
+> + UI + Vitest pokrivenost (177 testova). Vidi `docs/GOALEADORS_SPEC.md` za referencu.
 
 ## Izdvajanje u vlastiti repo
 
