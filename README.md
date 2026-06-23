@@ -33,6 +33,7 @@ React + Vite · Framer Motion · Zustand · HTML5 Canvas (match viz, kasnije) ·
 | `src/game/starterPack.js`   | Starter kompozicija + benefiti (§7)                            |
 | `src/game/training.js`      | Trening centar: aktivni/pasivni boost, max +10 (§10.4)         |
 | `src/game/academy.js`       | Akademija: omladinske karte, domaći bias, OVR po nivou (§10.3) |
+| `src/game/scouting.js`      | Scout mreže: misije, trajanje, slotovi, ubrzanje, resolve (§10.5) |
 | `src/game/rng.js`           | Seedable PRNG (deterministički draws)                          |
 | `src/game/*.test.js`        | Vitest: OVERALL, karte, packs + pity, pool, match engine       |
 | `src/store/useGameStore.js` | Zustand store (kolekcija, pity, openAndCollect)                |
@@ -69,6 +70,7 @@ nisu postavljene).
 - [x] **Valute + starter pack** — Lopte/Kovanice, kupovina kesica, nagrade, starter (§6, §7)
 - [x] **Trening centar** — aktivni trening stata, max +10, ponovni OVERALL (§10.4)
 - [x] **Akademija** — omladinske karte, domaći bias, kvalitet po nivou (§10.3)
+- [x] **Scout mreža** — ciljane misije, trajanje po raritetu, ubrzanje, nivoi (§10.5)
 - [ ] Edicije + penzija / Legacy (§4)
 - [ ] Trade tržište (§5.4)
 

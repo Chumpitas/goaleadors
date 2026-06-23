@@ -6,6 +6,7 @@ import { CURRENCIES, applyTransaction, matchReward } from '../game/currency.js';
 import { grantStarterCards, STARTER_BONUS } from '../game/starterPack.js';
 import { trainCard, TRAINING_COST_KOVANICE } from '../game/training.js';
 import { generateYouth } from '../game/academy.js';
+import { startMission, isComplete, resolveMission, speedUpCost, scoutSlots } from '../game/scouting.js';
 
 const EDITION = 'foundations';
 
@@ -108,6 +109,63 @@ export const useGameStore = create((set, get) => ({
       return { collection };
     });
     return { ok: true, applied: res.applied, capped: res.capped };
+  },
+
+  // Scout mreža (§10.5)
+  scoutLevel: 3,
+  scoutMissions: [],
+
+  /** Pokreni scout misiju ako ima slobodnog skauta. */
+  startScout(params) {
+    const { scoutLevel, scoutMissions } = get();
+    if (scoutMissions.length >= scoutSlots(scoutLevel)) {
+      return { ok: false, reason: 'svi skauti zauzeti' };
+    }
+    let mission;
+    try {
+      mission = startMission(params, { level: scoutLevel });
+    } catch (e) {
+      return { ok: false, reason: e.message };
+    }
+    set((s) => ({ scoutMissions: [...s.scoutMissions, mission] }));
+    return { ok: true, mission };
+  },
+
+  /** Ubrzaj misiju Lopticama (§6.4). */
+  speedUpScout(id) {
+    const mission = get().scoutMissions.find((m) => m.id === id);
+    if (!mission) return { ok: false, reason: 'nema misije' };
+    const cost = speedUpCost(mission);
+    if (get().lopte < cost) return { ok: false, reason: 'nedovoljno Loptica' };
+    get()._tx(CURRENCIES.LOPTE, -cost, 'scout:ubrzanje');
+    set((s) => ({
+      scoutMissions: s.scoutMissions.map((m) => (m.id === id ? { ...m, finishesAt: Date.now() } : m)),
+    }));
+    return { ok: true };
+  },
+
+  /** Preuzmi kartu sa završene misije. */
+  collectScout(id) {
+    const mission = get().scoutMissions.find((m) => m.id === id);
+    if (!mission) return { ok: false, reason: 'nema misije' };
+    if (!isComplete(mission)) return { ok: false, reason: 'misija u toku' };
+    const card = resolveMission(mission, get().pool);
+    set((s) => ({
+      collection: card ? [...s.collection, card] : s.collection,
+      scoutMissions: s.scoutMissions.filter((m) => m.id !== id),
+    }));
+    return { ok: true, card };
+  },
+
+  /** DEMO: preskoči vrijeme misije (bez troška) radi isprobavanja. */
+  skipScoutTime(id) {
+    set((s) => ({
+      scoutMissions: s.scoutMissions.map((m) => (m.id === id ? { ...m, finishesAt: Date.now() } : m)),
+    }));
+  },
+
+  cancelScout(id) {
+    set((s) => ({ scoutMissions: s.scoutMissions.filter((m) => m.id !== id) }));
   },
 
   /** Generiši omladince iz akademije (§10.3) — besplatno, dodaje u kolekciju. */

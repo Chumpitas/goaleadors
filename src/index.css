@@ -357,6 +357,128 @@ body {
   margin-top: 1.5rem;
 }
 
+/* --- scout --- */
+.scout {
+  max-width: 720px;
+  margin: 0 auto;
+}
+
+.scout__intro {
+  text-align: center;
+  color: #8aa394;
+  font-size: 0.85rem;
+}
+
+.scout__form {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+  align-items: flex-end;
+  justify-content: center;
+  margin-bottom: 1rem;
+}
+
+.scout__form label {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+  font-size: 0.72rem;
+  color: #8aa394;
+}
+
+.scout__form select,
+.scout__form input {
+  background: #0e1612;
+  color: #e8efe9;
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  border-radius: 8px;
+  padding: 0.4rem 0.5rem;
+  font-size: 0.85rem;
+}
+
+.scout__form input { width: 70px; }
+
+.scout__start,
+.scout__collect {
+  background: #2c6e49;
+  color: #fff;
+  border: none;
+  padding: 0.5rem 1.1rem;
+  border-radius: 999px;
+  cursor: pointer;
+  font-size: 0.85rem;
+}
+
+.scout__msg {
+  text-align: center;
+  color: #e8462f;
+  font-size: 0.85rem;
+}
+
+.scout__missions {
+  display: flex;
+  flex-direction: column;
+  gap: 0.6rem;
+  margin-top: 1rem;
+}
+
+.scout__mission {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 1rem;
+  padding: 0.75rem 1rem;
+  border-radius: 12px;
+  background: linear-gradient(160deg, #1b2620, #0e1612);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+}
+
+.scout__mission.is-ready {
+  border-color: #2c6e49;
+}
+
+.scout__mInfo {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  font-size: 0.8rem;
+  color: #b9c9bd;
+}
+
+.scout__mActions {
+  display: flex;
+  gap: 0.4rem;
+  align-items: center;
+}
+
+.scout__mActions button {
+  background: rgba(255, 255, 255, 0.06);
+  color: #e8efe9;
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  border-radius: 8px;
+  padding: 0.4rem 0.7rem;
+  font-size: 0.78rem;
+  cursor: pointer;
+}
+
+.scout__mActions button:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+.scout__cancel {
+  color: #e8462f !important;
+}
+
+.scout__found {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.5rem;
+  margin-top: 1.5rem;
+  color: #e0a01e;
+}
+
 /* --- reveal overlay --- */
 .reveal {
   position: fixed;
