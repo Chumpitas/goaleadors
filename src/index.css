@@ -2294,3 +2294,331 @@ input:focus, select:focus, textarea:focus {
     width: 90vw !important;
   }
 }
+
+/* =========================================================
+   DASHBOARD
+   ========================================================= */
+.dash {
+  width: 100%;
+  max-width: 520px;
+  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.dash__greeting {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 12px;
+}
+.dash__club-name {
+  font-family: 'Archivo', system-ui, sans-serif;
+  font-size: 24px;
+  font-weight: 900;
+  margin: 0 0 4px;
+}
+.dash__sub {
+  font-size: 13px;
+  color: var(--text-muted);
+  margin: 0;
+}
+.dash__streak {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  background: var(--bg-card);
+  border: 1px solid var(--border-bright);
+  border-radius: var(--radius-lg);
+  padding: 10px 16px;
+  min-width: 60px;
+}
+.dash__streak-num {
+  font-family: 'Archivo', system-ui, sans-serif;
+  font-size: 22px;
+  font-weight: 900;
+  color: var(--gold);
+  line-height: 1;
+}
+.dash__streak-label { font-size: 11px; color: var(--text-muted); margin-top: 2px; }
+
+.dash__balances {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 10px;
+}
+.dash__bal {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  background: var(--bg-card);
+  border: 1px solid var(--border-bright);
+  border-radius: var(--radius-lg);
+  padding: 14px 12px;
+}
+.dash__bal-icon { font-size: 20px; }
+.dash__bal-val {
+  font-family: 'Archivo', system-ui, sans-serif;
+  font-size: 16px;
+  font-weight: 800;
+  display: block;
+  line-height: 1.1;
+}
+.dash__bal-label { font-size: 10px; color: var(--text-muted); display: block; }
+.dash__bal--ball { border-color: rgba(34,197,94,.3); }
+.dash__bal--coin { border-color: rgba(246,198,26,.3); }
+.dash__bal--cards { border-color: rgba(139,63,209,.3); }
+
+.dash__section-title {
+  font-family: 'Archivo', system-ui, sans-serif;
+  font-size: 13px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: .08em;
+  color: var(--text-muted);
+  margin: 0 0 10px;
+}
+
+.dash__actions {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 10px;
+}
+.dash__action {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  background: var(--bg-card);
+  border: 1px solid var(--border-bright);
+  border-radius: var(--radius-lg);
+  padding: 16px 14px;
+  color: var(--text);
+  transition: border-color .15s, transform .1s;
+  text-align: left;
+}
+.dash__action:hover {
+  border-color: var(--action-color, var(--gold));
+  transform: translateY(-1px);
+}
+.dash__action-icon {
+  font-size: 24px;
+  width: 44px; height: 44px;
+  border-radius: var(--radius-md);
+  display: flex; align-items: center; justify-content: center;
+  background: color-mix(in srgb, var(--action-color, var(--gold)) 15%, transparent);
+  flex-shrink: 0;
+}
+.dash__action-label { font-size: 14px; font-weight: 700; }
+
+.dash__status-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 10px;
+}
+.dash__status-card {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  background: var(--bg-card);
+  border: 1px solid var(--border-bright);
+  border-radius: var(--radius-lg);
+  padding: 14px 8px;
+  cursor: pointer;
+  transition: border-color .15s;
+  border: none;
+  color: var(--text);
+}
+.dash__status-card:hover { background: var(--bg-surface); }
+.dash__status-icon { font-size: 18px; }
+.dash__status-val {
+  font-family: 'Archivo', system-ui, sans-serif;
+  font-size: 20px;
+  font-weight: 900;
+  color: var(--gold);
+  line-height: 1;
+}
+.dash__status-label { font-size: 10px; color: var(--text-muted); text-align: center; }
+
+.dash__tip {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  background: var(--gold-dim);
+  border: 1px solid rgba(246,198,26,.25);
+  border-radius: var(--radius-lg);
+  padding: 14px;
+  font-size: 13px;
+  color: var(--text-dim);
+}
+.dash__tip-icon { font-size: 18px; flex-shrink: 0; }
+
+/* =========================================================
+   CLUB MAP — Izometrijska mapa
+   ========================================================= */
+.clubmap {
+  width: 100%;
+  max-width: 520px;
+  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.clubmap__header { text-align: center; }
+.clubmap__title {
+  font-family: 'Archivo', system-ui, sans-serif;
+  font-size: 22px;
+  font-weight: 900;
+  margin: 0 0 4px;
+}
+.clubmap__sub { font-size: 13px; color: var(--text-muted); margin: 0; }
+
+.clubmap__iso {
+  background: linear-gradient(160deg, #0a2535 0%, #061620 100%);
+  border: 1px solid var(--border-bright);
+  border-radius: var(--radius-2xl);
+  padding: 20px 16px;
+  position: relative;
+  overflow: hidden;
+}
+.clubmap__iso::before {
+  content: '';
+  position: absolute; inset: 0;
+  background-image: 
+    linear-gradient(rgba(255,255,255,.025) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255,255,255,.025) 1px, transparent 1px);
+  background-size: 40px 40px;
+  pointer-events: none;
+}
+
+.clubmap__grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  grid-template-rows: repeat(3, auto);
+  gap: 10px;
+  position: relative; z-index: 1;
+}
+
+.clubmap__tile {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  padding: 16px 8px;
+  background: rgba(255,255,255,.05);
+  border: 1.5px solid rgba(255,255,255,.1);
+  border-radius: var(--radius-lg);
+  color: var(--text);
+  transition: background .15s, border-color .15s, transform .12s;
+  min-height: 90px;
+  cursor: pointer;
+}
+.clubmap__tile:hover:not(.clubmap__tile--locked) {
+  background: rgba(255,255,255,.1);
+  border-color: rgba(246,198,26,.5);
+  transform: translateY(-2px);
+}
+.clubmap__tile--stadium {
+  background: linear-gradient(145deg, rgba(246,198,26,.12), rgba(246,198,26,.04));
+  border-color: rgba(246,198,26,.4);
+  min-height: 120px;
+}
+.clubmap__tile--selected {
+  border-color: var(--gold) !important;
+  background: rgba(246,198,26,.12) !important;
+}
+.clubmap__tile--locked {
+  opacity: .45;
+  cursor: default;
+}
+.clubmap__tile--locked:hover { transform: none; }
+
+.clubmap__tile-icon { font-size: 28px; line-height: 1; }
+.clubmap__tile--stadium .clubmap__tile-icon { font-size: 40px; }
+.clubmap__tile-label {
+  font-size: 10px;
+  font-weight: 700;
+  text-align: center;
+  color: var(--text-dim);
+  line-height: 1.2;
+}
+.clubmap__tile--stadium .clubmap__tile-label {
+  font-size: 11px;
+  color: var(--gold);
+}
+
+/* Drawer */
+.clubmap__drawer {
+  background: var(--bg-card);
+  border: 1px solid var(--border-bright);
+  border-radius: var(--radius-xl);
+  overflow: hidden;
+  animation: slideUp .2s ease;
+}
+@keyframes slideUp {
+  from { opacity: 0; transform: translateY(8px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+.clubmap__drawer-inner {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 16px;
+}
+.clubmap__drawer-icon { font-size: 32px; flex-shrink: 0; }
+.clubmap__drawer-info {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+.clubmap__drawer-info strong { font-size: 15px; font-weight: 700; }
+.clubmap__drawer-info span { font-size: 12px; color: var(--text-muted); }
+.clubmap__drawer-actions { display: flex; gap: 8px; align-items: center; }
+.clubmap__btn-go {
+  background: var(--gold);
+  color: #0a2230;
+  border: none;
+  border-radius: var(--radius-full);
+  padding: 9px 18px;
+  font-size: 14px;
+  font-weight: 800;
+  white-space: nowrap;
+}
+.clubmap__btn-close {
+  background: rgba(255,255,255,.07);
+  border: 1px solid var(--border-bright);
+  color: var(--text-muted);
+  border-radius: var(--radius-full);
+  width: 34px; height: 34px;
+  font-size: 14px;
+  display: flex; align-items: center; justify-content: center;
+}
+
+/* Bottom nav centralno dugme (Moj klub) */
+.bottomnav__item--center {
+  position: relative;
+  top: -18px;
+  flex-shrink: 0;
+}
+.bottomnav__item--center .bottomnav__icon {
+  background: var(--gold) !important;
+  color: #0a2230 !important;
+  width: 58px !important;
+  height: 58px !important;
+  border-radius: 50% !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  font-size: 26px !important;
+  box-shadow: 0 4px 20px rgba(246,198,26,.5);
+  border: 3px solid var(--bg-card);
+  margin-bottom: 0 !important;
+}
+.bottomnav__item--center.is-active .bottomnav__icon {
+  background: var(--gold) !important;
+  box-shadow: 0 4px 28px rgba(246,198,26,.7);
+}

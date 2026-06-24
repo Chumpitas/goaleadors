@@ -10,6 +10,8 @@ import PackOpening from './components/PackOpening.jsx';
 import MatchSim from './components/MatchSim.jsx';
 import LeagueTable from './components/LeagueTable.jsx';
 import ClubPanel from './components/ClubPanel.jsx';
+import ClubMap from './components/ClubMap.jsx';
+import DashboardPanel from './components/DashboardPanel.jsx';
 import MyTeamPanel from './components/MyTeamPanel.jsx';
 import TrainingPanel from './components/TrainingPanel.jsx';
 import AcademyPanel from './components/AcademyPanel.jsx';
@@ -31,6 +33,7 @@ import { SAMPLE_CARDS } from './game/sampleCards.js';
 
 // Svi dostupni tabovi — vidljivost se kontroliše kroz visibleTabs()
 const ALL_TABS = [
+  { id: 'dashboard', label: 'Dashboard',   icon: '📊' },
   { id: 'club',      label: 'Moj klub',    icon: '🏠' },
   { id: 'myteam',   label: 'Moj tim',     icon: '👥' },
   { id: 'cards',    label: 'Karte',       icon: '🃏' },
@@ -69,8 +72,8 @@ function visibleTabs(devMode = false, { currentLeagueLevel = 1, totalSeasons = 0
   });
 }
 
-// Mobile bottom nav — 5 najvažnijih
-const BOTTOM_IDS = ['club', 'myteam', 'match', 'league', 'shop'];
+// Mobile bottom nav — dashboard lijevo, klub centar, match/liga/kesice
+const BOTTOM_IDS = ['dashboard', 'myteam', 'club', 'match', 'league'];
 
 export default function App() {
   const user = useGameStore((s) => s.user);
@@ -84,7 +87,7 @@ export default function App() {
 
   const collection = useGameStore((s) => s.collection);
   const starterClaimed = useGameStore((s) => s.starterClaimed);
-  const [tab, setTab] = useState('club');
+  const [tab, setTab] = useState('dashboard');
   const [authReady, setAuthReady] = useState(false);
   const [starterDone, setStarterDone] = useState(false);
   // Dev mode — drži skriveno, aktivira se s ?dev=1 u URL-u
@@ -201,7 +204,8 @@ export default function App() {
 
       {/* Main content */}
       <main className="content">
-        {activeTab === 'club'      && <ClubPanel />}
+        {activeTab === 'dashboard' && <DashboardPanel onNavigate={setTab} />}
+        {activeTab === 'club'      && <ClubMap onNavigate={setTab} />}
         {activeTab === 'myteam'    && <MyTeamPanel />}
         {activeTab === 'cards'     && (
           <section className="app__grid">
@@ -236,11 +240,15 @@ export default function App() {
         {bottomTabs.map((t) => (
           <button
             key={t.id}
-            className={`bottomnav__item${activeTab === t.id ? ' is-active' : ''}`}
+            className={[
+              'bottomnav__item',
+              t.id === 'club' ? 'bottomnav__item--center' : '',
+              activeTab === t.id ? 'is-active' : '',
+            ].join(' ')}
             onClick={() => setTab(t.id)}
           >
             <span className="bottomnav__icon">{t.icon}</span>
-            <span>{t.label}</span>
+            {t.id !== 'club' && <span>{t.label}</span>}
           </button>
         ))}
       </nav>
