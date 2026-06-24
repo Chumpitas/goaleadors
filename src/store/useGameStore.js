@@ -957,8 +957,12 @@ export const useGameStore = create(persist((set, get) => ({
   async signUp(email, password) {
     const { user, error } = await signUp(email, password);
     if (error) return { ok: false, reason: error };
-    if (user) { set({ user }); await get().syncToCloud(); }
-    return { ok: true, needsConfirm: !user };
+    if (user) {
+      set({ user });
+      try { await get().syncToCloud(); } catch (_) {}
+    }
+    const needsConfirm = !user || !user.confirmed_at;
+    return { ok: true, needsConfirm };
   },
 
   async signOut() {

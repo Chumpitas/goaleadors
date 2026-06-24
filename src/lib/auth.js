@@ -6,7 +6,13 @@ export const authEnabled = !!supabase;
 export async function signUp(email, password) {
   if (!supabase) return { error: 'Supabase nije konfigurisan' };
   const { data, error } = await supabase.auth.signUp({ email, password });
-  return { user: data?.user || null, error: error?.message || null };
+  if (error) {
+    const msg = error.message || error.error_description || JSON.stringify(error) || 'Nepoznata greška';
+    return { user: null, error: msg };
+  }
+  // Supabase vraća user bez session ako email nije potvrđen
+  const user = data?.user ?? null;
+  return { user, error: null };
 }
 
 export async function signIn(email, password) {
