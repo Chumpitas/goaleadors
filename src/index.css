@@ -1213,7 +1213,7 @@ input:focus, select:focus, textarea:focus {
 .onb__back { background: rgba(255,255,255,.08); color: var(--text-dim); }
 
 /* =========================================================
-   CLUB VIEW
+   CLUB VIEW (legacy)
    ========================================================= */
 .club { max-width: 480px; text-align: center; }
 .club__identity { display: flex; align-items: center; justify-content: center; gap: 20px; }
@@ -1225,6 +1225,148 @@ input:focus, select:focus, textarea:focus {
 .club__actions { display: flex; gap: 10px; justify-content: center; }
 .club__cancel { background: rgba(255,255,255,.08); color: var(--text-dim); border: none; padding: 10px 22px; border-radius: var(--radius-full); }
 .club__editing { text-align: center; color: var(--text-muted); }
+
+/* =========================================================
+   CLUB VIEW v2 — Teget redesign
+   ========================================================= */
+.club2 {
+  max-width: 480px;
+  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.club2__hero {
+  background: linear-gradient(160deg, #0d2f45 0%, #071b28 100%);
+  border: 1px solid var(--border-bright);
+  border-radius: var(--radius-2xl);
+  padding: 32px 24px 28px;
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+  position: relative;
+  overflow: hidden;
+}
+.club2__hero::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(ellipse at 50% 0%, rgba(246,198,26,.1) 0%, transparent 65%);
+  pointer-events: none;
+}
+
+.club2__visuals {
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  gap: 24px;
+  position: relative;
+  z-index: 1;
+}
+
+.club2__crest-wrap {
+  filter: drop-shadow(0 8px 24px rgba(0,0,0,.5));
+}
+
+.club2__jersey-wrap {
+  filter: drop-shadow(0 8px 20px rgba(0,0,0,.4));
+  margin-bottom: 4px;
+}
+
+.club2__name {
+  font-family: 'Archivo', system-ui, sans-serif;
+  font-size: 28px;
+  font-weight: 900;
+  color: var(--text);
+  margin: 0;
+  letter-spacing: -0.5px;
+  position: relative; z-index: 1;
+}
+
+.club2__location {
+  font-size: 13px;
+  color: var(--text-muted);
+  margin: 0;
+  position: relative; z-index: 1;
+}
+
+.club2__stats {
+  background: var(--bg-card);
+  border: 1px solid var(--border-bright);
+  border-radius: var(--radius-xl);
+  padding: 20px 24px;
+  display: flex;
+  align-items: center;
+  justify-content: space-around;
+  gap: 12px;
+}
+
+.club2__stat {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  flex: 1;
+}
+
+.club2__stat-label {
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: .08em;
+  color: var(--text-muted);
+}
+
+.club2__stat-value {
+  font-family: 'Archivo', system-ui, sans-serif;
+  font-size: 18px;
+  font-weight: 800;
+  color: var(--gold);
+}
+
+.club2__stat-divider {
+  width: 1px;
+  height: 36px;
+  background: var(--border-bright);
+  flex-shrink: 0;
+}
+
+.club2__actions {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.club2__btn-primary {
+  width: 100%;
+  background: var(--gold);
+  color: #0a2230;
+  border: none;
+  border-radius: var(--radius-full);
+  padding: 15px;
+  font-size: 15px;
+  font-weight: 800;
+  letter-spacing: .04em;
+  transition: opacity .15s, transform .1s;
+  box-shadow: var(--shadow-gold);
+}
+.club2__btn-primary:hover { opacity: .9; transform: translateY(-1px); }
+
+.club2__btn-ghost {
+  width: 100%;
+  background: transparent;
+  color: var(--text-muted);
+  border: 1px solid var(--border-bright);
+  border-radius: var(--radius-full);
+  padding: 13px;
+  font-size: 14px;
+  font-weight: 600;
+  transition: border-color .15s, color .15s;
+}
+.club2__btn-ghost:hover { border-color: var(--text-muted); color: var(--text); }
 
 /* =========================================================
    SPLASH SCREEN (auth loading)
