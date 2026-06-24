@@ -6,27 +6,29 @@ import { BUILDING_IMAGES } from '../game/clubMapImages.js';
    sistem pa se savršeno poklapaju.
    iso(c, r) → [x, y] u SVG jedinicama.
    ========================================================================= */
-const COLS = 12;
-const ROWS = 12;
-const WC = 27; // pola širine kockice
-const HC = 30; // pola visine kockice (strmiji izo → manje praznog prostora gore/dole)
+// Pravi izometrijski odnos 2:1 (široke pljosnate kockice). Veliki grid 30×30 —
+// prikazuje se samo prozor u njegovu sredinu, pa kockice prekrivaju cijeli ekran.
+const COLS = 30;
+const ROWS = 30;
+const WC = 32; // pola širine kockice
+const HC = 16; // pola visine kockice (WC = 2·HC → klasična izometrija)
 
 function iso(c, r) {
   return [(c - r) * WC, (c + r) * HC];
 }
 
-// Stadion zauzima veliki centralni blok 6×4, ostale građevine 2×2.
-const STADIUM = { id: 'stadium', label: 'Stadion', tab: null, c0: 3, r0: 4, cw: 6, ch: 4 };
+// Stadion zauzima veliki centralni blok 6×4 (centar grida), ostale građevine 2×2.
+const STADIUM = { id: 'stadium', label: 'Stadion', tab: null, c0: 12, r0: 13, cw: 6, ch: 4 };
 
 const BUILDINGS = [
-  { id: 'train',    label: 'Trening',     tab: 'train',    c0: 5, r0: 1,  unlock: 'liga_1' },
-  { id: 'myteam',   label: 'Svlačionica', tab: 'myteam',   c0: 2, r0: 2 },
-  { id: 'match',    label: 'Teren',       tab: 'match',    c0: 8, r0: 2 },
-  { id: 'sponsors', label: 'Sponzori',    tab: 'sponsors', c0: 1, r0: 6,  unlock: 'liga_5' },
-  { id: 'market',   label: 'Tržnica',     tab: 'market',   c0: 9, r0: 6,  unlock: 'liga_1' },
-  { id: 'academy',  label: 'Akademija',   tab: 'academy',  c0: 2, r0: 9,  unlock: 'liga_5' },
-  { id: 'scout',    label: 'Skaut',       tab: 'scout',    c0: 5, r0: 10, unlock: 'liga_5' },
-  { id: 'medical',  label: 'Medicinski',  tab: 'medical',  c0: 8, r0: 9,  unlock: 'liga_1' },
+  { id: 'train',    label: 'Trening',     tab: 'train',    c0: 10, r0: 10, unlock: 'liga_1' },
+  { id: 'myteam',   label: 'Svlačionica', tab: 'myteam',   c0: 10, r0: 14 },
+  { id: 'match',    label: 'Teren',       tab: 'match',    c0: 14, r0: 10 },
+  { id: 'sponsors', label: 'Sponzori',    tab: 'sponsors', c0: 12, r0: 17, unlock: 'liga_5' },
+  { id: 'market',   label: 'Tržnica',     tab: 'market',   c0: 18, r0: 13, unlock: 'liga_1' },
+  { id: 'academy',  label: 'Akademija',   tab: 'academy',  c0: 15, r0: 19, unlock: 'liga_5' },
+  { id: 'scout',    label: 'Skaut',       tab: 'scout',    c0: 19, r0: 19, unlock: 'liga_5' },
+  { id: 'medical',  label: 'Medicinski',  tab: 'medical',  c0: 19, r0: 15, unlock: 'liga_1' },
 ];
 
 function isUnlocked(b, level, seasons) {
@@ -60,9 +62,9 @@ export default function ClubMap({ onNavigate }) {
     if (b.tab) onNavigate(b.tab);
   };
 
-  // viewBox tijesan oko grida — ispunjava širinu ekrana.
-  // Grid bbox: x ±(COLS*WC)=±324, y 0..((COLS+ROWS)*HC)=720. Pad za zgrade gore/labele dole.
-  const vb = { x: -340, y: -120, w: 680, h: 900 };
+  // Prozor u sredinu velikog grida (centar = stadion na iso(15,15) = [0, 480]).
+  // Aspekt prozora ~ portretni ekran → kockice prekrivaju cijeli ekran bez praznih ivica.
+  const vb = { x: -190, y: 110, w: 380, h: 745 };
 
   // Ground ćelije.
   const cells = [];
@@ -155,7 +157,7 @@ export default function ClubMap({ onNavigate }) {
       <svg
         className="clubmap3__svg"
         viewBox={`${vb.x} ${vb.y} ${vb.w} ${vb.h}`}
-        preserveAspectRatio="xMidYMid meet"
+        preserveAspectRatio="xMidYMid slice"
       >
         {/* Ground mreža */}
         <g className="clubmap3__ground">
