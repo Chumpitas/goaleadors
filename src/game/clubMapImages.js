@@ -2,7 +2,7 @@
 // CDN URL-ovi se referenciraju direktno (browser ih učitava; server proxy blokira download).
 const CDN = 'https://d8j0ntlcm91z4.cloudfront.net/user_2zCFsJmlhH6t01iCupOrbjaSRvW';
 
-export const MAP_BG = `${CDN}/hf_20260624_194943_bac11ba2-94bf-47d9-b941-6ce7942aaa91.png`;
+export const MAP_BG = `${CDN}/hf_20260624_202352_70e97920-6c52-419d-b16f-b1db46d8038e.png`;
 
 // Transparentne (background removed) verzije svih građevina.
 export const BUILDING_IMAGES = Object.freeze({
