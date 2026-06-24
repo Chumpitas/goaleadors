@@ -20,16 +20,17 @@ function iso(c, r) {
 // Stadion zauzima veliki centralni blok 6×4 (centar grida), ostale građevine 2×2.
 const STADIUM = { id: 'stadium', label: 'Stadion', tab: null, c0: 12, r0: 13, cw: 6, ch: 4 };
 
-// Raspoređene u prsten oko stadiona (gore / bočno / dole) da pokriju cijelu mapu.
+// Prozor je uzak (x) a visok (y) → raspored po dubini s malim bočnim pomakom
+// (|u|≤3) da sve ostane unutar ekrana. Stadion u centru iso(15,15).
 const BUILDINGS = [
-  { id: 'train',    label: 'Trening',     tab: 'train',    c0: 4,  r0: 6,  unlock: 'liga_1' }, // gore
-  { id: 'myteam',   label: 'Svlačionica', tab: 'myteam',   c0: 6,  r0: 11 },                   // gornji-lijevi
-  { id: 'match',    label: 'Teren',       tab: 'match',    c0: 11, r0: 6 },                    // gornji-desni
-  { id: 'sponsors', label: 'Sponzori',    tab: 'sponsors', c0: 10, r0: 15, unlock: 'liga_5' }, // lijevo
-  { id: 'market',   label: 'Tržnica',     tab: 'market',   c0: 16, r0: 11, unlock: 'liga_1' }, // desno
-  { id: 'academy',  label: 'Akademija',   tab: 'academy',  c0: 16, r0: 20, unlock: 'liga_5' }, // donji-lijevi
-  { id: 'scout',    label: 'Skaut',       tab: 'scout',    c0: 20, r0: 20, unlock: 'liga_5' }, // dole
-  { id: 'medical',  label: 'Medicinski',  tab: 'medical',  c0: 20, r0: 16, unlock: 'liga_1' }, // donji-desni
+  { id: 'train',    label: 'Trening',     tab: 'train',    c0: 8,  r0: 8,  unlock: 'liga_1' }, // gore
+  { id: 'myteam',   label: 'Svlačionica', tab: 'myteam',   c0: 7,  r0: 10 },                   // gornji-lijevi
+  { id: 'match',    label: 'Teren',       tab: 'match',    c0: 10, r0: 7 },                    // gornji-desni
+  { id: 'sponsors', label: 'Sponzori',    tab: 'sponsors', c0: 15, r0: 18, unlock: 'liga_5' }, // donji-lijevi
+  { id: 'market',   label: 'Tržnica',     tab: 'market',   c0: 18, r0: 15, unlock: 'liga_1' }, // donji-desni
+  { id: 'academy',  label: 'Akademija',   tab: 'academy',  c0: 18, r0: 21, unlock: 'liga_5' }, // niže-lijevo
+  { id: 'medical',  label: 'Medicinski',  tab: 'medical',  c0: 21, r0: 18, unlock: 'liga_1' }, // niže-desno
+  { id: 'scout',    label: 'Skaut',       tab: 'scout',    c0: 22, r0: 22, unlock: 'liga_5' }, // dno
 ];
 
 function isUnlocked(b, level, seasons) {
@@ -82,12 +83,15 @@ export default function ClubMap({ onNavigate }) {
     const cw = span?.cw ?? 2;
     const ch = span?.ch ?? 2;
     const [cx, cy] = iso(b.c0 + cw / 2, b.r0 + ch / 2);
+    const isStadium = b.id === 'stadium';
     // Širina slike ~ širina dijagonale bloka.
     const blockW = (cw + ch) * WC;
-    const w = blockW * (b.id === 'stadium' ? 1.05 : 1.15);
-    const h = w; // kvadratne slike
+    const w = blockW * (isStadium ? 1.0 : 1.15);
+    // Stadion je 3:2 (landscape), ostale slike su kvadratne 1:1.
+    const h = isStadium ? w * (2 / 3) : w;
     const x = cx - w / 2;
-    const y = cy - h * 0.74; // baza sjedi oko centra polja
+    // Baza slike sjeda na centar bloka (stadion niže jer je landscape).
+    const y = cy - h * (isStadium ? 0.62 : 0.74);
 
     return (
       <g

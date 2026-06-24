@@ -8,7 +8,7 @@ export const MAP_BG = `${CDN}/hf_20260624_202603_b942a6f3-04e8-47a6-8be9-899c518
 
 // Transparentne (background removed) LEVEL 1 verzije svih građevina.
 export const BUILDING_IMAGES = Object.freeze({
-  stadium:  `${CDN}/hf_20260624_202726_bd788b46-1c1a-4704-aa55-01b93925e691.png`,
+  stadium:  `${CDN}/hf_20260624_212004_c953ef54-2c4b-4396-8839-2872ced26dc7.png`, // 3:2 fit za 6×4 blok
   match:    `${CDN}/hf_20260624_202729_174da354-0a2f-4639-be23-9fe8eae1c36e.png`, // teren
   myteam:   `${CDN}/hf_20260624_202727_9ccc5d58-d06e-42c0-bd9a-d7bf623f5f11.png`, // svlačionica
   train:    `${CDN}/hf_20260624_202730_643565d7-b828-4902-8696-f6e9dbcf49dd.png`,
