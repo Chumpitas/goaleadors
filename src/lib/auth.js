@@ -7,7 +7,10 @@ export async function signUp(email, password) {
   if (!supabase) return { error: 'Supabase nije konfigurisan' };
   const { data, error } = await supabase.auth.signUp({ email, password });
   if (error) {
-    const msg = error.message || error.error_description || JSON.stringify(error) || 'Nepoznata greška';
+    const msg = error.message && error.message !== 'unexpected_failure'
+      ? error.message
+      : error.error_description
+        || (error.status === 500 ? 'Greška servera — provjeri Supabase email podešavanja.' : 'Nepoznata greška pri registraciji.');
     return { user: null, error: msg };
   }
   // Supabase vraća user bez session ako email nije potvrđen
