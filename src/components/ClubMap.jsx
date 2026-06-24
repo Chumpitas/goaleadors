@@ -17,20 +17,19 @@ function iso(c, r) {
   return [(c - r) * WC, (c + r) * HC];
 }
 
-// Stadion zauzima veliki centralni blok 6×4 (centar grida), ostale građevine 2×2.
-const STADIUM = { id: 'stadium', label: 'Stadion', tab: null, c0: 12, r0: 13, cw: 6, ch: 4 };
+// Stadion: centralni blok 4×6 (4 široko × 6 duboko), prema korisnikovoj oznaci.
+const STADIUM = { id: 'stadium', label: 'Stadion', tab: null, c0: 13, r0: 11, cw: 4, ch: 6 };
 
-// Prozor je uzak (x) a visok (y) → raspored po dubini s malim bočnim pomakom
-// (|u|≤3) da sve ostane unutar ekrana. Stadion u centru iso(15,15).
+// Pozicije očitane sa korisnikove označene izometrije (8 blokova 2×2).
 const BUILDINGS = [
-  { id: 'train',    label: 'Trening',     tab: 'train',    c0: 8,  r0: 8,  unlock: 'liga_1' }, // gore
-  { id: 'myteam',   label: 'Svlačionica', tab: 'myteam',   c0: 7,  r0: 10 },                   // gornji-lijevi
-  { id: 'match',    label: 'Teren',       tab: 'match',    c0: 10, r0: 7 },                    // gornji-desni
-  { id: 'sponsors', label: 'Sponzori',    tab: 'sponsors', c0: 15, r0: 18, unlock: 'liga_5' }, // donji-lijevi
-  { id: 'market',   label: 'Tržnica',     tab: 'market',   c0: 18, r0: 15, unlock: 'liga_1' }, // donji-desni
-  { id: 'academy',  label: 'Akademija',   tab: 'academy',  c0: 18, r0: 21, unlock: 'liga_5' }, // niže-lijevo
-  { id: 'medical',  label: 'Medicinski',  tab: 'medical',  c0: 21, r0: 18, unlock: 'liga_1' }, // niže-desno
-  { id: 'scout',    label: 'Skaut',       tab: 'scout',    c0: 22, r0: 22, unlock: 'liga_5' }, // dno
+  { id: 'train',    label: 'Trening',     tab: 'train',    c0: 6,  r0: 4,  unlock: 'liga_1' },
+  { id: 'myteam',   label: 'Svlačionica', tab: 'myteam',   c0: 5,  r0: 7 },
+  { id: 'match',    label: 'Teren',       tab: 'match',    c0: 10, r0: 7 },
+  { id: 'sponsors', label: 'Sponzori',    tab: 'sponsors', c0: 8,  r0: 11, unlock: 'liga_5' },
+  { id: 'market',   label: 'Tržnica',     tab: 'market',   c0: 17, r0: 20, unlock: 'liga_1' },
+  { id: 'academy',  label: 'Akademija',   tab: 'academy',  c0: 22, r0: 19, unlock: 'liga_5' },
+  { id: 'medical',  label: 'Medicinski',  tab: 'medical',  c0: 21, r0: 23, unlock: 'liga_1' },
+  { id: 'scout',    label: 'Skaut',       tab: 'scout',    c0: 25, r0: 23, unlock: 'liga_5' },
 ];
 
 function isUnlocked(b, level, seasons) {
