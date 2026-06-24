@@ -84,14 +84,23 @@ export default function ClubMap({ onNavigate }) {
     const ch = span?.ch ?? 2;
     const [cx, cy] = iso(b.c0 + cw / 2, b.r0 + ch / 2);
     const isStadium = b.id === 'stadium';
-    // Širina slike ~ širina dijagonale bloka.
-    const blockW = (cw + ch) * WC;
-    const w = blockW * (isStadium ? 1.0 : 1.15);
-    // Stadion je 3:2 (landscape), ostale slike su kvadratne 1:1.
-    const h = isStadium ? w * (2 / 3) : w;
-    const x = cx - w / 2;
-    // Baza slike sjeda na centar bloka (stadion niže jer je landscape).
-    const y = cy - h * (isStadium ? 0.62 : 0.74);
+    const blockDiagW = (cw + ch) * WC; // širina dijagonale bloka (px)
+    const blockHalfH = ((cw + ch) * HC) / 2; // pola visine dijamanta bloka
+
+    let w, h, x, y;
+    if (isStadium) {
+      // Stadion: 2:3 (4:6) slika. Širina ~ dijagonala bloka; baza sjeda na dno bloka.
+      w = blockDiagW * 1.08;
+      h = w * 1.5; // 2:3 portrait
+      x = cx - w / 2;
+      y = cy + blockHalfH + 12 - h; // dno slike malo ispod donjeg ugla bloka
+    } else {
+      // Ostale: kvadratne 1:1, baza oko centra polja.
+      w = blockDiagW * 1.15;
+      h = w;
+      x = cx - w / 2;
+      y = cy - h * 0.74;
+    }
 
     return (
       <g
