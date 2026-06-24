@@ -93,7 +93,7 @@ export default function ClubMap({ onNavigate }) {
       w = blockDiagW * 1.08;
       h = w * 1.5; // 2:3 portrait
       x = cx - w / 2;
-      y = cy + blockHalfH + 12 - h; // dno slike malo ispod donjeg ugla bloka
+      y = cy + blockHalfH + 30 - h; // dno slike sjeda u grid
     } else {
       // Ostale: kvadratne 1:1, baza oko centra polja.
       w = blockDiagW * 1.15;
@@ -184,14 +184,6 @@ export default function ClubMap({ onNavigate }) {
               strokeWidth="0.6"
             />
           ))}
-          {/* Istaknuto stadionsko polje */}
-          <polygon
-            points={blockPoints(STADIUM.c0, STADIUM.r0, STADIUM.cw, STADIUM.ch)}
-            fill="rgba(246,198,26,.08)"
-            stroke="rgba(246,198,26,.45)"
-            strokeWidth="1.4"
-            strokeDasharray="4 3"
-          />
         </g>
 
         {/* Sve građevine, sortirane po dubini (uklj. stadion) */}
