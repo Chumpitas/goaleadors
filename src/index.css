@@ -1,44 +1,60 @@
 /* =========================================================
-   GOALEADORS — Design System
-   Referenca: dark gaming card UI (navy + gradients + glassmorphism)
+   GOALEADORS — Design System v2
+   Teget tamna paleta · Archivo + Manrope · Zlatni akcenti
    ========================================================= */
 
 /* --- Varijable --- */
 :root {
-  --bg:           #0d0f14;
-  --bg-card:      #111318;
-  --bg-surface:   #16191f;
-  --bg-input:     #0d0f14;
-  --sidebar-w:    68px;
-  --topbar-h:     56px;
-  --bottomnav-h:  62px;
+  /* Backgrounds — teget tamna */
+  --bg:           #0a2230;
+  --bg-card:      #0d2a3d;
+  --bg-surface:   #112f42;
+  --bg-input:     rgba(255,255,255,.07);
+  --sidebar-w:    72px;
+  --topbar-h:     60px;
+  --bottomnav-h:  84px;
 
+  /* Akcenti */
+  --gold:         #f6c61a;
+  --gold-dim:     rgba(246,198,26,.15);
+  --gold-dark:    #d4a800;
+  --red:          #e8412b;
+  --red-dim:      rgba(232,65,43,.15);
   --green:        #22c55e;
   --green-dim:    rgba(34,197,94,.15);
-  --green-dark:   #16a34a;
-  --gold:         #f59e0b;
-  --gold-dim:     rgba(245,158,11,.15);
-  --purple:       #8b5cf6;
-  --red:          #ef4444;
-  --teal:         #0ea5e9;
+  --purple:       #8b3fd1;
+  --purple-dim:   rgba(139,63,209,.15);
 
-  --text:         #f0f2f5;
-  --text-muted:   #6b7280;
-  --text-dim:     #9ca3af;
-  --border:       rgba(255,255,255,.07);
-  --border-bright:rgba(255,255,255,.14);
+  /* Rarity boje */
+  --rarity-common:    #9aa0a6;
+  --rarity-rare:      #e0a01e;
+  --rarity-epic:      #8b3fd1;
+  --rarity-legendary: #d63a3a;
 
-  --radius-sm:    8px;
-  --radius-md:    12px;
-  --radius-lg:    16px;
-  --radius-xl:    20px;
+  /* Tekst */
+  --text:         #ffffff;
+  --text-muted:   rgba(255,255,255,.5);
+  --text-dim:     rgba(255,255,255,.7);
+
+  /* Borderi */
+  --border:       rgba(255,255,255,.08);
+  --border-bright:rgba(255,255,255,.15);
+
+  /* Radijusi — veće zaobljenje po dizajnu */
+  --radius-sm:    10px;
+  --radius-md:    14px;
+  --radius-lg:    18px;
+  --radius-xl:    22px;
+  --radius-2xl:   28px;
   --radius-full:  999px;
 
-  --shadow:       0 4px 24px rgba(0,0,0,.5);
-  --shadow-card:  0 2px 16px rgba(0,0,0,.4);
+  /* Sjene */
+  --shadow:       0 8px 32px rgba(0,0,0,.4);
+  --shadow-card:  0 4px 20px rgba(0,0,0,.35);
+  --shadow-gold:  0 8px 24px rgba(246,198,26,.3);
 
   color-scheme: dark;
-  font-family: system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+  font-family: 'Manrope', system-ui, sans-serif;
 }
 
 /* --- Reset --- */
@@ -51,7 +67,11 @@ body {
   min-height: 100vh;
   font-size: 14px;
   line-height: 1.5;
+  background-image: radial-gradient(circle at center, rgba(255,255,255,.045) 1.5px, transparent 1.6px);
+  background-size: 15px 15px;
 }
+
+h1, h2, h3, h4, h5, h6 { font-family: 'Archivo', system-ui, sans-serif; }
 
 button { cursor: pointer; font-family: inherit; }
 select, input { font-family: inherit; }
@@ -130,8 +150,8 @@ select, input { font-family: inherit; }
   color: var(--text);
 }
 .sidebar__item.is-active {
-  background: var(--green-dim);
-  color: var(--green);
+  background: var(--gold-dim);
+  color: var(--gold);
 }
 .sidebar__icon { font-size: 17px; line-height: 1; }
 .sidebar__label { text-align: center; word-break: break-word; }
@@ -233,7 +253,16 @@ select, input { font-family: inherit; }
   border-radius: var(--radius-sm);
   min-width: 0;
 }
-.bottomnav__item.is-active { color: var(--green); }
+.bottomnav__item.is-active { color: var(--gold); }
+.bottomnav__item.is-active .bottomnav__icon {
+  background: var(--gold);
+  color: #0a2230;
+  width: 48px; height: 48px;
+  border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 20px;
+  margin-bottom: -2px;
+}
 .bottomnav__icon { font-size: 18px; }
 
 @media (max-width: 768px) {
