@@ -647,7 +647,7 @@ textarea {
   border: 1px solid var(--border-bright);
   border-radius: var(--radius-sm);
   padding: 8px 10px;
-  font-size: 14px;
+  font-size: 16px; /* ≥16px prevents iOS Safari auto-zoom */
   outline: none;
   transition: border-color .15s;
 }
@@ -1329,7 +1329,7 @@ input:focus, select:focus, textarea:focus {
   border: 2.5px solid #1a2e3f;
   border-radius: 14px;
   padding: 14px 16px;
-  font-size: 15px; color: #1a2e3f;
+  font-size: 16px; color: #1a2e3f;
   outline: none;
   transition: border-color .15s;
 }
