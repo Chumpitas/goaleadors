@@ -20,15 +20,16 @@ function iso(c, r) {
 // Stadion zauzima veliki centralni blok 6×4 (centar grida), ostale građevine 2×2.
 const STADIUM = { id: 'stadium', label: 'Stadion', tab: null, c0: 12, r0: 13, cw: 6, ch: 4 };
 
+// Raspoređene u prsten oko stadiona (gore / bočno / dole) da pokriju cijelu mapu.
 const BUILDINGS = [
-  { id: 'train',    label: 'Trening',     tab: 'train',    c0: 10, r0: 10, unlock: 'liga_1' },
-  { id: 'myteam',   label: 'Svlačionica', tab: 'myteam',   c0: 10, r0: 14 },
-  { id: 'match',    label: 'Teren',       tab: 'match',    c0: 14, r0: 10 },
-  { id: 'sponsors', label: 'Sponzori',    tab: 'sponsors', c0: 12, r0: 17, unlock: 'liga_5' },
-  { id: 'market',   label: 'Tržnica',     tab: 'market',   c0: 18, r0: 13, unlock: 'liga_1' },
-  { id: 'academy',  label: 'Akademija',   tab: 'academy',  c0: 15, r0: 19, unlock: 'liga_5' },
-  { id: 'scout',    label: 'Skaut',       tab: 'scout',    c0: 19, r0: 19, unlock: 'liga_5' },
-  { id: 'medical',  label: 'Medicinski',  tab: 'medical',  c0: 19, r0: 15, unlock: 'liga_1' },
+  { id: 'train',    label: 'Trening',     tab: 'train',    c0: 4,  r0: 6,  unlock: 'liga_1' }, // gore
+  { id: 'myteam',   label: 'Svlačionica', tab: 'myteam',   c0: 6,  r0: 11 },                   // gornji-lijevi
+  { id: 'match',    label: 'Teren',       tab: 'match',    c0: 11, r0: 6 },                    // gornji-desni
+  { id: 'sponsors', label: 'Sponzori',    tab: 'sponsors', c0: 10, r0: 15, unlock: 'liga_5' }, // lijevo
+  { id: 'market',   label: 'Tržnica',     tab: 'market',   c0: 16, r0: 11, unlock: 'liga_1' }, // desno
+  { id: 'academy',  label: 'Akademija',   tab: 'academy',  c0: 16, r0: 20, unlock: 'liga_5' }, // donji-lijevi
+  { id: 'scout',    label: 'Skaut',       tab: 'scout',    c0: 20, r0: 20, unlock: 'liga_5' }, // dole
+  { id: 'medical',  label: 'Medicinski',  tab: 'medical',  c0: 20, r0: 16, unlock: 'liga_1' }, // donji-desni
 ];
 
 function isUnlocked(b, level, seasons) {
