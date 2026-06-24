@@ -23,11 +23,11 @@ export default function Landing() {
     try {
       if (mode === 'register') {
         const res = await signUp(email, password);
-        if (!res.ok) throw new Error(res.error || 'Greška pri registraciji.');
+        if (!res.ok) throw new Error(res.reason || 'Greška pri registraciji.');
         if (res.needsConfirm) setMsg({ type: 'ok', text: 'Potvrdi e-mail pa se prijavi.' });
       } else {
         const res = await signIn(email, password);
-        if (!res.ok) throw new Error(res.error || 'Pogrešan e-mail ili lozinka.');
+        if (!res.ok) throw new Error(res.reason || 'Pogrešan e-mail ili lozinka.');
       }
     } catch (err) {
       setMsg({ type: 'err', text: err.message });
