@@ -17,19 +17,19 @@ function iso(c, r) {
   return [(c - r) * WC, (c + r) * HC];
 }
 
-// Stadion: centralni blok 4×6. (+10,+10 pomak jer je grid sad 50×50, centar (25,25).)
-const STADIUM = { id: 'stadium', label: 'Stadion', tab: null, c0: 23, r0: 21, cw: 4, ch: 6 };
+// Stadion: centralni blok 4×6 (potvrđene koordinate sa korisnikove oznake).
+const STADIUM = { id: 'stadium', label: 'Stadion', tab: null, c0: 23, r0: 22, cw: 4, ch: 6 };
 
-// Pozicije (privremene — korisnik ponovo označava na novom sitnijem gridu).
+// Pozicije očitane i potvrđene sa korisnikove označene izometrije (8 blokova 2×2).
 const BUILDINGS = [
-  { id: 'train',    label: 'Trening',     tab: 'train',    c0: 16, r0: 14, unlock: 'liga_1' },
-  { id: 'myteam',   label: 'Svlačionica', tab: 'myteam',   c0: 15, r0: 17 },
-  { id: 'match',    label: 'Teren',       tab: 'match',    c0: 20, r0: 17 },
-  { id: 'sponsors', label: 'Sponzori',    tab: 'sponsors', c0: 18, r0: 21, unlock: 'liga_5' },
-  { id: 'market',   label: 'Tržnica',     tab: 'market',   c0: 27, r0: 30, unlock: 'liga_1' },
-  { id: 'academy',  label: 'Akademija',   tab: 'academy',  c0: 32, r0: 29, unlock: 'liga_5' },
-  { id: 'medical',  label: 'Medicinski',  tab: 'medical',  c0: 31, r0: 33, unlock: 'liga_1' },
-  { id: 'scout',    label: 'Skaut',       tab: 'scout',    c0: 35, r0: 33, unlock: 'liga_5' },
+  { id: 'train',    label: 'Trening',     tab: 'train',    c0: 15, r0: 13, unlock: 'liga_1' },
+  { id: 'myteam',   label: 'Svlačionica', tab: 'myteam',   c0: 12, r0: 16 },
+  { id: 'match',    label: 'Teren',       tab: 'match',    c0: 19, r0: 14 },
+  { id: 'sponsors', label: 'Sponzori',    tab: 'sponsors', c0: 16, r0: 18, unlock: 'liga_5' },
+  { id: 'market',   label: 'Tržnica',     tab: 'market',   c0: 30, r0: 25, unlock: 'liga_1' },
+  { id: 'academy',  label: 'Akademija',   tab: 'academy',  c0: 26, r0: 31, unlock: 'liga_5' },
+  { id: 'medical',  label: 'Medicinski',  tab: 'medical',  c0: 32, r0: 29, unlock: 'liga_1' },
+  { id: 'scout',    label: 'Skaut',       tab: 'scout',    c0: 30, r0: 33, unlock: 'liga_5' },
 ];
 
 function isUnlocked(b, level, seasons) {
