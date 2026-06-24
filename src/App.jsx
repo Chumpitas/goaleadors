@@ -184,23 +184,25 @@ export default function App() {
         </nav>
       </aside>
 
-      {/* Topbar */}
-      <header className="topbar">
-        <div className="topbar__title">
-          {currentTab?.icon} {currentTab?.label}
-        </div>
-        <div className="topbar__balances">
-          <div className="topbar__bal topbar__bal--green">
-            <span className="topbar__icon">⚽</span>
-            <span>{(lopte ?? 0).toLocaleString()}</span>
+      {/* Topbar — sakriven na mapi kluba (full-screen) */}
+      {activeTab !== 'club' && (
+        <header className="topbar">
+          <div className="topbar__title">
+            {currentTab?.icon} {currentTab?.label}
           </div>
-          <div className="topbar__bal topbar__bal--gold">
-            <span className="topbar__icon">🪙</span>
-            <span>{(kovanice ?? 0).toLocaleString()}</span>
+          <div className="topbar__balances">
+            <div className="topbar__bal topbar__bal--green">
+              <span className="topbar__icon">⚽</span>
+              <span>{(lopte ?? 0).toLocaleString()}</span>
+            </div>
+            <div className="topbar__bal topbar__bal--gold">
+              <span className="topbar__icon">🪙</span>
+              <span>{(kovanice ?? 0).toLocaleString()}</span>
+            </div>
+            <button className="topbar__reset" onClick={resetGame} title="Reset napretka">↺</button>
           </div>
-          <button className="topbar__reset" onClick={resetGame} title="Reset napretka">↺</button>
-        </div>
-      </header>
+        </header>
+      )}
 
       {/* Main content */}
       <main className="content">
