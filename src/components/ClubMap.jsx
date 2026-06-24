@@ -1,18 +1,18 @@
 import { useGameStore } from '../store/useGameStore.js';
 import { MAP_BG, BUILDING_IMAGES } from '../game/clubMapImages.js';
 
-// Pozicije su u % kontejnera (isometrijski diamond raspored oko stadiona u centru).
-// top/left = centar građevine; w = širina u % (visina auto).
+// Pozicije su u % kontejnera — izometrijski 3×3 grid: stadion u centru, 8 oko njega.
+// top/left = centar građevine; w = širina u % (kvadratne slike, visina = širina).
 const BUILDINGS = [
-  { id: 'stadium',  label: 'Stadion',          tab: null,       top: 46, left: 50, w: 46, z: 5 },
-  { id: 'train',    label: 'Trening',          tab: 'train',    top: 22, left: 50, w: 26, z: 3, unlock: 'liga_1' },
-  { id: 'myteam',   label: 'Svlačionica',      tab: 'myteam',   top: 30, left: 23, w: 28, z: 3 },
-  { id: 'match',    label: 'Teren',            tab: 'match',    top: 30, left: 77, w: 28, z: 3 },
-  { id: 'sponsors', label: 'Sponzori',         tab: 'sponsors', top: 50, left: 16, w: 26, z: 4, unlock: 'liga_5' },
-  { id: 'market',   label: 'Tržnica',          tab: 'market',   top: 50, left: 84, w: 26, z: 4, unlock: 'liga_1' },
-  { id: 'academy',  label: 'Akademija',        tab: 'academy',  top: 68, left: 26, w: 28, z: 6, unlock: 'liga_5' },
-  { id: 'medical',  label: 'Medicinski',       tab: 'medical',  top: 68, left: 74, w: 26, z: 6, unlock: 'liga_1' },
-  { id: 'scout',    label: 'Skaut',            tab: 'scout',    top: 80, left: 50, w: 26, z: 7, unlock: 'liga_5' },
+  { id: 'stadium',  label: 'Stadion',     tab: null,       top: 47, left: 50, w: 36, z: 47 },
+  { id: 'train',    label: 'Trening',     tab: 'train',    top: 25, left: 50, w: 23, z: 25, unlock: 'liga_1' },
+  { id: 'myteam',   label: 'Svlačionica', tab: 'myteam',   top: 35, left: 27, w: 23, z: 35 },
+  { id: 'match',    label: 'Teren',       tab: 'match',    top: 35, left: 73, w: 23, z: 35 },
+  { id: 'sponsors', label: 'Sponzori',    tab: 'sponsors', top: 50, left: 15, w: 22, z: 50, unlock: 'liga_5' },
+  { id: 'market',   label: 'Tržnica',     tab: 'market',   top: 50, left: 85, w: 22, z: 50, unlock: 'liga_1' },
+  { id: 'academy',  label: 'Akademija',   tab: 'academy',  top: 64, left: 27, w: 23, z: 64, unlock: 'liga_5' },
+  { id: 'medical',  label: 'Medicinski',  tab: 'medical',  top: 64, left: 73, w: 23, z: 64, unlock: 'liga_1' },
+  { id: 'scout',    label: 'Skaut',       tab: 'scout',    top: 74, left: 50, w: 23, z: 74, unlock: 'liga_5' },
 ];
 
 function isUnlocked(building, level, seasons) {
