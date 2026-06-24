@@ -2476,7 +2476,9 @@ input:focus, select:focus, textarea:focus {
 .clubmap__sub { font-size: 13px; color: var(--text-muted); margin: 0; }
 
 .clubmap__iso {
-  background: linear-gradient(160deg, #0a2535 0%, #061620 100%);
+  background: #061620;
+  background-size: cover;
+  background-position: center;
   border: 1px solid var(--border-bright);
   border-radius: var(--radius-2xl);
   padding: 20px 16px;
@@ -2486,10 +2488,7 @@ input:focus, select:focus, textarea:focus {
 .clubmap__iso::before {
   content: '';
   position: absolute; inset: 0;
-  background-image: 
-    linear-gradient(rgba(255,255,255,.025) 1px, transparent 1px),
-    linear-gradient(90deg, rgba(255,255,255,.025) 1px, transparent 1px);
-  background-size: 40px 40px;
+  background: linear-gradient(160deg, rgba(6,22,32,.55) 0%, rgba(6,22,32,.75) 100%);
   pointer-events: none;
 }
 
@@ -2538,6 +2537,15 @@ input:focus, select:focus, textarea:focus {
 
 .clubmap__tile-icon { font-size: 28px; line-height: 1; }
 .clubmap__tile--stadium .clubmap__tile-icon { font-size: 40px; }
+.clubmap__tile-img {
+  width: 100%;
+  height: auto;
+  max-height: 80px;
+  object-fit: contain;
+  filter: drop-shadow(0 4px 10px rgba(0,0,0,.5));
+  pointer-events: none;
+}
+.clubmap__tile--stadium .clubmap__tile-img { max-height: 110px; }
 .clubmap__tile-label {
   font-size: 10px;
   font-weight: 700;

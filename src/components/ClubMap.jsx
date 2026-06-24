@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { useGameStore } from '../store/useGameStore.js';
+import { MAP_BG, BUILDING_IMAGES } from '../game/clubMapImages.js';
 
 const BUILDINGS = [
   {
@@ -130,11 +131,12 @@ export default function ClubMap({ onNavigate }) {
       </div>
 
       {/* Izometrijska mapa */}
-      <div className="clubmap__iso">
+      <div className="clubmap__iso" style={{ backgroundImage: `url(${MAP_BG})` }}>
         <div className="clubmap__grid">
           {BUILDINGS.map((b) => {
             const built = isUnlocked(b, level, seasons);
             const isSelected = selected?.id === b.id;
+            const img = BUILDING_IMAGES[b.id];
             return (
               <button
                 key={b.id}
@@ -151,7 +153,11 @@ export default function ClubMap({ onNavigate }) {
                 }}
                 onClick={() => handleTap(b)}
               >
-                <span className="clubmap__tile-icon">{built ? b.icon : '🔒'}</span>
+                {built && img ? (
+                  <img src={img} alt={b.label} className="clubmap__tile-img" />
+                ) : (
+                  <span className="clubmap__tile-icon">{built ? b.icon : '🔒'}</span>
+                )}
                 <span className="clubmap__tile-label">{b.label}</span>
               </button>
             );
