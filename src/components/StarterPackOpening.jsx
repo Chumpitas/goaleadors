@@ -1,4 +1,5 @@
 import { useState, useEffect, useRef } from "react";
+import { CARD_IMAGES } from "../game/cardImages.js";
 
 const RARITY_CONFIG = {
   common:    { label: "COMMON",    bg: "linear-gradient(160deg,#1F2937,#374151)", border: "#6B7280", glow: "rgba(107,114,128,0.4)", particle: "#9CA3AF", text: "#9CA3AF" },
@@ -153,12 +154,17 @@ function CardFront({ card, animIn }) {
         <span style={{ fontSize: 8, color: "#9CA3AF", fontWeight: 700 }}>{card.position}</span>
       </div>
       {/* Avatar */}
-      <div style={{
-        height: 42, borderRadius: 6, margin: "1px 0",
-        background: `linear-gradient(180deg, ${cfg.border}22, ${cfg.border}44)`,
-        display: "flex", alignItems: "center", justifyContent: "center",
-        border: `1px solid ${cfg.border}33`, fontSize: 18, fontWeight: 800, color: "#fff",
-      }}>{initials}</div>
+      {CARD_IMAGES[card.name]
+        ? <div style={{ height: 52, borderRadius: 6, margin: "1px 0", overflow: "hidden", flexShrink: 0 }}>
+            <img src={CARD_IMAGES[card.name]} alt={card.name} style={{ width: "100%", height: "100%", objectFit: "cover", objectPosition: "top center" }} />
+          </div>
+        : <div style={{
+            height: 42, borderRadius: 6, margin: "1px 0",
+            background: `linear-gradient(180deg, ${cfg.border}22, ${cfg.border}44)`,
+            display: "flex", alignItems: "center", justifyContent: "center",
+            border: `1px solid ${cfg.border}33`, fontSize: 18, fontWeight: 800, color: "#fff",
+          }}>{initials}</div>
+      }
       {/* Name + OVR */}
       <div style={{ fontSize: 10, color: "#F0EAD6", fontWeight: 700, letterSpacing: 0.3, lineHeight: 1.1, textAlign: "center" }}>{card.name}</div>
       <div style={{ display: "flex", alignItems: "baseline", gap: 3, justifyContent: "center" }}>

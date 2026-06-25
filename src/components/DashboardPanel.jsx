@@ -21,7 +21,7 @@ export default function DashboardPanel({ onNavigate }) {
     { icon: '⚽', label: 'Odigraj meč', tab: 'match', color: '#22c55e' },
     { icon: '📦', label: 'Otvori kesicu', tab: 'packs', color: '#8b3fd1' },
     { icon: '👥', label: 'Moj tim', tab: 'myteam', color: '#1d4ed8' },
-    { icon: '🏆', label: 'Tabela', tab: 'league', color: '#f6c61a' },
+    { icon: '🃏', label: 'Karte', tab: 'cards', color: '#0ea5e9' },
   ];
 
   return (
