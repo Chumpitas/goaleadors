@@ -979,9 +979,14 @@ export const useGameStore = create(persist((set, get) => ({
       if (st) {
         set(st);
         // Ubaci garantovane karte koje su dodate nakon što je igrač već primio starter pack.
-        const ids = new Set((st.collection ?? []).map((c) => c.name));
-        const missing = GUARANTEED_CARDS.filter((c) => !ids.has(c.name));
-        if (missing.length) set((s) => ({ collection: [...s.collection, ...missing] }));
+        // Osiguraj da sve garantovane karte postoje u kolekciji i imaju image polje.
+        const patched = (st.collection ?? []).map((c) => {
+          const g = GUARANTEED_CARDS.find((gc) => gc.name === c.name);
+          return g ? { ...c, image: g.image } : c;
+        });
+        const patchedNames = new Set(patched.map((c) => c.name));
+        const missing = GUARANTEED_CARDS.filter((c) => !patchedNames.has(c.name));
+        set({ collection: [...patched, ...missing] });
       }
       set({ cloudStatus: 'saved' });
     } catch (e) {
