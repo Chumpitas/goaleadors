@@ -187,9 +187,6 @@ export default function App() {
       {/* Topbar — sakriven na mapi kluba (full-screen) */}
       {activeTab !== 'club' && (
         <header className="topbar">
-          <div className="topbar__title">
-            {currentTab?.icon} {currentTab?.label}
-          </div>
           <div className="topbar__balances">
             <div className="topbar__bal topbar__bal--green">
               <span className="topbar__icon">⚽</span>
