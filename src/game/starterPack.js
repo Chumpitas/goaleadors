@@ -5,7 +5,7 @@ import { createCard } from './cards.js';
 const CDN = 'https://d8j0ntlcm91z4.cloudfront.net/user_2zCFsJmlhH6t01iCupOrbjaSRvW';
 
 /** Garantovane karte koje svaki igrač dobija u starter packu. */
-const GUARANTEED_CARDS = [
+export const GUARANTEED_CARDS = [
   Object.assign(createCard({
     name: 'Carlos Eduardo Ferreira',
     position: 'ATT',

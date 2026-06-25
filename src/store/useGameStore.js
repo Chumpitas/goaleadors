@@ -10,7 +10,7 @@ import {
   SEASON_PASS_WEEKS,
   PREMIUM_PASS_COST_LOPTE,
 } from '../game/progression.js';
-import { grantStarterCards, STARTER_BONUS } from '../game/starterPack.js';
+import { grantStarterCards, STARTER_BONUS, GUARANTEED_CARDS } from '../game/starterPack.js';
 import { trainCard, TRAINING_COST_KOVANICE } from '../game/training.js';
 import { generateYouth } from '../game/academy.js';
 import { startMission, isComplete, resolveMission, maxConcurrentScouts, missionCost } from '../game/scouting.js';
@@ -976,7 +976,13 @@ export const useGameStore = create(persist((set, get) => ({
     set({ cloudStatus: 'loading' });
     try {
       const st = await loadCloudState(get().user.id);
-      if (st) set(st);
+      if (st) {
+        set(st);
+        // Ubaci garantovane karte koje su dodate nakon što je igrač već primio starter pack.
+        const ids = new Set((st.collection ?? []).map((c) => c.name));
+        const missing = GUARANTEED_CARDS.filter((c) => !ids.has(c.name));
+        if (missing.length) set((s) => ({ collection: [...s.collection, ...missing] }));
+      }
       set({ cloudStatus: 'saved' });
     } catch (e) {
       set({ cloudStatus: 'error' });
