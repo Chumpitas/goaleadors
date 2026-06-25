@@ -2,6 +2,7 @@ import { motion } from 'framer-motion';
 import { rarityById } from '../game/constants.js';
 import { attributesForPosition } from '../game/cards.js';
 import { useGameStore } from '../store/useGameStore.js';
+import { CARD_IMAGES } from '../game/cardImages.js';
 
 const ATTR_LABELS = {
   shooting:    'SHOOTING',
@@ -68,8 +69,8 @@ export default function CardView({ card, onClick, small = false }) {
 
       {/* Player image or initials placeholder */}
       <div className="card2__img">
-        {card.image
-          ? <img src={card.image} alt={card.name} />
+        {(card.image || CARD_IMAGES[card.name])
+          ? <img src={card.image || CARD_IMAGES[card.name]} alt={card.name} />
           : <span className="card2__initials">
               {card.name.split(' ').map((w) => w[0]).join('').slice(0, 2).toUpperCase()}
             </span>
