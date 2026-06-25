@@ -1733,6 +1733,128 @@ input:focus, select:focus, textarea:focus {
 }
 
 /* ═══════════════════════════════════════════════════════
+   CARD2 — Figma dizajn
+═══════════════════════════════════════════════════════ */
+.card2 {
+  width: 200px;
+  border-radius: 16px;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  background: #0e1a24;
+  border: 1.5px solid var(--rc, #9aa0a6);
+  box-shadow: 0 0 18px color-mix(in srgb, var(--rc, #9aa0a6) 30%, transparent);
+  cursor: pointer;
+  position: relative;
+  user-select: none;
+}
+.card2--small { width: 140px; }
+
+.card2__namebar {
+  background: #0b1520;
+  padding: 6px 10px;
+  text-align: center;
+  border-bottom: 1px solid rgba(255,255,255,0.06);
+}
+.card2__name {
+  font-size: 11px; font-weight: 800; color: #fff;
+  text-transform: uppercase; letter-spacing: 0.6px;
+  white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+  font-family: 'Archivo', sans-serif;
+}
+
+.card2__toprow {
+  position: absolute;
+  top: 34px; left: 0; right: 0;
+  display: flex; justify-content: space-between; align-items: flex-start;
+  padding: 6px 10px;
+  pointer-events: none;
+}
+.card2__flag { font-size: 20px; line-height: 1; filter: drop-shadow(0 1px 3px rgba(0,0,0,.6)); }
+.card2__pos {
+  font-size: 22px; font-weight: 900; color: rgba(255,255,255,0.85);
+  font-family: 'Archivo', sans-serif; letter-spacing: -1px;
+  text-shadow: 0 2px 8px rgba(0,0,0,.7);
+}
+
+.card2__img {
+  width: 100%; aspect-ratio: 4/3.2;
+  background: linear-gradient(160deg, #1a2f42 0%, #0d1e2c 100%);
+  display: flex; align-items: center; justify-content: center;
+  overflow: hidden;
+  flex-shrink: 0;
+}
+.card2__img img {
+  width: 100%; height: 100%; object-fit: cover; object-position: top center;
+}
+.card2__initials {
+  font-size: 36px; font-weight: 900; color: rgba(255,255,255,0.15);
+  font-family: 'Archivo', sans-serif;
+}
+
+.card2__panel {
+  background: #0b1520;
+  padding: 8px 10px 6px;
+  display: flex; flex-direction: column; gap: 6px;
+}
+
+.card2__overall-row {
+  display: flex; align-items: center; justify-content: space-between;
+}
+.card2__nat-code {
+  font-size: 10px; font-weight: 700; color: rgba(255,255,255,0.5);
+  letter-spacing: 0.5px;
+}
+.card2__overall {
+  font-size: 28px; font-weight: 900; color: #fff;
+  font-family: 'Archivo', sans-serif; line-height: 1;
+  background: color-mix(in srgb, var(--rc) 20%, #0d2035);
+  border: 1.5px solid color-mix(in srgb, var(--rc) 50%, transparent);
+  border-radius: 20px;
+  padding: 2px 16px;
+}
+.card2__rarity-label {
+  font-size: 9px; font-weight: 700; color: var(--rc);
+  text-transform: uppercase; letter-spacing: 0.5px;
+}
+
+.card2__attrs {
+  display: grid; grid-template-columns: repeat(4, 1fr);
+  gap: 2px;
+  border-top: 1px solid rgba(255,255,255,0.06);
+  padding-top: 6px;
+}
+.card2--small .card2__attrs { grid-template-columns: repeat(2, 1fr); }
+.card2__attr { display: flex; flex-direction: column; align-items: center; gap: 1px; }
+.card2__attr-label { font-size: 7px; font-weight: 700; color: rgba(255,255,255,0.4); letter-spacing: 0.3px; }
+.card2__attr-val { font-size: 13px; font-weight: 800; color: #fff; font-family: 'Archivo', sans-serif; }
+
+.card2__abilities {
+  display: flex; flex-wrap: wrap; gap: 4px;
+  border-top: 1px solid rgba(255,255,255,0.06);
+  padding-top: 5px;
+}
+.card2__ability {
+  font-size: 8px; font-weight: 700;
+  background: color-mix(in srgb, #e0a01e 15%, transparent);
+  color: #e0a01e;
+  border: 1px solid rgba(224,160,30,0.4);
+  border-radius: 20px;
+  padding: 3px 8px;
+  letter-spacing: 0.4px;
+}
+
+.card2__footer {
+  display: flex; gap: 4px; justify-content: center; flex-wrap: wrap;
+  font-size: 7px; font-weight: 600;
+  color: rgba(255,255,255,0.3);
+  letter-spacing: 0.5px;
+  text-transform: uppercase;
+  border-top: 1px solid rgba(255,255,255,0.06);
+  padding-top: 5px;
+}
+
+/* ═══════════════════════════════════════════════════════
    CARD — FIFA stil
 ═══════════════════════════════════════════════════════ */
 .card {

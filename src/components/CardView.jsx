@@ -3,85 +3,114 @@ import { rarityById } from '../game/constants.js';
 import { attributesForPosition } from '../game/cards.js';
 import { useGameStore } from '../store/useGameStore.js';
 
-// Pretvori gameDay u stvarni datum (počevši od 2026-01-01).
+const ATTR_LABELS = {
+  shooting:    'SHOOTING',
+  passing:     'PASSING',
+  tackling:    'TACKLING',
+  pace:        'PACE',
+  reflexes:    'REFLEXES',
+  positioning: 'POSITNG',
+};
+
 const GAME_START = new Date('2026-01-01');
 function gameDayToDate(day) {
   const d = new Date(GAME_START);
   d.setDate(d.getDate() + day - 1);
-  return d.toLocaleDateString('sr-Latn', { day: 'numeric', month: 'short' });
+  return d.toLocaleDateString('sr-Latn', { day: '2-digit', month: '2-digit', year: '2-digit' });
 }
 
-const ATTR_LABELS = {
-  shooting: 'SHO',
-  passing: 'PAS',
-  tackling: 'TAC',
-  pace: 'PAC',
-  reflexes: 'REF',
-  positioning: 'POS',
+const NAT_FLAGS = {
+  'Srbija':   '🇷🇸',
+  'Hrvatska': '🇭🇷',
+  'Bosna':    '🇧🇦',
+  'Brazil':   '🇧🇷',
+  'Belgija':  '🇧🇪',
 };
 
-const RARITY_BG = {
-  common:    'linear-gradient(160deg, #1e2128 0%, #2a2d35 100%)',
-  rare:      'linear-gradient(160deg, #1c1600 0%, #2e2400 100%)',
-  epic:      'linear-gradient(160deg, #120b22 0%, #1e1035 100%)',
-  legendary: 'linear-gradient(160deg, #1c0505 0%, #300a0a 100%)',
+const RARITY_COLORS = {
+  common:    '#9aa0a6',
+  rare:      '#e0a01e',
+  epic:      '#8b3fd1',
+  legendary: '#d63a3a',
 };
 
 export default function CardView({ card, onClick, small = false }) {
   const rarity = rarityById(card.rarity);
   const attrKeys = attributesForPosition(card.position);
-  const initials = card.name.split(' ').map((w) => w[0]).join('').slice(0, 2).toUpperCase();
-  const bg = RARITY_BG[card.rarity] || RARITY_BG.common;
+  const rarityColor = RARITY_COLORS[card.rarity] || RARITY_COLORS.common;
+  const flag = NAT_FLAGS[card.nationality] ?? '🏳️';
 
   const editionSchedule = useGameStore((s) => s.editionSchedule);
   const edition = card.editionId ? editionSchedule.find((e) => e.code === card.editionId) : null;
-  const retireLabel = edition ? gameDayToDate(edition.retireDay) : null;
+  const expDate = edition ? gameDayToDate(edition.retireDay) : null;
+  const editionLabel = edition ? edition.theme.toUpperCase() + ' EDITION' : null;
 
   return (
     <motion.div
-      className={`card${small ? ' card--small' : ''}`}
-      style={{ '--rarity': rarity.hex, background: bg }}
+      className={`card2${small ? ' card2--small' : ''}`}
+      style={{ '--rc': rarityColor }}
       initial={{ opacity: 0, y: 16 }}
       animate={{ opacity: 1, y: 0 }}
       whileHover={{ y: -6, scale: 1.03 }}
       transition={{ type: 'spring', stiffness: 260, damping: 22 }}
       onClick={onClick}
     >
-      {/* Top row */}
-      <div className="card__top">
-        <div className="card__overall">{card.overall}</div>
-        <div className="card__pos">{card.position}</div>
-        {card.nationality && <div className="card__nat">{card.nationality}</div>}
+      {/* Name banner */}
+      <div className="card2__namebar">
+        <span className="card2__name">{card.name}</span>
       </div>
 
-      {/* Avatar */}
-      <div className="card__avatar" style={{ background: `color-mix(in srgb, ${rarity.hex} 22%, #111)` }}>
-        {initials}
+      {/* Flag + Position */}
+      <div className="card2__toprow">
+        <span className="card2__flag">{flag}</span>
+        <span className="card2__pos">{card.position}</span>
       </div>
 
-      {/* Name */}
-      <div className="card__name">{card.name}</div>
-      <div className="card__rarity">{card.isTalent ? `★ Talent ${card.potential}` : rarity.label}</div>
-      {retireLabel && <div className="card__expire">do {retireLabel}</div>}
+      {/* Player image or initials placeholder */}
+      <div className="card2__img">
+        {card.image
+          ? <img src={card.image} alt={card.name} />
+          : <span className="card2__initials">
+              {card.name.split(' ').map((w) => w[0]).join('').slice(0, 2).toUpperCase()}
+            </span>
+        }
+      </div>
 
-      {/* Attributes */}
-      <ul className="card__attrs">
-        {attrKeys.map((key) => (
-          <li key={key}>
-            <span className="card__attr-label">{ATTR_LABELS[key] ?? key}</span>
-            <span className="card__attr-val">{card.attributes[key]}</span>
-          </li>
-        ))}
-      </ul>
+      {/* Stats panel */}
+      <div className="card2__panel">
+        {/* Overall */}
+        <div className="card2__overall-row">
+          <span className="card2__nat-code">{card.nationality?.slice(0, 3).toUpperCase() ?? '---'}</span>
+          <span className="card2__overall">{card.overall}</span>
+          <span className="card2__rarity-label">{rarity.label.toUpperCase()}</span>
+        </div>
 
-      {/* Abilities */}
-      {card.abilities?.length > 0 && (
-        <ul className="card__abilities">
-          {card.abilities.map((a) => (
-            <li key={a.id} title={a.base}>⚡ {a.name}</li>
+        {/* Attributes */}
+        <div className="card2__attrs">
+          {attrKeys.map((key) => (
+            <div key={key} className="card2__attr">
+              <span className="card2__attr-label">{ATTR_LABELS[key] ?? key}</span>
+              <span className="card2__attr-val">{card.attributes[key]}</span>
+            </div>
           ))}
-        </ul>
-      )}
+        </div>
+
+        {/* Abilities */}
+        {card.abilities?.length > 0 && (
+          <div className="card2__abilities">
+            {card.abilities.map((a) => (
+              <span key={a.id} className="card2__ability">{a.name.toUpperCase()}</span>
+            ))}
+          </div>
+        )}
+
+        {/* Footer */}
+        <div className="card2__footer">
+          <span>GOALEADORS</span>
+          {editionLabel && <span>· {editionLabel}</span>}
+          {expDate && <span>· EXP. {expDate}</span>}
+        </div>
+      </div>
     </motion.div>
   );
 }

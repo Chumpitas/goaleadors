@@ -2,6 +2,15 @@
 import { createCard } from './cards.js';
 
 export const SAMPLE_CARDS = [
+  Object.assign(createCard({
+    name: 'Carlos Eduardo Ferreira',
+    position: 'ATT',
+    rarity: 'rare',
+    nationality: 'Brazil',
+    editionId: 'foundations',
+    attributes: { shooting: 60, passing: 62, tackling: 64, pace: 47 },
+    abilities: ['veteran_presence', 'set_piece_stopper'],
+  }), { image: 'https://d8j0ntlcm91z4.cloudfront.net/user_2zCFsJmlhH6t01iCupOrbjaSRvW/hf_20260625_010348_3f3e9c6e-ae64-43a9-ad3e-ac9970038edd.png' }),
   createCard({
     name: 'Marko Vidić',
     position: 'ATT',
