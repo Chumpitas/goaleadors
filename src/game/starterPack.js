@@ -1,5 +1,21 @@
 // Starter pack po registraciji (§7) — besplatno.
 import { pick } from './rng.js';
+import { createCard } from './cards.js';
+
+const CDN = 'https://d8j0ntlcm91z4.cloudfront.net/user_2zCFsJmlhH6t01iCupOrbjaSRvW';
+
+/** Garantovane karte koje svaki igrač dobija u starter packu. */
+const GUARANTEED_CARDS = [
+  Object.assign(createCard({
+    name: 'Carlos Eduardo Ferreira',
+    position: 'ATT',
+    rarity: 'rare',
+    nationality: 'Brazil',
+    editionId: 'foundations',
+    attributes: { shooting: 60, passing: 62, tackling: 64, pace: 47 },
+    abilities: ['veteran_presence'],
+  }), { image: `${CDN}/hf_20260625_010348_3f3e9c6e-ae64-43a9-ad3e-ac9970038edd.png` }),
+];
 
 /**
  * Sastav starter postave (§7), po poziciji/raritetu.
@@ -34,7 +50,7 @@ function drawOne(pool, position, rarity, rng) {
  * @returns {object[]} karte (mogu se ponavljati definicije ako je pool malen)
  */
 export function grantStarterCards(pool, rng = Math.random) {
-  const cards = [];
+  const cards = [...GUARANTEED_CARDS];
   for (const row of STARTER_COMPOSITION) {
     for (const [rarity, count] of [['common', row.common], ['rare', row.rare], ['epic', row.epic]]) {
       for (let i = 0; i < count; i++) {
