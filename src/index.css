@@ -318,6 +318,7 @@ select, input { font-family: inherit; }
 .card__avatar { width: 56px; height: 56px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 18px; font-weight: 700; color: #fff; margin: 4px auto; }
 .card__name { font-size: 11px; font-weight: 700; text-align: center; color: #fff; text-transform: uppercase; letter-spacing: 0.5px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 .card__rarity { font-size: 9px; text-align: center; color: var(--rarity); text-transform: uppercase; letter-spacing: 1px; margin-bottom: 2px; }
+.card__expire { font-size: 9px; text-align: center; color: rgba(255,255,255,0.4); margin-bottom: 2px; }
 .card__attrs { list-style: none; padding: 0; margin: 0; display: grid; grid-template-columns: 1fr 1fr; gap: 2px; }
 .card__attrs li { display: flex; justify-content: space-between; padding: 2px 4px; background: rgba(255,255,255,0.05); border-radius: 3px; }
 .card__attr-label { font-size: 9px; font-weight: 700; color: rgba(255,255,255,0.5); }

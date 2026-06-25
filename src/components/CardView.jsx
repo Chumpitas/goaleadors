@@ -1,6 +1,15 @@
 import { motion } from 'framer-motion';
 import { rarityById } from '../game/constants.js';
 import { attributesForPosition } from '../game/cards.js';
+import { useGameStore } from '../store/useGameStore.js';
+
+// Pretvori gameDay u stvarni datum (počevši od 2026-01-01).
+const GAME_START = new Date('2026-01-01');
+function gameDayToDate(day) {
+  const d = new Date(GAME_START);
+  d.setDate(d.getDate() + day - 1);
+  return d.toLocaleDateString('sr-Latn', { day: 'numeric', month: 'short' });
+}
 
 const ATTR_LABELS = {
   shooting: 'SHO',
@@ -23,6 +32,10 @@ export default function CardView({ card, onClick, small = false }) {
   const attrKeys = attributesForPosition(card.position);
   const initials = card.name.split(' ').map((w) => w[0]).join('').slice(0, 2).toUpperCase();
   const bg = RARITY_BG[card.rarity] || RARITY_BG.common;
+
+  const editionSchedule = useGameStore((s) => s.editionSchedule);
+  const edition = card.editionId ? editionSchedule.find((e) => e.code === card.editionId) : null;
+  const retireLabel = edition ? gameDayToDate(edition.retireDay) : null;
 
   return (
     <motion.div
@@ -49,6 +62,7 @@ export default function CardView({ card, onClick, small = false }) {
       {/* Name */}
       <div className="card__name">{card.name}</div>
       <div className="card__rarity">{card.isTalent ? `★ Talent ${card.potential}` : rarity.label}</div>
+      {retireLabel && <div className="card__expire">do {retireLabel}</div>}
 
       {/* Attributes */}
       <ul className="card__attrs">
